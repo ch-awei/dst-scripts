@@ -84,7 +84,7 @@ local function GoHomeAction(inst)
 end
 
 local SEE_FOOD_DIST         = 25
-local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "outofreach" }
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return nil
@@ -133,6 +133,7 @@ function MoleBatBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function()
                 return self.inst._quaking
             end, "Quaking",

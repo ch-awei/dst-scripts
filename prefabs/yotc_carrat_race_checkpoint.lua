@@ -134,6 +134,8 @@ local function fn()
 
     MakeMediumBurnable(inst, nil, nil, true)
     MakeSmallPropagator(inst)
+    MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst:ListenForEvent("onbuilt", onbuilt)
     inst:ListenForEvent("yotc_racer_at_checkpoint", OnRacerAtCheckpoint)
@@ -148,7 +150,7 @@ end
 
 
 return Prefab("yotc_carrat_race_checkpoint", fn, assets, prefabs ),
-       MakeDeployableKitItem("yotc_carrat_race_checkpoint_item", "yotc_carrat_race_checkpoint", "yotc_carrat_racekit_checkpoint", "yotc_carrat_racekit_checkpoint", "idle", {Asset("ANIM", "anim/yotc_carrat_racekit_checkpoint.zip")}, {size = "med", scale = 0.77}, nil, {fuelvalue = TUNING.LARGE_FUEL}, carratrace_common.deployable_data),
+       MakeDeployableKitItem("yotc_carrat_race_checkpoint_item", "yotc_carrat_race_checkpoint", "yotc_carrat_race_checkpoint_item", "yotc_carrat_race_checkpoint_item", "idle", {Asset("ANIM", "anim/yotc_carrat_race_checkpoint_item.zip")}, {size = "med", scale = 0.77}, nil, {fuelvalue = TUNING.LARGE_FUEL}, carratrace_common.deployable_data),
 		MakePlacer("yotc_carrat_race_checkpoint_item_placer", "yotc_carrat_race_checkpoint", "yotc_carrat_race_checkpoint", "idle_off", nil, nil, nil, nil, nil, nil,
 		function(inst)
 			return carratrace_common.PlacerPostInit_AddPlacerRing(inst, "yotc_carrat_race_deploy_checkpoint")

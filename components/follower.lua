@@ -63,6 +63,10 @@ end
 local function TryPorting(inst, self)
 	self.porttask = nil
 
+    if inst.ghost_babysitter then
+        return
+    end
+
     if inst.components.hitchable and not inst.components.hitchable.canbehitched then
         return
     end
@@ -165,6 +169,29 @@ function Follower:StopLeashing()
 	end
 end
 
+function Follower:DisableLeashing()
+	if not self.noleashing then
+        self.noleashing = true
+        self:StopLeashing()
+    end
+end
+
+function Follower:EnableLeashing()
+    if not self.noleashing then
+        return
+    end
+
+    self.noleashing = nil
+
+    if self.leader ~= nil and (self.leader:HasTag("player") or self.leader.components.inventoryitem ~= nil) then
+        self:StartLeashing()
+
+        if self.inst:IsAsleep() then
+            OnEntitySleep(self.inst)
+        end
+    end
+end
+
 OnPlayerJoined = function(self, player)
     if self.cached_player_leader_userid == player.userid then
         local current_time = GetTime()
@@ -172,11 +199,7 @@ OnPlayerJoined = function(self, player)
         if self.inst:GetDistanceSqToInst(player) <= TUNING.FOLLOWER_REFOLLOW_DIST_SQ and
         (not cached_player_leader_timeleft or cached_player_leader_timeleft > current_time) then
 
-            if player.components.leader then
-                player.components.leader:AddFollower(self.inst)
-            else
-                self:SetLeader(player)
-            end
+            self:SetLeader(player)
 
             self.targettime = nil
             if cached_player_leader_timeleft then

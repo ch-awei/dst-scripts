@@ -57,13 +57,7 @@ function SpawnAt(prefab, loc, scale, offset)
     prefab = (prefab.GUID and prefab.prefab) or prefab
 
     local spawn = SpawnPrefab(prefab)
-    local pos = nil
-
-    if loc.prefab then
-        pos = loc:GetPosition()
-    else
-        pos = loc
-    end
+    local pos = (loc.prefab and loc:GetPosition()) or loc
 
     if spawn and pos then
         pos = pos + offset
@@ -166,6 +160,18 @@ function table.reverse(tab)
     end
 
     return newTable
+end
+
+-- only for indexed tables
+-- Does a half-table-length iteration, swapping elements from the front half
+-- with elements from the back half, in order.
+-- The comma-separated double assignment lets us do this as one operation.
+function table.reverse_inplace(t)
+    local size = #t
+    for i = 1, math.floor(size / 2), 1 do
+        t[i], t[size - i + 1] = t[size - i + 1], t[i]
+    end
+    return t
 end
 
 function table.invert(t)
@@ -776,7 +782,6 @@ end
 
 -- make environment
 local env = {  -- add functions you know are safe here
-    loadstring=loadstring -- functions can get serialized to text, this is required to turn them back into functions
  }
 
 function RunInEnvironment(fn, fnenv)
@@ -810,7 +815,7 @@ function RunInSandboxSafe(untrusted_code, error_handler)
 end
 
 --same as above, but catches infinite loops
-function RunInSandboxSafeCatchInfiniteLoops(untrusted_code, error_handler)
+function RunInSandboxSafeCatchInfiniteLoops(untrusted_code, error_handler, maxops)
     if DEBUGGER_ENABLED then
         --The debugger makes use of debug.sethook, so it conflicts with this function
         --We'll rely on the debugger to catch infinite loops instead, so in this case, just fallback
@@ -825,7 +830,7 @@ function RunInSandboxSafeCatchInfiniteLoops(untrusted_code, error_handler)
     local co = coroutine.create(function()
         coroutine.yield(xpcall(untrusted_function, error_handler or function() end))
     end)
-    debug.sethook(co, function() error("infinite loop detected") end, "", 20000)
+    debug.sethook(co, function() error("infinite loop detected") end, "", maxops or 20000)
     --clear out all entries to the metatable of string, since that can be accessed even by doing local string = "" string.whatever()
     local string_backup = deepcopy(string)
     cleartable(string)
@@ -1611,14 +1616,13 @@ function DistPointToSegmentXYSq(p, v1, v2)
 	return Dist2dSq(p, {x = v1.x + t * (v2.x - v1.x), y =v1.y + t * (v2.y - v1.y)});
 end
 
-
 -- helpers for orderedPairs
 function __genOrderedIndex( t )
     local orderedIndex = {}
     for key in pairs(t) do
         table.insert( orderedIndex, key )
     end
-    table.sort( orderedIndex )
+	table.sort(orderedIndex, stringidsorter) --this should not be affected by locale
     return orderedIndex
 end
 
@@ -1697,7 +1701,7 @@ end
 
 function DecodeAndUnzipString(str)
     if type(str) == "string" then
-        local success, savedata = RunInSandbox(TheSim:DecodeAndUnzipString(str))
+        local success, savedata = RunInSandboxSafeCatchInfiniteLoops(TheSim:DecodeAndUnzipString(str), nil, 2000000)
         if success then
             return savedata
         else
@@ -1713,8 +1717,9 @@ end
 function FunctionOrValue(func_or_val, ...)
     if type(func_or_val) == "function" then
         return func_or_val(...)
+    else
+        return func_or_val
     end
-    return func_or_val
 end
 
 function ApplyLocalWordFilter(text, text_filter_context, net_id)
@@ -1776,27 +1781,29 @@ end
 
 -- NOTES(JBK): Controller reticles AKA reticules or handbags.
 local BLINKFOCUS_MUST_TAGS = { "blinkfocus" }
-function ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, rmin, rmax, riter, validwalkablefn)
+function ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, rmin, rmax, riter, validwalkablefn, inwagpunkarena)
     -- If this function returns true the pos vector will be modified.
     for r = rmin, rmax, riter do
         local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, validwalkablefn, false, true)
         if offset ~= nil then
-            pos.x = pos.x + offset.x
-            pos.z = pos.z + offset.z
-            return true
+            if inwagpunkarena == TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(pos.x + offset.x, pos.y, pos.z + offset.z) then
+                pos.x = pos.x + offset.x
+                pos.z = pos.z + offset.z
+                return true
+            end
         end
     end
     -- Variable pos was not edited.
     return false
 end
-function ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn)
+function ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn, inwagpunkarena)
     -- If this function returns true the pos vector will be modified.
     -- 12 to 6
-    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 12, 6, -.5, validwalkablefn) then
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 12, 6, -.5, validwalkablefn, inwagpunkarena) then
         return true
     end
     -- 12.5 to 20
-    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, 12.5, maxrange or 20, .5, validwalkablefn) then
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, 12.5, maxrange or 20, .5, validwalkablefn, inwagpunkarena) then
         return true
     end
     -- Variable pos was not edited.
@@ -1805,6 +1812,7 @@ end
 function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
     local rotation = player.Transform:GetRotation()
     local pos = player:GetPosition()
+    local inwagpunkarena = TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(pos.x, pos.y, pos.z)
 
     -- Obtain max range.
     local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.CONTROLLER_BLINKFOCUS_DISTANCE, BLINKFOCUS_MUST_TAGS)
@@ -1813,7 +1821,10 @@ function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
         local newmaxrange = v.maxrange and v.maxrange:value() or nil
         if newmaxrange ~= nil and newmaxrange ~= 0 and (maxrange == nil or newmaxrange < maxrange) then
             if player:GetDistanceSqToInst(v) < newmaxrange * newmaxrange then
-                maxrange = newmaxrange
+                local x, y, z = v.Transform:GetWorldPosition()
+                if inwagpunkarena == TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) then
+                    maxrange = newmaxrange
+                end
             end
         end
     end
@@ -1825,7 +1836,10 @@ function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
             local angletoepos = player:GetAngleToPoint(epos)
             local angleto = math.abs(anglediff(rotation, angletoepos))
             if angleto < TUNING.CONTROLLER_BLINKFOCUS_ANGLE then
-                return epos
+                local x, y, z = v.Transform:GetWorldPosition()
+                if inwagpunkarena == TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) then
+                    return epos
+                end
             end
         end
     end
@@ -1835,7 +1849,7 @@ function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
     -- NOTES(JBK): This is done this way to try to find a forward angle first and then go back and forth in a conical sweep away from the forward direction.
     -- This will create a more intuitive feel for spots for the reticle location instead of a circular sweep.
     -- Directly forward first.
-    if ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn) then
+    if ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn, inwagpunkarena) then
         return pos
     end
     -- Conical sweep.
@@ -1843,15 +1857,15 @@ function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
     local CONE_ANGLE = TUNING.CONTROLLER_BLINKCONE_ANGLE
     for i = 1, SWEEPS do
         local deviation = (i / SWEEPS) * CONE_ANGLE * DEGREES
-        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation + deviation, maxrange, validwalkablefn) then
+        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation + deviation, maxrange, validwalkablefn, inwagpunkarena) then
             return pos
         end
-        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation - deviation, maxrange, validwalkablefn) then
+        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation - deviation, maxrange, validwalkablefn, inwagpunkarena) then
             return pos
         end
     end
     -- One last try for very close forward oneshot to get a valid position.
-    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 4, 0, -.5, validwalkablefn) then
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 4, 0, -.5, validwalkablefn, inwagpunkarena) then
         return pos
     end
     -- No valid point but we will return something for the reticle to use.
@@ -1860,33 +1874,91 @@ function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
     return pos
 end
 
+local function _RecordLastGoodBoatSpot(placer, rotation, offset, ox, oz)
+	placer._boat_last_rot = rotation
+	placer._boat_last_offs = placer.offset
+	placer._boat_last_t = GetTime()
+	placer._boat_last_ox = ox
+	placer._boat_last_oz = oz
+end
+
+local function _ResetLastGoodBoatSpot(placer)
+	placer._boat_last_rot = nil
+	placer._boat_last_offs = nil
+	placer._boat_last_t = nil
+	placer._boat_last_ox = nil
+	placer._boat_last_oz = nil
+end
+
+local function _ShouldKeepLastGoodBoatSpot(placer, ox, oz)
+	return (math.abs(placer._boat_last_ox - ox) < 0.1 and math.abs(placer._boat_last_oz - oz) < 0.1)
+		or placer._boat_last_t + 1 > GetTime()
+end
+
 -- NOTES(JBK): Controller placer AKA should this placer move to a better spot so controllers can still place it.
 function ControllerPlacer_Boat_SpotFinder_Internal(placer, player, ox, oy, oz)
+	local SWEEPS = 15
+	local CONE_ANGLE = TUNING.CONTROLLER_BOATPLACEMENT_ANGLE
+
     local x, y, z = player.Transform:GetWorldPosition()
-    x, z = math.floor(x), math.floor(z)
-    local rotation = player.Transform:GetRotation() * DEGREES
+	local orot = player.Transform:GetRotation()
+	local snap_to_degrees = CONE_ANGLE / SWEEPS
+	local rotation = math.floor(orot / snap_to_degrees + 0.5) * snap_to_degrees * DEGREES
+
+	local tx = x + placer.offset * math.cos(rotation)
+	local tz = z - placer.offset * math.sin(rotation)
+	placer.inst.Transform:SetPosition(tx, 0, tz)
+	if placer:TestCanBuild() then
+		_RecordLastGoodBoatSpot(placer, rotation, placer.offset, ox, oz)
+		return
+	end
+
     -- Conical sweep.
-    local SWEEPS = 10
-    local CONE_ANGLE = TUNING.CONTROLLER_BOATPLACEMENT_ANGLE
-    for r = placer.offset, 1, -.5 do
-        for i = 1, SWEEPS do
-            local deviation = (i / SWEEPS) * CONE_ANGLE * DEGREES
-            local tx, tz = math.floor(x + r * math.cos(rotation + deviation)), math.floor(z - r * math.sin(rotation + deviation))
+	local min_r = placer._min_boat_radius or 1
+	local delta_r = placer.offset - min_r
+	delta_r = delta_r / math.ceil(delta_r / 0.5) - 0.001
+	local deviation_delta = CONE_ANGLE * DEGREES / SWEEPS
+	for i = 1, SWEEPS do
+		local deviation = i * deviation_delta
+		for r = placer.offset, min_r, -delta_r do
+			tx, tz = x + r * math.cos(rotation + deviation), z - r * math.sin(rotation + deviation)
             placer.inst.Transform:SetPosition(tx, 0, tz)
             if placer:TestCanBuild() then
+				_RecordLastGoodBoatSpot(placer, rotation + deviation, r, ox, oz)
                 return
             end
-            tx, tz = math.floor(x + r * math.cos(rotation - deviation)), math.floor(z - r * math.sin(rotation - deviation))
+			tx, tz = x + r * math.cos(rotation - deviation), z - r * math.sin(rotation - deviation)
             placer.inst.Transform:SetPosition(tx, 0, tz)
             if placer:TestCanBuild() then
+				_RecordLastGoodBoatSpot(placer, rotation - deviation, r, ox, oz)
                 return
             end
         end
     end
+
     -- Reset it back to where it was before the modifications.
     placer.inst.Transform:SetPosition(ox, oy, oz)
+	if placer:TestCanBuild() then
+		_RecordLastGoodBoatSpot(placer, orot * DEGREES, placer.offset, ox, oz)
+		return
+	end
+
+	-- No good spots.
+	if placer._boat_last_rot then
+		if _ShouldKeepLastGoodBoatSpot(placer, ox, oz) then
+			tx = x + placer._boat_last_offs * math.cos(placer._boat_last_rot)
+			tz = z - placer._boat_last_offs * math.sin(placer._boat_last_rot)
+			placer.inst.Transform:SetPosition(tx, 0, tz)
+			placer._boat_last_ox = ox
+			placer._boat_last_oz = oz
+		else
+			_ResetLastGoodBoatSpot(placer)
+		end
+	end
 end
-function ControllerPlacer_Boat_SpotFinder(inst)
+function ControllerPlacer_Boat_SpotFinder(inst, boat_radius)
+	local min_range = boat_radius + 0.5 --see CLIENT_CanDeployBoat (boat.lua, yotd_boats.lua)
+	inst.components.placer._min_boat_radius = min_range + 0.01 --make sure placer stays within valid range of CLIENT_CanDeployBoat
     inst.components.placer.controllergroundoverridefn = ControllerPlacer_Boat_SpotFinder_Internal
 end
 

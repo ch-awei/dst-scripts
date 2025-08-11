@@ -151,6 +151,8 @@ local function common_fn(build, tag)
         return inst
     end
 
+	inst.override_combat_fx_size = "med"
+
     inst.recentlycharged = {}
     inst.Physics:SetCollisionCallback(oncollide)
 
@@ -185,6 +187,8 @@ local function common_fn(build, tag)
     local locomotor = inst:AddComponent("locomotor")
     locomotor.walkspeed = TUNING.ROOK_WALK_SPEED
     locomotor.runspeed =  TUNING.ROOK_RUN_SPEED
+
+    inst:AddComponent("drownable")
 
     --
     local sleeper = inst:AddComponent("sleeper")

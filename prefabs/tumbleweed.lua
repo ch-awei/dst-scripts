@@ -120,16 +120,21 @@ local function onpickup(inst, picker)
     local item = nil
     for i, v in ipairs(inst.loot) do
         item = SpawnPrefab(v)
-        item.Transform:SetPosition(x, y, z)
-        if item.components.inventoryitem ~= nil and item.components.inventoryitem.ondropfn ~= nil then
-            item.components.inventoryitem.ondropfn(item)
-        end
-        if inst.lootaggro[i] and item.components.combat ~= nil and picker ~= nil then
-            if not (
-                item:HasTag("spider") and (picker:HasTag("spiderwhisperer") or picker:HasTag("spiderdisguise") or (picker:HasTag("monster") and not picker:HasTag("player"))) or
-                item:HasTag("frog") and picker:HasTag("merm")
-            ) then
-                item.components.combat:SuggestTarget(picker)
+        
+        if item ~= nil then
+            item.Transform:SetPosition(x, y, z)
+
+            if item.components.inventoryitem ~= nil and item.components.inventoryitem.ondropfn ~= nil then
+                item.components.inventoryitem.ondropfn(item)
+            end
+
+            if inst.lootaggro[i] and item.components.combat ~= nil and picker ~= nil then
+                if not (
+                    item:HasTag("spider") and (picker:HasTag("spiderwhisperer") or picker:HasTag("spiderdisguise") or (picker:HasTag("monster") and not picker:HasTag("player"))) or
+                    item:HasTag("frog") and picker:HasTag("merm")
+                ) then
+                    item.components.combat:SuggestTarget(picker)
+                end
             end
         end
     end
@@ -403,6 +408,14 @@ local function burntfxfn()
     return inst
 end
 
+local function OnHaunt(inst)
+    if math.random() <= TUNING.HAUNT_CHANCE_OCCASIONAL then
+        onpickup(inst, nil)
+        inst:Remove()
+    end
+    return true
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -484,13 +497,7 @@ local function fn()
     inst.OnLoad = OnLoad
 
     inst:AddComponent("hauntable")
-    inst.components.hauntable:SetOnHauntFn(function(inst, haunter)
-        if math.random() <= TUNING.HAUNT_CHANCE_OCCASIONAL then
-            onpickup(inst, nil)
-			inst:Remove()
-        end
-        return true
-    end)
+    inst.components.hauntable:SetOnHauntFn(OnHaunt)
 
     return inst
 end

@@ -68,7 +68,7 @@ local function OnHit(inst, attacker, target)
 
     -- Hit a boat? Cause a leak!
     if target ~= nil and target:HasTag("boat") then
-        if inst.redgemcount and inst.redgemcount > 3 then
+        if inst.redgemcount and inst.redgemcount > 4 then
             local hitpos = inst:GetPosition()
 
             local size = "small_leak"
@@ -117,7 +117,7 @@ local function OnHit(inst, attacker, target)
                 if loot ~= nil then
                     loot.Transform:SetPosition(ae_x, ae_y, ae_z)
                     if loot.components.inventoryitem ~= nil then
-                        loot.components.inventoryitem:InheritWorldWetnessAtTarget(affected_entity)
+                        loot.components.inventoryitem:MakeMoistureAtLeast(TUNING.OCEAN_WETNESS)
                     end
                     if loot.components.stackable ~= nil
                             and affected_entity.components.pickable.numtoharvest > 1 then
@@ -209,8 +209,7 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
         inst.Physics:SetFriction(0)
         inst.Physics:SetDamping(0)
         inst.Physics:SetRestitution(0)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.GROUND)
+		inst.Physics:SetCollisionMask(COLLISION.GROUND)
         inst.Physics:SetSphere(TUNING.CANNONBALL_RADIUS)
         inst.Physics:SetCollides(false) -- The cannonball hitting targets will be handled in OnUpdateProjectile() with FindEntities()
 
@@ -231,6 +230,7 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
 
     --projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.AnimState:SetBank(bank)
     inst.AnimState:SetBuild(build)
@@ -272,7 +272,7 @@ local function setdamage(inst, damage)
     inst.damage = damage
     inst.components.combat:SetDefaultDamage(inst.damage)
 
-    if inst.redgemcount and inst.redgemcount > 3 then
+    if inst.redgemcount and inst.redgemcount > 4 then
         local build = "cannonball_rock_lvl2_build"
         if inst.redgemcount > 7 then
             build = "cannonball_rock_lvl3_build"

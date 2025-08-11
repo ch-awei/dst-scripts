@@ -57,6 +57,7 @@ local data = {
 		sanity_arua = TUNING.SANITYAURA_SMALL_TINY,
         disable_charcoal = true,
         scrapbook_proxy = "cotl_tabernacle_level3",
+		scannable_recipename = "cotl_tabernacle_level1",
 	},
 	{
 		construction_product = nil, 
@@ -74,6 +75,7 @@ local data = {
 		sanity_arua = TUNING.SANITYAURA_SMALL,
         disable_charcoal = false,
         scrapbook_proxy = nil,
+		scannable_recipename = "cotl_tabernacle_level1",
 	},
 }
 
@@ -158,7 +160,7 @@ local function onbuilt(inst)
     inst.SoundEmitter:PlaySound(inst.data.sounds.ontakefuel)
 end
 
-local function OnHaunt(inst, haunter)
+local function OnHaunt(inst)
     if math.random() <= TUNING.HAUNT_CHANCE_RARE and
         inst.components.fueled ~= nil and
         not inst.components.fueled:IsEmpty() then
@@ -237,6 +239,8 @@ local function fn(data)
 		inst:AddTag("constructionsite")
 	end
 
+	inst.SCANNABLE_RECIPENAME = data.scannable_recipename
+
 	inst:SetDeploySmartRadius(1.25) --recipe min_spacing/2
     MakeObstaclePhysics(inst, 0.75)
     MakeSnowCoveredPristine(inst)
@@ -248,6 +252,8 @@ local function fn(data)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    MakeSnowCovered(inst)
 
     inst.scrapbook_anim    = "idle_3"
     inst.scrapbook_adddeps = scrapbook_adddeps

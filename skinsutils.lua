@@ -24,6 +24,7 @@ SKIN_RARITY_COLORS.Complimentary = SKIN_RARITY_COLORS.Common
 SKIN_RARITY_COLORS.HeirloomClassy = SKIN_RARITY_COLORS.HeirloomElegant
 SKIN_RARITY_COLORS.HeirloomSpiffy = SKIN_RARITY_COLORS.HeirloomElegant
 SKIN_RARITY_COLORS.HeirloomDistinguished = SKIN_RARITY_COLORS.HeirloomElegant
+SKIN_RARITY_COLORS.Resurrected = SKIN_RARITY_COLORS.ProofOfPurchase
 
 DEFAULT_SKIN_COLOR = SKIN_RARITY_COLORS["Common"]
 
@@ -62,6 +63,7 @@ end
 RARITY_ORDER =
 {
 	ProofOfPurchase = 1,
+    Resurrected = 1.5,
 	Timeless = 2,
 	Loyal = 3,
 	Reward = 4,
@@ -118,6 +120,9 @@ function GetFrameSymbolForRarity( rarity )
 	if rarity == "Complimentary" then
 		return "common"
 	end
+    if rarity == "Resurrected" then
+        return "proofofpurchase"
+    end
 	return string.lower( rarity )
 end
 
@@ -1342,7 +1347,7 @@ function ShouldDisplayItemInCollection(item_type)
         return false
     end
 	local rarity = GetRarityForItem(item_type)
-	if rarity == "Event" or rarity == "ProofOfPurchase" or rarity == "Loyal" or rarity == "Timeless" then
+	if rarity == "Event" or rarity == "ProofOfPurchase" or rarity == "Resurrected" or rarity == "Loyal" or rarity == "Timeless" then
 		return TheInventory:CheckOwnership(item_type)
 	end
     return true
@@ -1920,6 +1925,7 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	local resize_root = nil
 	local resize_root_small = nil
 	local resize_root_small_higher = nil
+    local resize_root_thisisreallybig = nil
 
 	-- Decide how many columns there should be
 	if num_item_types == 1 then
@@ -1935,32 +1941,48 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	elseif num_item_types == 13 then
 		columns = 5
 		resize_root = true
+    elseif num_item_types == 20 then
+		columns = 5
+		resize_root_small = true
 	elseif num_item_types == 12 or num_item_types == 11 then
 		columns = 6
 	elseif num_item_types == 16 or num_item_types == 17 or num_item_types == 18 then
 		columns = 6
 		resize_root = true
-	elseif num_item_types == 19 then
+	elseif num_item_types == 19 or num_item_types == 14 then
 		columns = 7
 		resize_root = true
-	elseif num_item_types == 22 or num_item_types == 23 or num_item_types == 24 then
+	elseif num_item_types == 22 or num_item_types == 23 or num_item_types == 24 or num_item_types == 27 then
 		columns = 8
 		resize_root_small = true
 	elseif num_item_types == 31 or num_item_types == 35 then
 		columns = 9
 		resize_root_small = true
-	elseif num_item_types == 38 then
+	elseif num_item_types == 38 or num_item_types == 30 then
 		columns = 10
 		resize_root_small = true
-	elseif num_item_types == 41 then
+	elseif num_item_types == 41 or num_item_types == 42 or num_item_types == 47 then
 		columns = 10
 		resize_root_small_higher = true
+    elseif num_item_types == 64 or num_item_types == 50 then
+		columns = 11
+		resize_root_thisisreallybig = true
 	else
 		columns = 10
 		resize_root_small_higher = true
 		print("Warning: Found an unexpected number of items in a box.", num_item_types)
 	end
-	return columns, resize_root, resize_root_small, resize_root_small_higher
+	return columns, resize_root, resize_root_small, resize_root_small_higher, resize_root_thisisreallybig
+end
+
+function GetPurchasePackFromEntitlement(entitlement_id)
+	local pack_type = nil
+	--if IsPSN() then
+	if true then
+		pack_type = ENTITLEMENTLOOKUPS.PSN[entitlement_id]
+	end
+
+	return pack_type
 end
 
 -- Testing and viewing skins on a more close level.

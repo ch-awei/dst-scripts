@@ -37,6 +37,7 @@ local events =
 		end
 	end),
 	CommonHandlers.OnLocomote(false, true),
+    CommonHandlers.OnFallInVoid(),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
 }
@@ -66,7 +67,7 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 				inst.components.combat:DoAttack(v)
 				if devour == true and v.sg ~= nil and v:HasTag("player") and dsq < AOE_DEVOUR_RADIUS_SQ then
 					--Don't buffer, handle immediately
-					v.sg:HandleEvent("devoured", { attacker = inst })
+					v:PushEventImmediate("devoured", { attacker = inst })
 					if v.sg:HasStateTag("devoured") and v.sg.statemem.attacker == inst then
 						devour = v
 					end
@@ -801,5 +802,6 @@ local states =
 		end,
 	},
 }
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("shadowthrall_horns", states, events, "idle")

@@ -241,6 +241,7 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
 
     if self.can_show_skilltree and not TheInput:ControllerAttached() and not ThePlayer then
         self.switch_context_button:Show()
+        self.inst:ListenForEvent("debug_rebuild_skilltreedata", function() if self.currentContext == "skills" then self:SwitchContext() self:SwitchContext() end end, TheGlobalInstance)
     else
         self.switch_context_button:Hide()
     end
@@ -590,7 +591,7 @@ function LoadoutSelect:OnControl(control, down)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 return true
             end
-        elseif control == CONTROL_MENU_MISC_1 and AllowSkins() and not self.skilltree then
+        elseif control == CONTROL_SKIN_PRESETS and AllowSkins() and not self.skilltree then
             self:_LoadSkinPresetsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
@@ -598,7 +599,7 @@ function LoadoutSelect:OnControl(control, down)
             self:_LoadItemSkinsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
-        elseif control == CONTROL_MENU_MISC_2 and self.can_show_skilltree and not ThePlayer then
+        elseif control == CONTROL_MENU_R2 and self.can_show_skilltree and not ThePlayer then
             self:SwitchContext()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true            
@@ -621,14 +622,14 @@ function LoadoutSelect:GetHelpText()
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
         end
         if not self.skilltree then
-            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
+            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_SKIN_PRESETS) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
         end
         if self:_ShouldShowStartingItemSkinsButton() then
 		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_4) .. " " .. STRINGS.UI.ITEM_SKIN_DEFAULTS.TITLE)
         end
         if self.can_show_skilltree and not ThePlayer then
             local text = self.switch_context_button:GetText()
-            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. text)
+            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2) .. " " .. text)
         end
 
 		return table.concat(t, "  ")

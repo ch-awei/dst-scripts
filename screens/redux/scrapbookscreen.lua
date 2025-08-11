@@ -39,6 +39,15 @@ local UIAnim = require "widgets/uianim"
 
 local dataset = require("screens/redux/scrapbookdata")
 
+--DO SOME FILTERING FOR PREFABS NOT PRESENT IN ALL VERSIONS
+--if rawget(_G, "TheSim") and not TheSim:HasPlayerSkeletons() then
+--if TheSim and not TheSim:HasPlayerSkeletons() then
+if rawget(_G, "TheSim") and not TheSim:HasPlayerSkeletons() then
+	dataset["skeleton"] = nil
+else
+	dataset["shallow_grave"] = nil
+end
+
 local PANEL_WIDTH = 1000
 local PANEL_HEIGHT = 530
 local SEARCH_BOX_HEIGHT = 40
@@ -235,6 +244,10 @@ function ScrapbookScreen:LinkDeps()
 	end
 end
 
+local function trim_spaces_and_periods(str)
+    return str:gsub("[ %.]", "")
+end
+
 function ScrapbookScreen:FilterData(search_text, search_set)
 	if not search_set  then
 		search_set = self:CollectType(dataset)
@@ -251,11 +264,11 @@ function ScrapbookScreen:FilterData(search_text, search_set)
 	for i,set in ipairs( search_set ) do
 		local name = nil
 		if set.type ~= UNKNOWN then
-			name = TrimString(string.lower(STRINGS.NAMES[string.upper(set.name)])):gsub(" ", "")
+			name = trim_spaces_and_periods(TrimString(string.lower(STRINGS.NAMES[string.upper(set.name)])))
 
 		--local name = TrimString(string.lower(set.name)):gsub(" ", "")
 			if set.subcat then
-				name = name .. TrimString(string.lower(STRINGS.SCRAPBOOK.SUBCATS[string.upper(set.subcat)])):gsub(" ", "")
+				name = name .. trim_spaces_and_periods(TrimString(string.lower(STRINGS.SCRAPBOOK.SUBCATS[string.upper(set.subcat)])))
 			end
 			local num = string.find(name, search_text, 1, true)
 			if num then
@@ -268,7 +281,7 @@ function ScrapbookScreen:FilterData(search_text, search_set)
 end
 
 function ScrapbookScreen:SetSearchText(search_text)
-	search_text = TrimString(string.lower(search_text)):gsub(" ", "")
+	search_text = trim_spaces_and_periods(TrimString(string.lower(search_text)))
 
 	self:FilterData(search_text)
 
@@ -765,7 +778,7 @@ function ScrapbookScreen:BuildItemGrid()
 			return a.entry < b.entry
 		end
 
-		return a_name < b_name
+		return stringidsorter(a_name, b_name)
 	end)
 
 	for i, data in ipairs(self.current_view_data) do
@@ -773,7 +786,7 @@ function ScrapbookScreen:BuildItemGrid()
 	end
 
     local function ScrollWidgetsCtor(context, index)
-        local w = Widget("recipe-cell-".. index)
+        local w = Widget("scrapbook-cell-".. index)
 
 		----------------
 		w.item_root = w:AddChild(Widget("item_root"))
@@ -1409,7 +1422,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		if data.weapondamage then
 			makeentry("icon_damage.tex", tostring(checknumber(data.weapondamage) and math.floor(data.weapondamage) or data.weapondamage))
 			if data.planardamage then
-				makesubentry("+"..math.floor(data.planardamage) .. STRINGS.SCRAPBOOK.DATA_PLANAR_DAMAGE)
+				makesubentry("+"..tostring(checknumber(data.planardamage) and math.floor(data.planardamage) or data.planardamage).. STRINGS.SCRAPBOOK.DATA_PLANAR_DAMAGE)
 			end
 
 			if data.areadamage then
@@ -1429,12 +1442,21 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 
 		if data.toolactions then
 			local actions = ""
-			for i,action in ipairs(data.toolactions)do
-				actions = actions .. action
+
+			for i, act in ipairs(data.toolactions) do
+				local string = STRINGS.ACTIONS[act]
+
+				if type(string) == "table" and string.GENERIC then
+					string = string.GENERIC
+				end
+
+				actions = actions .. string.upper(string or act)
+
 				if i ~= #data.toolactions then
 					actions = actions .. ", "
 				end
 			end
+
 			makesubentry(actions)
 		end
 
@@ -1608,6 +1630,10 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		if data.burnable then
 			makeentry("icon_burnable.tex", STRINGS.SCRAPBOOK.DATA_BURNABLE)
 		end
+
+		if data.snowmandecor then
+			makeentry("icon_snowmandeco.tex", STRINGS.SCRAPBOOK.DATA_SNOWMANDECO)
+		end		
 	end
 
 	---------------------------------------------
@@ -1655,10 +1681,17 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		end
 
 		if data.overridebuild then
-			animstate:AddOverrideBuild(data.overridebuild)
+            if type(data.overridebuild) == "table" then
+                for k, v in pairs(data.overridebuild) do
+                    animstate:AddOverrideBuild(v)
+                end
+            else
+			    animstate:AddOverrideBuild(data.overridebuild)
+            end
 		end
 
 		animstate:Hide("snow")
+		animstate:Hide("mouseover")
 
 		if data.hide then
 			for i,hide in ipairs(data.hide) do
@@ -1690,9 +1723,23 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			end
 		end
 
+        if data.symbolcolours then
+			for i, set in ipairs( data.symbolcolours ) do
+				animstate:SetSymbolMultColour(set[1], set[2], set[3], set[4], set[5])
+			end
+        end
+
+        if data.usepointfiltering then
+            animstate:UsePointFiltering(true)
+        end
+
 		local x1, y1, x2, y2 = animstate:GetVisualBB()
 
 		local ax,ay = animal:GetBoundingBoxSize()
+
+        if data.bb_x_extra or data.bb_y_extra then
+            ax, ay = ax + data.bb_x_extra or 0, ay + data.bb_y_extra or 0
+        end
 
 		local SCALE = CUSTOM_SIZE.x/ax
 
@@ -1811,7 +1858,10 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 	end
 
 ----------------------- DEPS -----------------------------------------
+
 	self.depsbuttons = {}
+	self.character_pannel_first = nil
+
     local DEPS_COLS = 9
     if data and data.deps and #data.deps>0 then
 
@@ -1844,7 +1894,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 				return a.entry < b.entry
 			end
 
-			return a_name < b_name
+			return stringidsorter(a_name, b_name)
 		end)
 
 		local dep_imgsize = imagesize - imagebuffer
@@ -2019,7 +2069,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 				icon:ScaleToSize(STAT_ICONSIZE,STAT_ICONSIZE)
 				icon:SetPosition(STAT_PANEL_INDENT+(STAT_ICONSIZE/2), recipeheight-STAT_ICONSIZE/2)
 				local txt = recipewidget:AddChild(Text(CHATFONT, 15, text, UICOLOURS.BLACK))
-				txt:SetMultilineTruncatedString(text, 100, STAT_PANEL_WIDTH-(STAT_PANEL_INDENT*2))
+				txt:SetMultilineTruncatedString(text, 100, STAT_PANEL_WIDTH-(STAT_PANEL_INDENT*2) - STAT_ICONSIZE - STAT_GAP_SMALL)
 				local tw, th = txt:GetRegionSize()
 				txt:SetPosition(STAT_PANEL_INDENT+STAT_ICONSIZE + STAT_GAP_SMALL + (tw/2), recipeheight-STAT_ICONSIZE/2 )
 				txt:SetHAlign(ANCHOR_LEFT)
@@ -2085,8 +2135,6 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		local entry_upper = string.upper(data.speechname or data.prefab)
 
 		if data.knownlevel > 1 and STRINGS.CHARACTERS.GENERIC.DESCRIBE[entry_upper] and #viewed_characters > 0 then
-			self.character_pannel_first = nil
-
 			local row= 1
             local valid_index = 1
             local buttonorder = {}
@@ -2445,6 +2493,17 @@ function ScrapbookScreen:SelectEntry(entry)
 		self.details = self.detailsroot:AddChild(self:PopulateInfoPanel(entry))
 		self:DoFocusHookups()
 		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/scrapbook_pageflip")
+	end
+end
+
+function ScrapbookScreen:DEBUG_REIMPORT_DATASET()
+	package.loaded["screens/redux/scrapbookdata"] = nil
+	dataset = require("screens/redux/scrapbookdata")
+
+	if TheSim and not TheSim:HasPlayerSkeletons() then
+		dataset["skeleton"] = nil
+	else	
+		dataset["shallow_grave"] = nil
 	end
 end
 

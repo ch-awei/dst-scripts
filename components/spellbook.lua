@@ -16,16 +16,20 @@ local SpellBook = Class(function(self, inst)
 	self.inst = inst
 	self.tag = nil
 	self.items = nil
+	self.bgdata = nil
 	self.radius = 175
 	self.focus_radius = 178
 	self.spell_id = nil
 	self.spellname = nil
+	self.spellaction = nil
 	self.spellfn = nil
 	self.onopenfn = nil
 	self.onclosefn = nil
+	self.canusefn = nil
 	self.opensound = nil
 	self.closesound = nil
 	self.executesound = nil
+	self.closeonexecute = true
 
 	inst:ListenForEvent("openspellwheel", OnOpenSpellWheel)
 	inst:ListenForEvent("closespellwheel", OnCloseSpellWheel)
@@ -43,6 +47,10 @@ function SpellBook:SetFocusRadius(radius)
 	self.focus_radius = radius
 end
 
+function SpellBook:SetBgData(bgdata)
+	self.bgdata = bgdata
+end
+
 function SpellBook:SetItems(items)
 	self.items = items
 end
@@ -55,8 +63,26 @@ function SpellBook:SetOnCloseFn(fn)
 	self.onclosefn = fn
 end
 
+function SpellBook:SetCanUseFn(fn)
+	self.canusefn = fn
+end
+
+--V2C: Spellbook is valid, but should we actually open it?
+--     Useful for silently blocking it from opening when classified commands are in a busy preview state
+function SpellBook:SetShouldOpenFn(fn)
+	self.shouldopenfn = fn
+end
+
+function SpellBook:ShouldOpen(user)
+	return self.shouldopenfn == nil or self.shouldopenfn(self.inst, user)
+end
+
 function SpellBook:CanBeUsedBy(user)
-	return (self.tag == nil or user:HasTag(self.tag)) and self.items ~= nil and #self.items > 0
+	return (self.tag == nil or user:HasTag(self.tag))
+		and (self.canusefn == nil or self.canusefn(self.inst, user))
+		and self.items ~= nil
+		and #self.items > 0
+		and (not self.inst.isplayer or self.inst == user)
 end
 
 function SpellBook:OpenSpellBook(user)
@@ -64,7 +90,7 @@ function SpellBook:OpenSpellBook(user)
 		if user.components.playercontroller ~= nil then
 			user.components.playercontroller:CancelAOETargeting()
 		end
-		user.HUD:OpenSpellWheel(self.inst, self.items, self.radius, self.focus_radius)
+		user.HUD:OpenSpellWheel(self.inst, self.items, self.radius, self.focus_radius, self.bgdata)
 	end
 end
 
@@ -91,6 +117,22 @@ function SpellBook:GetSpellName()
 	return self.spellname
 end
 
+--------------------------------------------------------------------------
+--Use this to directly push specific actions
+--These functions are used on client and server
+
+function SpellBook:SetSpellAction(action)
+	self.spellaction = action
+end
+
+function SpellBook:GetSpellAction()
+	return self.spellaction
+end
+
+--------------------------------------------------------------------------
+--Use these for spells that go through stategraph CAST_SPELLBOOK action
+--These functions are used on server only
+
 function SpellBook:SetSpellFn(fn)
 	self.spellfn = fn
 end
@@ -100,10 +142,13 @@ function SpellBook:HasSpellFn()
 end
 
 function SpellBook:CastSpell(user)
-	if self.spellfn == nil then
+	if self.spellfn then
+		return self.spellfn(self.inst, user)
+	else
 		return false
 	end
-	return self.spellfn(self.inst, user)
 end
+
+--------------------------------------------------------------------------
 
 return SpellBook

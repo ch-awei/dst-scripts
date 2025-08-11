@@ -121,6 +121,7 @@ local function normal_fn()
         return inst
     end
 
+	inst.override_combat_fx_height = ""
     inst.scrapbook_damage = 0
 
     local color = .5 + math.random() * .5
@@ -136,8 +137,11 @@ local function normal_fn()
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 2.0
 
+    inst:AddComponent("drownable")
+
     ------------------------------------------
     inst:SetStateGraph("SGmushgnome")
+	inst.sg.mem.burn_on_electrocute = true
 
     ------------------------------------------
 

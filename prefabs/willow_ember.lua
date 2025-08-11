@@ -62,17 +62,6 @@ end
 
 ------------------------------------------
 
-local function EnablePickupSound(inst)
-	inst.pickupsound = nil
-end
-
-local function OnTempDisablePickupSound(inst)
-	if inst.pickupsound == nil then
-		inst.pickupsound = "NONE"
-		inst:DoStaticTaskInTime(2 * FRAMES, EnablePickupSound)
-	end
-end
-
 local function KillEmber(inst)
     inst:ListenForEvent("animover", inst.Remove)
 
@@ -84,7 +73,7 @@ local function toground(inst)
     inst.persists = false
 
     if inst._task == nil then
-        inst._task = inst:DoTaskInTime(TUNING.WILLOW_EMBER_DURATION, KillEmber) -- NOTES(JBK): This is 1.1 max keep it in sync with "[WST]"
+        inst._task = inst:DoTaskInTime(TUNING.WILLOW_EMBER_DURATION, KillEmber)
     end
 
     if inst.AnimState:IsCurrentAnimation("idle_loop") then
@@ -175,7 +164,7 @@ local function ConsumeEmbers(inst, doer, amount)
 					for j = i, inventory:GetNumSlots() do
 						local v2 = inventory:GetItemInSlot(j)
 						if v2 and v2 ~= inst and v2.prefab == inst.prefab then
-							inst._tempdisablepickupsound:push()
+							inst.components.clientpickupsoundsuppressor:IgnoreNextPickupSound()
 							inst.pickupsound = "NONE"
 							inst.components.stackable:SetStackSize(v2.components.stackable:StackSize())
 							inventory:RemoveItem(v2, true):Remove()
@@ -636,6 +625,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.FIRE_THROW,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.FIRE_THROW)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatFireThrow)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoefiretarget_1"
@@ -668,6 +658,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.FIRE_BURST,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.FIRE_BURST)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatFireBurst)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticulemultitarget"
@@ -700,6 +691,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.FIRE_BALL,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.FIRE_BALL)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatFireBall)
             
@@ -733,6 +725,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.FIRE_FRENZY,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.FIRE_FRENZY)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoefiretarget_1"
@@ -765,6 +758,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.LUNAR_FIRE,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.LUNAR_FIRE)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleline"
@@ -812,6 +806,7 @@ local SKILLTREE_SPELL_DEFS =
         label = STRINGS.PYROMANCY.SHADOW_FIRE,
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.SHADOW_FIRE)
+			inst.components.spellbook:SetSpellAction(nil)
             inst.components.aoetargeting:SetDeployRadius(0)
             inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe5line"
@@ -871,7 +866,7 @@ local function updatespells(inst,owner)
     inst.components.spellbook:SetItems(spells)
 end
 
-local function OnUpdateSpellsDirty(inst, force)
+local function DoClientUpdateSpells(inst, force)
 	--V2C: inst.replica.inventoryitem:IsHeldBy(ThePlayer) won't work for new ember
 	--     spawned directly in pocket, because inventory preview won't have been
 	--     resolved yet.
@@ -888,10 +883,13 @@ local function OnUpdateSpellsDirty(inst, force)
 	end
 end
 
+local function OnUpdateSpellsDirty(inst)
+	inst:DoTaskInTime(0, DoClientUpdateSpells)
+end
+
 local function DoOnClientInit(inst)
-	inst:ListenForEvent("willow_ember._tempdisablepickupsound", OnTempDisablePickupSound)
     inst:ListenForEvent("willow_ember._updatespells", OnUpdateSpellsDirty)
-    OnUpdateSpellsDirty(inst)
+	DoClientUpdateSpells(inst)
 end
 
 local function topocket(inst, owner)
@@ -953,14 +951,15 @@ local function fn()
     inst.components.aoetargeting.reticule.twinstickmode = 1
     inst.components.aoetargeting.reticule.twinstickrange = 8
 
+	inst:AddComponent("clientpickupsoundsuppressor")
+
     inst._updatespells = net_event(inst.GUID, "willow_ember._updatespells")
-	inst._tempdisablepickupsound = net_event(inst.GUID, "willow_ember._tempdisablepickupsound")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         inst:DoTaskInTime(0,DoOnClientInit)
-		inst._onskillrefresh_client = function(owner) OnUpdateSpellsDirty(inst, true) end
+		inst._onskillrefresh_client = function(owner) DoClientUpdateSpells(inst, true) end
 
         return inst
     end

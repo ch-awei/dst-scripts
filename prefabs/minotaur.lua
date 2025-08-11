@@ -429,14 +429,14 @@ local function OnUpdateObstacleSize(inst)
 end
 
 local function OnChangeToObstacle(inst)
-
     inst.Physics:SetMass(100)
     inst.Physics:SetCollisionGroup(COLLISION.GIANTS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES,
+		COLLISION.GIANTS
+	)
     
     inst.ischaracterpassthrough = true
     inst.task = inst:DoPeriodicTask(.5, OnUpdateObstacleSize)
@@ -472,12 +472,7 @@ local function checkstunend(inst, data)
     if data ~= nil then
         if data.name == "endstun" then
             inst:RestartBrain()
-            if inst.AnimState:IsCurrentAnimation("stun_jump_pre") or
-                inst.AnimState:IsCurrentAnimation("stun_pre") or
-                inst.AnimState:IsCurrentAnimation("stun_loop") or
-                inst.AnimState:IsCurrentAnimation("stun_hit") then
-                inst.sg:GoToState("stun_pst")
-            end
+			inst:PushEventImmediate("endstun")
         end
     end
 end
@@ -522,12 +517,16 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_height = "low"
+
     inst.recentlycharged = {}
     inst.Physics:SetCollisionCallback(oncollide)
 
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.MINOTAUR_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.MINOTAUR_RUN_SPEED
+
+    inst:AddComponent("drownable")
 
     inst:SetStateGraph("SGminotaur")
 

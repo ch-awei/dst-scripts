@@ -145,6 +145,14 @@ local loop_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.LOOPALWAYS, data = "always" },
 }
 
+local loop_plus_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPNEVER, data = "never" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPRARE, data = "rare" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPRANDOM, data = "default" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPOFTEN, data = "often" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPALWAYS, data = "always" },
+}
+
 local complexity_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDEVERYSIMPLE, data = "verysimple" },
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDESIMPLE, data = "simple" },
@@ -386,6 +394,7 @@ local WORLDGEN_GROUP = {
 			["terrariumchest"] = {value = "default", image = "terrarium.tex", desc = yesno_descriptions, world={"forest"}},
 			["stageplays"] = {value = "default", image = "stageplays.tex", desc = yesno_descriptions, world={"forest"}},
 			["junkyard"] = {value = "default", image = "junkyard.tex", desc = yesno_descriptions, world={"forest"}},
+			["balatro"] = {value = "default", image = "balatro_machine.tex", desc = yesno_descriptions, world={"forest"}},
 		}
 	},
 	["global"] = {
@@ -471,6 +480,8 @@ local WORLDSETTINGS_GROUP = {
 			["spider_spitter"] = {value = "default", image = "spider_spitter.tex", world={"cave"}},
 			["spider_dropper"] = {value = "default", image = "spider_dropper.tex", world={"cave"}},
 			["molebats"] = {value = "default", image = "molebats.tex", world={"cave"}},
+			["itemmimics"] = {value = "default", image = "itemmimics.tex", world={"cave"}},
+			["chest_mimics"] = {value = "default", image = "chest_mimics.tex", world={"cave"}},
 		}
 	},
 	["animals"] = {
@@ -566,11 +577,13 @@ local WORLDSETTINGS_GROUP = {
             ["rifts_frequency"] = {value = "default", image = "lunarrift_portal.tex", desc = frequency_descriptions, world={"forest"}},
             ["rifts_enabled"] = {value = "default", image = "lunarrift_portal.tex", desc = riftsenabled_descriptions, world={"forest"}},
             ["lunarhail_frequency"] = {value = "default", image = "lunar_hail.tex", desc = frequency_descriptions, world={"forest"}},
+			["wanderingtrader_enabled"] = {value = "always", image = "wanderingtrader.tex", desc = enableddisabled_descriptions, world={"forest"}},
 
 			["weather"] = {value = "default", image = "rain.tex", desc = frequency_descriptions, world={"forest", "cave"}},
 
 			["earthquakes"] = {value = "default", image = "earthquakes.tex", desc = frequency_descriptions, world={"cave"}},
 			["wormattacks"] = {value = "default", image = "wormattacks.tex", desc = frequency_descriptions, world={"cave"}},
+			["wormattacks_boss"] = {value = "default", image = "wormattacks_boss.tex", desc = loop_plus_descriptions, world={"cave"}},
 			["atriumgate"] = {value = "default", image = "atriumgate.tex", desc = atrium_descriptions, world={"cave"}},
             ["rifts_frequency_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = frequency_descriptions, world={"cave"}},
             ["rifts_enabled_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = riftsenabled_descriptions, world={"cave"}},
@@ -615,6 +628,7 @@ local WORLDSETTINGS_GROUP = {
 			["year_of_the_catcoon"] = {value = "default", image = "yot_catcoonshrine.tex", masteroption = true, master_controlled = true, order = 9},
 			["year_of_the_bunnyman"] = {value = "default", image = "yotr_rabbitshrine.tex", masteroption = true, master_controlled = true, order = 10},
 			["year_of_the_dragonfly"] = {value = "default", image = "yotd_dragonshrine.tex", masteroption = true, master_controlled = true, order = 11},
+			["year_of_the_snake"] = {value = "default", image = "yots_wormshrine.tex", masteroption = true, master_controlled = true, order = 12},			
 		}
 	},
 	["global"] = {
@@ -878,11 +892,9 @@ local function GetOptionsFromGroup(GROUP, MOD_GROUP, location, is_master_world)
 		end
 	end
 
-
 	table.sort(options, function(a, b)
 		local item_a = GetOption(a.name)
 		local item_b = GetOption(b.name)
-
 
 		if item_a.group.order ~= item_b.group.order then
 			return item_a.group.order < item_b.group.order
@@ -894,7 +906,7 @@ local function GetOptionsFromGroup(GROUP, MOD_GROUP, location, is_master_world)
 		local item_b_order = item_b.order
 
 		if item_a_order == item_b_order then
-			return (STRINGS.UI.CUSTOMIZATIONSCREEN[string.upper(item_a.name)] or "") < (STRINGS.UI.CUSTOMIZATIONSCREEN[string.upper(item_b.name)]  or "")
+			return stringidsorter(STRINGS.UI.CUSTOMIZATIONSCREEN[string.upper(item_a.name)] or "", STRINGS.UI.CUSTOMIZATIONSCREEN[string.upper(item_b.name)] or "")
 		elseif item_a_order == nil or item_b_order == nil then
 			return item_a_order ~= nil
 		end

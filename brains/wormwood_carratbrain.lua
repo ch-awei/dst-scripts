@@ -53,7 +53,7 @@ local function PickUpFilter(inst, target, leader)
     return IsItemEdible(leader, target)
 end
 
-local NORMAL_RUNAWAY_DATA = {tags = {"scarytoprey"}, notags = {"carratcrafter"}, fn = ShouldRunFromScary}
+local NORMAL_RUNAWAY_DATA = {tags = {"scarytoprey"}, fn = ShouldRunFromScary}
 function CarratBrain:OnStart()
     local leader = GetLeader(self.inst)
     local ignorethese = nil
@@ -70,6 +70,7 @@ function CarratBrain:OnStart()
     local root = PriorityNode(
     {
         BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, NORMAL_RUNAWAY_DATA, AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
         WhileNode(function() return GetLeader(self.inst) ~= nil end, "Has Leader",
             BrainCommon.NodeAssistLeaderPickUps(self, pickupparams)

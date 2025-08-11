@@ -130,6 +130,7 @@ local function fn()
     inst:AddTag("monster")
     inst:AddTag("hostile")
     inst:AddTag("epic")
+    inst:AddTag("smallepic")
     inst:AddTag("largecreature")
     inst:AddTag("spiderqueen")
     inst:AddTag("spider")
@@ -143,6 +144,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.override_combat_fx_size = "med"
 
     inst:SetStateGraph("SGspiderqueen")
 
@@ -216,6 +219,8 @@ local function fn()
     ------------------
 
     inst:SetBrain(brain)
+
+	inst.hit_recovery = TUNING.SPIDERQEEN_HIT_RECOVERY
 
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDead)

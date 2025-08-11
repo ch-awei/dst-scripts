@@ -1,17 +1,22 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-}
-
+local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)
+	--no skipping when we're dodging (hit_recovery increased)
+	return inst.hit_recovery == nil
+		and inst.components.combat:InCooldown()
+		and inst.sg:HasStateTag("idle")
+end
 
 local events=
 {
     CommonHandlers.OnLocomote(false, true),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
-    CommonHandlers.OnAttacked(),
+	CommonHandlers.OnAttacked(nil, nil, hit_recovery_skip_cooldown_fn),
     CommonHandlers.OnDeath(),
 }
 
@@ -65,7 +70,7 @@ local states=
     },
 
     State{  name = "ruinsrespawn",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("spawn")
@@ -134,7 +139,8 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
-
-return StateGraph("knight", states, events, "idle", actionhandlers)
-
+return StateGraph("knight", states, events, "idle")

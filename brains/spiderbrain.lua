@@ -35,7 +35,7 @@ local function KeepTraderFn(inst, target)
         and inst.components.trader:IsTryingToTradeWithMe(target)
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local function EatFoodAction(inst)
     local target = FindEntity(inst,
         SEE_FOOD_DIST,
@@ -129,6 +129,7 @@ function SpiderBrain:OnStart()
     local pre_nodes = PriorityNode({
         BrainCommon.PanicWhenScared(self.inst, .3),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
     })
 
     local post_nodes = PriorityNode({

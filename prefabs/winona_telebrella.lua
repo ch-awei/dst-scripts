@@ -133,6 +133,15 @@ local function OnUpdateChargingFuel(inst)
 	end
 end
 
+local function NotifyCircuitChanged(inst, node)
+	node:PushEvent("engineeringcircuitchanged")
+end
+
+local function OnCircuitChanged(inst)
+	--Notify other connected batteries
+	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
+end
+
 local function SetCharging(inst, powered, duration)
 	if not powered then
 		if inst._powertask then
@@ -143,6 +152,7 @@ local function SetCharging(inst, powered, duration)
 			inst.components.fueled:SetUpdateFn(nil)
 			inst.components.powerload:SetLoad(0)
 			SetLedEnabled(inst, false)
+			OnCircuitChanged(inst)
 		end
 	else
 		local waspowered = inst._powertask ~= nil
@@ -158,6 +168,7 @@ local function SetCharging(inst, powered, duration)
 				inst.components.fueled:StartConsuming()
 				inst.components.powerload:SetLoad(TUNING.WINONA_TELEBRELLA_POWER_LOAD_CHARGING)
 				SetLedEnabled(inst, true)
+				OnCircuitChanged(inst)
 			end
 		end
 	end
@@ -328,15 +339,6 @@ local function DoWireSparks(inst)
 	end
 end
 
-local function NotifyCircuitChanged(inst, node)
-	node:PushEvent("engineeringcircuitchanged")
-end
-
-local function OnCircuitChanged(inst)
-	--Notify other connected batteries
-	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
-end
-
 local function OnConnectCircuit(inst)--, node)
 	if not inst._wired then
 		inst._wired = true
@@ -378,6 +380,7 @@ local function fn()
 
 	inst:AddTag("nopunch")
 	inst:AddTag("umbrella")
+	inst:AddTag("metal")
 	inst:AddTag("engineering")
 	inst:AddTag("engineeringbatterypowered")
 
@@ -401,7 +404,7 @@ local function fn()
 	inst:AddComponent("tradable")
 
 	inst:AddComponent("waterproofer")
-	inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_HUGE)
+	inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALLMED)
 
 	inst:AddComponent("inspectable")
 	inst.components.inspectable.getstatus = GetStatus
@@ -409,10 +412,6 @@ local function fn()
 	inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 	inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-
-	inst:AddComponent("insulator")
-	inst.components.insulator:SetSummer()
-	inst.components.insulator:SetInsulation(TUNING.INSULATION_MED)
 
 	MakeHauntableLaunch(inst)
 

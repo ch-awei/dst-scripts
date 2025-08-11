@@ -33,7 +33,7 @@ local function ShouldGoHome(inst)
     return GetTime() - inst.lastmeal > HUNGER_TOLERANCE
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return
@@ -134,6 +134,7 @@ function SlurtleBrain:OnStart()
     {
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),

@@ -57,7 +57,7 @@ local function fish_target_valid_on_action(ba)
         and not (target.components.inventoryitem and target.components.inventoryitem:IsHeld())
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local SEE_FOOD_DIST = 10
 local function EatFoodAction(inst)
     if inst.components.timer:TimerExists("eat_cooldown") then
@@ -116,6 +116,7 @@ function SpiderWaterBrain:OnStart()
         {
             BrainCommon.PanicWhenScared(self.inst, .3),
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             IfNode(function()
                     return not self.inst.bedazzled and self.inst.components.follower.leader == nil
                 end, "AttackWall",

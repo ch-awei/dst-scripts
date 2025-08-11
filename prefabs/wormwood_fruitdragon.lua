@@ -165,10 +165,13 @@ local function fn()
     inst.components.locomotor.runspeed = TUNING.WORMWOOD_PET_FRUITDRAGON_RUN_SPEED
     inst.components.locomotor.walkspeed = TUNING.WORMWOOD_PET_FRUITDRAGON_WALK_SPEED
 
+    inst:AddComponent("drownable")
+
     MakeSmallFreezableCharacter(inst)
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGwormwood_fruitdragon")
+    inst.sg.mem.burn_on_electrocute = true --it's plant-based. will have the short stun, but won't actually burn though.
 
     MakeHauntablePanicAndIgnite(inst)
 

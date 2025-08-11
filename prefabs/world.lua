@@ -50,8 +50,16 @@ local assets =
 
     Asset("ANIM", "anim/poi_marker.zip"),
     Asset("ANIM", "anim/poi_stand.zip"),    
-}
 
+	Asset("DYNAMIC_ATLAS", "images/pumpkin_carving.xml"),
+	Asset("PKGREF", "images/pumpkin_carving.tex"),
+
+	Asset("DYNAMIC_ATLAS", "images/pumpkin_carving2.xml"),
+	Asset("PKGREF", "images/pumpkin_carving2.tex"),
+
+	Asset("DYNAMIC_ATLAS", "images/snowman.xml"),
+	Asset("PKGREF", "images/snowman.tex"),
+}
 
 for k, v in pairs(GroundTiles.assets) do
     table.insert(assets, v)
@@ -163,7 +171,6 @@ local prefabs =
     "wormhole_limited_1",
     "diviningrod",
     "diviningrodbase",
-    "splash_ocean",
     "maxwell_smoke",
     "chessjunk1",
     "chessjunk2",
@@ -201,6 +208,7 @@ local prefabs =
     "fire",
     "character_fire",
     "shatter",
+	"electrocute_fx",
     --
 
     "migration_portal",
@@ -263,6 +271,8 @@ local prefabs =
 
 	-- vinebridgemanager
 	"vine_bridge_fx",
+
+    "snowball_item",
 }
 
 for _, v in pairs(require("prefabs/farm_plant_defs").PLANT_DEFS) do
@@ -273,6 +283,13 @@ for _, v in pairs(require("prefabs/weed_defs").WEED_DEFS) do
 end
 for _, v in pairs(require("prefabs/pocketdimensioncontainer_defs").POCKETDIMENSIONCONTAINER_DEFS) do
     table.insert(prefabs, v.prefab)
+end
+
+require("ocean_util") -- Only here just in case but it should not be needed.
+for _, v in pairs(SINKENTITY_PREFABS) do
+    for _, prefab in pairs(v) do
+        table.insert(prefabs, prefab)
+    end
 end
 
 --------------------------------------------------------------------------
@@ -356,7 +373,7 @@ local function CreateTilePhysics(inst)
             0.25, 64
         )
         inst.Map:AddTileCollisionSet(
-            inst.has_ocean and COLLISION.GROUND or COLLISION.LAND_OCEAN_LIMITS,
+            inst:CanFlyingCrossBarriers() and COLLISION.GROUND or COLLISION.LAND_OCEAN_LIMITS,
             TileGroups.ImpassableTiles, true,
             TileGroups.ImpassableTiles, false,
             0.25, 128
@@ -370,6 +387,10 @@ end
 
 local function GetPocketDimensionContainer(world, name)
     return world.PocketDimensionContainers[name]
+end
+
+local function CanFlyingCrossBarriers(world) -- NOTES(JBK): Ghosts are flying in this case and has_ocean is backwards compatability.
+    return world.has_ocean or world.cancrossbarriers_flying
 end
 
 --------------------------------------------------------------------------
@@ -424,6 +445,9 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
         inst.entity:AddSoundEmitter()
 
         inst.tile_physics_init = custom_data.tile_physics_init
+
+        inst.cancrossbarriers_flying = custom_data.cancrossbarriers_flying -- Intentionally not a table for searchability.
+        inst.CanFlyingCrossBarriers = CanFlyingCrossBarriers
 
         if custom_data.common_preinit ~= nil then
             custom_data.common_preinit(inst)
@@ -549,6 +573,7 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
 
         inst:AddComponent("dockmanager")
         inst:AddComponent("vinebridgemanager")
+        inst:AddComponent("worldroutes")
 
         inst:AddComponent("playerspawner")
 

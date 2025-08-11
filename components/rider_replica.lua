@@ -7,6 +7,8 @@ local Rider = Class(function(self, inst)
         self.classified = inst.player_classified
         self._onmounthealthdelta = function(mount, data) self:OnMountHealth(data.newpercent) end
     else
+		--self.predictriderrunspeed = nil
+
         self._onisriding = function() self:OnIsRiding(self._isriding:value()) end
         inst:ListenForEvent("isridingdirty", self._onisriding)
 
@@ -56,8 +58,7 @@ local function GetPickupAction(inst, target)
         return ACTIONS.CHECKTRAP
     end
 
-    local is_inventory = (target.replica.inventoryitem ~= nil and target.replica.inventoryitem:CanBePickedUp())
-            or (target.components.inventoryitem ~= nil and target.components.canbepickedup)
+    local is_inventory = target.replica.inventoryitem ~= nil and target.replica.inventoryitem:CanBePickedUp(inst)
 
     if is_inventory
             and not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable") or target:HasTag("spider")) then
@@ -140,7 +141,7 @@ function Rider:SetActionFilter(riding)
         if riding then
 			--See playercontroller AllowMountedStoreActionFilter; match priority
             self.inst.components.playercontroller.actionbuttonoverride = ActionButtonOverride
-            self.inst.components.playeractionpicker:PushActionFilter(MountedActionFilter, 20)
+            self.inst.components.playeractionpicker:PushActionFilter(MountedActionFilter, ACTION_FILTER_PRIORITIES.mounted)
         else
             self.inst.components.playercontroller.actionbuttonoverride = nil
             self.inst.components.playeractionpicker:PopActionFilter(MountedActionFilter)
@@ -214,6 +215,9 @@ function Rider:GetMountRunSpeed()
     elseif mount.components.locomotor ~= nil then
         return mount.components.locomotor.runspeed
     elseif self.classified ~= nil then
+		if self.predictriderrunspeed and self.inst:HasTag("autopredict") then
+			return self.predictriderrunspeed
+		end
         return self.classified.riderrunspeed:value()
     else
         return 0

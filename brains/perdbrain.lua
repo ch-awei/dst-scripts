@@ -51,7 +51,7 @@ local function GoHomeAction(inst)
 end
 
 local EATFOOD_MUST_TAGS = { "edible_"..FOODTYPE.VEGGIE }
-local EATFOOD_CANT_TAGS = { "INLIMBO" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local SCARY_TAGS = { "scarytoprey" }
 local function EatFoodAction(inst, checksafety)
     local target =
@@ -155,6 +155,7 @@ function PerdBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return not TheWorld.state.isday end, "IsNight",
             DoAction(self.inst, GoHomeAction, "Go Home", true)),
         IfNode(function() return self.inst.seekshrine end, "Seek Shrine",

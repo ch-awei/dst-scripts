@@ -21,6 +21,15 @@ local function flopsoundcheck(inst)
 end
 
 local function Flop(inst)
+	if not inst.components.inventoryitem.canbepickedup then
+		if inst.flop_task ~= nil then
+			inst.flop_task:Cancel()
+			inst.flop_task = nil
+		end
+
+		return -- Don't flop if we can't be picked up, this likely means we're in a special place/state.
+	end
+
 	if inst.flopsnd1 then inst.flopsnd1:Cancel() inst.flopsnd1 = nil end
 	if inst.flopsnd2 then inst.flopsnd2:Cancel() inst.flopsnd2 = nil end
 	if inst.flopsnd3 then inst.flopsnd3:Cancel() inst.flopsnd3 = nil end
@@ -314,7 +323,7 @@ local function water_common(data)
     inst.AnimState:SetBuild(data.build)
     inst.AnimState:PlayAnimation("idle_loop")
 
-    inst.scrapbook_anim = "idle_ground"
+    inst.scrapbook_anim = "flop_pst"
 
     inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.UNDERWATER)
 	inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
@@ -431,7 +440,7 @@ local function inv_common(fish_def)
     inst.AnimState:SetBuild(fish_def.build)
     inst.AnimState:PlayAnimation("flop_pst")
 
-    inst.scrapbook_anim = "idle_ground"
+    inst.scrapbook_anim = "flop_pst"
 
 	if fish_def.dynamic_shadow then
 	    inst.DynamicShadow:SetSize(fish_def.dynamic_shadow[1], fish_def.dynamic_shadow[2])

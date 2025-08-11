@@ -241,6 +241,11 @@ local function MakeEmpty(inst)
 	end
 
 	inst.AnimState:ClearOverrideSymbol("swap_body")
+
+	if inst.pumpkincarving_fx then
+		inst.pumpkincarving_fx:Remove()
+		inst.pumpkincarving_fx = nil
+	end
 end
 
 local function OnActivate(inst, doer)
@@ -269,6 +274,19 @@ local function onitemget(inst, data)
 			inst.AnimState:OverrideItemSkinSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol, item.GUID, "swap_cavein_boulder" ) --default should never be used
 		else
 			inst.AnimState:OverrideSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol)
+		end
+	end
+
+	if inst.pumpkincarving_fx then
+		inst.pumpkincarving_fx:Remove()
+		inst.pumpkincarving_fx = nil
+	end
+	if item.components.pumpkincarvable then
+		local cutdata = item.components.pumpkincarvable:GetCutData()
+		if string.len(cutdata) > 0 then
+			inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
+			inst.pumpkincarving_fx.entity:SetParent(inst.entity)
+			inst.pumpkincarving_fx:SetData(cutdata)
 		end
 	end
 
@@ -308,21 +326,20 @@ local function getstatus(inst)
 end
 
 local function OnHaunt(inst, haunter)
-	if not (inst:HasTag("burnt") or inst:HasTag("fire")) and inst:HasTag("winch_ready") and GetHeldItem(inst) == nil
+	if math.random() < TUNING.HAUNT_CHANCE_HALF
+		and haunter.isplayer
 		and inst.components.activatable:CanActivate()
-		and math.random() < TUNING.HAUNT_CHANCE_HALF then
+		and GetHeldItem(inst) == nil
+		and not (inst:HasTag("burnt") or inst:HasTag("fire"))
+		and inst:HasTag("winch_ready") then
 
 		inst.components.activatable:DoActivate(haunter)
 	end
 end
 
+local LOAD_OBJECT_FILTER_TAGS = {"burnt", "fire", "lowered_ground", "takeshelfitem"}
 local function load_object_action_filter(inst, doer, heavy_item)
-	return inst:HasTag("inactive")
-		and not inst:HasTag("takeshelfitem")
-		and not inst:HasTag("burnt")
-		and not inst:HasTag("lowered_ground")
-		and not inst:HasTag("fire")
-		and not inst:HasTag("burnt")
+	return inst:HasTag("inactive") and not inst:HasAnyTag(LOAD_OBJECT_FILTER_TAGS)
 end
 
 local function OnUseHeavy(inst, doer, heavy_item)
@@ -393,6 +410,15 @@ local function OnLoadPostPass(inst)
 					inst.AnimState:OverrideItemSkinSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol, item.GUID, "swap_cavein_boulder" ) --default should never be used
 				else
 					inst.AnimState:OverrideSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol)
+				end
+			end
+
+			if item.components.pumpkincarvable then
+				local cutdata = item.components.pumpkincarvable:GetCutData()
+				if string.len(cutdata) > 0 then
+					inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
+					inst.pumpkincarving_fx.entity:SetParent(inst.entity)
+					inst.pumpkincarving_fx:SetData(cutdata)
 				end
 			end
 		end

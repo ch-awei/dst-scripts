@@ -2,7 +2,7 @@ require("stategraphs/commonstates")
 
 local actionhandlers =
 {
-    ActionHandler(ACTIONS.EAT, 
+    ActionHandler(ACTIONS.EAT,
         function(inst, action)
             if action.target:HasTag("spidermutator") and action.target.components.spidermutator:CanMutate(inst) then
                 action.target.components.spidermutator:Mutate(inst, true)
@@ -21,17 +21,23 @@ local events =
     CommonHandlers.OnHop(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() then
-            if inst:HasTag("spider_warrior") or inst:HasTag("spider_spitter") or inst:HasTag("spider_moon") then
-                if not inst.sg:HasAnyStateTag("attack", "moving") then -- don't interrupt attack, exit shield or moviment
-                    inst.sg:GoToState("hit") -- can still attack
-                end
-            elseif not inst.sg:HasStateTag("shield") then
-                inst.sg:GoToState("hit_stunlock")  -- can't attack during hit reaction
-            end
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("electrocute") then
+				if inst:HasAnyTag("spider_warrior", "spider_spitter", "spider_moon") then
+					if not inst.sg:HasAnyStateTag("attack", "moving") then -- don't interrupt attack, exit shield or moviment
+						inst.sg:GoToState("hit") -- can still attack
+					end
+				elseif not inst.sg:HasStateTag("shield") then
+					inst.sg:GoToState("hit_stunlock")  -- can't attack during hit reaction
+				end
+			end
         end
     end),
     EventHandler("doattack", function(inst, data)
@@ -119,9 +125,21 @@ local states =
             inst.SoundEmitter:PlaySound(SoundPath(inst, "die"))
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
-            RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+
+            if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
+                RemovePhysicsColliders(inst)
+                inst.components.lootdropper:DropLoot(inst:GetPosition())
+            end
         end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
+                    TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                end
+            end),
+        },
     },
 
     State{
@@ -462,7 +480,7 @@ local states =
         timeline=
         {
             TimeEvent(30*FRAMES, function(inst)
-                
+
                 -- DANY
                 --inst.SoundEmitter:PlaySound("SPIDER SMOKE SOUND")
 
@@ -555,7 +573,7 @@ local states =
 
     State{
         name = "trapped",
-        tags = { "busy", "trapped" },
+		tags = { "busy", "trapped", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -572,7 +590,7 @@ local states =
 
     State{
         name = "mutate",
-        tags = {"busy", "mutating"},
+		tags = { "busy", "mutating", "noelectrocute" },
 
         onenter = function(inst, start_anim)
             inst.Physics:Stop()
@@ -583,20 +601,20 @@ local states =
 
         timeline=
         {
-            TimeEvent(15*FRAMES, function(inst) 
+            TimeEvent(15*FRAMES, function(inst)
                 inst.SoundEmitter:KillSound("eating")
-                inst.SoundEmitter:PlaySound("webber2/common/mutate") 
+                inst.SoundEmitter:PlaySound("webber2/common/mutate")
             end),
         },
 
         events=
         {
-            EventHandler("animover", function(inst) 
-                local x,y,z = inst.Transform:GetWorldPosition()        
+            EventHandler("animover", function(inst)
+                local x,y,z = inst.Transform:GetWorldPosition()
                 local fx = SpawnPrefab("spider_mutate_fx")
                 fx.Transform:SetPosition(x,y,z)
 
-                inst:DoTaskInTime(0.25, function() 
+                inst:DoTaskInTime(0.25, function()
 
                     inst.components.inventory:DropEverything()
 
@@ -626,7 +644,7 @@ local states =
 
     State{
         name = "mutate_pst",
-        tags = {"busy", "mutating"},
+		tags = { "busy", "mutating", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -636,6 +654,31 @@ local states =
         events=
         {
             EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    },
+
+    State{
+        name = "parasite_revive",
+		tags = { "busy", "noelectrocute" },
+
+        onenter = function(inst)
+            inst.sg.statemem.bank = inst.AnimState:GetBankHash()
+
+            inst.AnimState:SetBank("spider") -- To play parasite_death_pst...
+
+            inst.AnimState:PlayAnimation("parasite_death_pst")
+            inst.Physics:Stop()
+        end,
+
+        onexit = function(inst)
+            if inst.sg.statemem.bank ~= nil then
+                inst.AnimState:SetBank(inst.sg.statemem.bank)
+            end
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
     },
 }
@@ -655,7 +698,9 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("spider", states, events, "idle", actionhandlers)

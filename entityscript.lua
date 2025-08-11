@@ -711,11 +711,18 @@ function EntityScript:GetAdjectivedName()
 		if self:HasTag("broken") then
 			return ConstructAdjectivedName(self, ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC), STRINGS.BROKENITEM)
 		end
+        --dead creatures
+		if self:HasTag("deadcreature") then
+			return ConstructAdjectivedName(self, ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC), STRINGS.DEADCREATURE)
+		end
         --generic
         return ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC)
 	elseif self:HasTag("broken") then
 		return ConstructAdjectivedName(self, name, STRINGS.BROKENITEM)
+    elseif self:HasTag("deadcreature") then
+        return ConstructAdjectivedName(self, name, STRINGS.DEADCREATURE)
     end
+
     return name
 end
 
@@ -731,9 +738,33 @@ function EntityScript:GetDisplayName()
     return name
 end
 
+--Can NOT be used on clients
+function EntityScript:GetWetMultiplier()
+	if self:HasTag("wet") then
+		return 1
+	elseif self:HasTag("moistureimmunity") then
+        return 0
+	elseif self.components.inventoryitem then --Inventoryitemmoisture can give us percent, but keep it consistent with how it was before, for now......
+        return self.components.inventoryitem:IsWet() and 1 or 0
+	end
+
+	local moisture = self.components.temp_moisture or self.components.moisture --or self.components.inventoryitem 
+	if moisture then
+        return moisture:GetMoisturePercent()
+    else
+        return
+        (
+			(TheWorld.state.iswet and not self:HasTag("rainimmunity")) or
+			(self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
+        ) and 1 or 0
+    end
+end
+
 --Can be used on clients
 function EntityScript:GetIsWet()
-    if self:HasTag("moistureimmunity") then
+	if self:HasTag("wet") then
+		return true
+	elseif self:HasTag("moistureimmunity") then
         return false
     end
 
@@ -741,8 +772,7 @@ function EntityScript:GetIsWet()
     if replica then
         return replica:IsWet()
     else
-        return self:HasTag("wet")
-            or (TheWorld.state.iswet and not self:HasTag("rainimmunity"))
+		return (TheWorld.state.iswet and not self:HasTag("rainimmunity"))
             or (self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
     end
 end
@@ -1192,7 +1222,7 @@ function EntityScript:StopAllWatchingWorldStates()
     self.worldstatewatching = nil
 end
 
-function EntityScript:PushEvent(event, data)
+function EntityScript:PushEvent_Internal(event, data, immediate)
     if self.event_listeners then
         local listeners = self.event_listeners[event]
         if listeners then
@@ -1210,15 +1240,25 @@ function EntityScript:PushEvent(event, data)
         end
     end
 
-    if self.sg and
-        self.sg:IsListeningForEvent(event) and
-        SGManager:OnPushEvent(self.sg) then
-        self.sg:PushEvent(event, data)
+	if self.sg then
+		if immediate then
+			self.sg:HandleEvent(event, data)
+		elseif self.sg:IsListeningForEvent(event) and SGManager:OnPushEvent(self.sg) then
+			self.sg:PushEvent(event, data)
+		end
     end
 
     if self.brain then
         self.brain:PushEvent(event, data)
     end
+end
+
+function EntityScript:PushEvent(event, data)
+	self:PushEvent_Internal(event, data, false)
+end
+
+function EntityScript:PushEventImmediate(event, data)
+	self:PushEvent_Internal(event, data, true)
 end
 
 function EntityScript:SetPhysicsRadiusOverride(radius)
@@ -1340,6 +1380,25 @@ function EntityScript:FaceAwayFromPoint(dest, force)
 		return
 	end
     self.Transform:SetRotation(math.atan2(z - dest.z, dest.x - x) / DEGREES + 180)
+end
+
+function EntityScript:IsEntityInFrontConeSlice(otherinst, wholearcangle_degrees, max_dist, circle_dist)
+    -- Distances are optional.
+    -- circle_dist lets a small circle around self to be counted regardless of the angle.
+    if max_dist or circle_dist then
+        local dsq = self:GetDistanceSqToInst(otherinst)
+        if circle_dist and (dsq < circle_dist * circle_dist) then
+            return true -- This is valid close.
+        end
+        if max_dist and (dsq > max_dist * max_dist) then
+            return false -- Too far.
+        end
+    end
+
+    -- More expensive calculations for cone slice.
+    local rotation = self.Transform:GetRotation()
+    local forward_vector = Vector3(math.cos(-rotation / RADIANS), 0 , math.sin(-rotation / RADIANS))
+    return IsWithinAngle(self:GetPosition(), forward_vector, wholearcangle_degrees / RADIANS, otherinst:GetPosition())
 end
 
 function EntityScript:IsAsleep()
@@ -1729,13 +1788,13 @@ function EntityScript:GetCurrentTileType()
 
     if actual_tile ~= nil and tilecenter_x ~= nil and tilecenter_z ~= nil then
         if not TileGroupManager:IsLandTile(actual_tile) then
-            local xpercent = (tilecenter_x - ptx) / TILE_SCALE + .25
-            local ypercent = (tilecenter_z - ptz) / TILE_SCALE + .25
+			local xpercent = (tilecenter_x - ptx) / TILE_SCALE
+			local ypercent = (tilecenter_z - ptz) / TILE_SCALE
 
-            local x_min = xpercent > .666 and -1 or 0
-            local x_max = xpercent < .333 and 1 or 0
-            local y_min = ypercent > .666 and -1 or 0
-            local y_max = ypercent < .333 and 1 or 0
+			local x_min = xpercent > 0.166 and -1 or 0
+			local x_max = xpercent < -0.166 and 1 or 0
+			local y_min = ypercent > 0.166 and -1 or 0
+			local y_max = ypercent < -0.166 and 1 or 0
 
             --local x_off = 0 -- These are only calculated for debugging
             --local y_off = 0 -- These are only calculated for debugging
@@ -1788,6 +1847,9 @@ function EntityScript:GetPersistData()
             local t, refs = v:OnSave()
             if type(t) == "table" and not IsTableEmpty(t) then
                 data[k] = t
+				if t.add_component_if_missing then
+					data.add_component_if_missing = true
+				end
             end
 
             if refs then
@@ -1829,6 +1891,14 @@ function EntityScript:LoadPostPass(newents, savedata)
 end
 
 function EntityScript:SetPersistData(data, newents)
+	if data and data.add_component_if_missing then
+		for k, v in pairs(data) do
+			if self.components[k] == nil and type(v) == "table" and v.add_component_if_missing then
+				self:AddComponent(k)
+			end
+		end
+	end
+
     if self.OnPreLoad ~= nil then
         self:OnPreLoad(data, newents)
     end
@@ -1836,10 +1906,16 @@ function EntityScript:SetPersistData(data, newents)
     if data ~= nil then
         for k, v in pairs(data) do
             local cmp = self.components[k]
+
+			--V2C: -backward compatibility for add_component_if_missing
+			--     -the flag has since been added to the base data table as well so that we
+			--      can add the missing components before preload
             if cmp == nil and type(v) == "table" and v.add_component_if_missing then
 				self:AddComponent(k)
                 cmp = self.components[k]
             end
+			------
+
             if cmp ~= nil and cmp.OnLoad ~= nil then
                 cmp:OnLoad(v, newents)
             end
@@ -1973,7 +2049,7 @@ function EntityScript:GetDebuff(name)
         or nil
 end
 
-function EntityScript:AddDebuff(name, prefab, data, skip_test, pre_buff_fn)
+function EntityScript:AddDebuff(name, prefab, data, skip_test, pre_buff_fn, buffer)
     if self.components.debuffable == nil then
         self:AddComponent("debuffable")
     end
@@ -1982,7 +2058,7 @@ function EntityScript:AddDebuff(name, prefab, data, skip_test, pre_buff_fn)
         if pre_buff_fn then
             pre_buff_fn()
         end
-        self.components.debuffable:AddDebuff(name, prefab, data)
+        self.components.debuffable:AddDebuff(name, prefab, data, buffer)
         return true
     end
 

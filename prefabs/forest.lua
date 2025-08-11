@@ -22,6 +22,7 @@ local assets =
 	Asset("IMAGE", "images/colour_cubes/lunacy_regular_cc.tex"),
     Asset("IMAGE", "images/colour_cubes/purple_moon_cc.tex"),
     Asset("IMAGE", "images/colour_cubes/moonstorm_cc.tex"),
+    Asset("IMAGE", "images/colour_cubes/blackout_cc.tex"),
 
     Asset("ANIM", "anim/snow.zip"),
     Asset("ANIM", "anim/acidglob.zip"),
@@ -212,6 +213,9 @@ local assets =
     Asset("ATLAS", "images/lunacy_over_lunacy_over0042.xml"),
     Asset("ATLAS", "images/lunacy_over_lunacy_over0043.xml"),
     Asset("ATLAS", "images/lunacy_over_lunacy_over0044.xml"),
+
+    -- rabbitkingmanager
+    Asset("SOUND", "sound/rabbit.fsb"),
 }
 
 local prefabs =
@@ -478,9 +482,6 @@ local prefabs =
     "icefishing_hole",
     "sharkboi_ice_hazard",
 
-    -- Year of the Dragon
-
-
     -- Rifts / Meta QoL
 
     --"fishbone_shadow",
@@ -489,6 +490,72 @@ local prefabs =
     "junk_pile_big",
 
     "boat_otterden",
+
+    -- Rifts 4
+
+    -- rabbitkingmanager
+    "rabbitking_passive",
+    "rabbitking_aggressive",
+    "rabbitking_lucky",
+
+    "itemmimic_revealed",
+
+	-- Winter's Feast 2024
+    -- snowballmanager
+    "snowball_item",
+    "snowball_shatter_fx",
+
+    -- YOTS
+    "yots_worm_lantern_spawner",
+
+    -- Meta 5
+    "graveguard_ghost",
+
+    "shallow_grave",
+    "shallow_grave_player",
+
+    -- Playing Cards
+    "deck_of_cards", -- playingcardsmanager
+    "balatro_machine",
+
+	-- Rifts 5
+	"alterguardian_phase1_lunarrift",
+    "gestalt_guard_evolved",
+
+    -- wanderingtraderspawner
+    "wanderingtrader",
+
+    -- wagpunk_arena_manager
+    "wagboss_robot",
+    "wagdrone_spot_marker",
+    "gestalt_cage_filled_placerindicator",
+    "wagpunk_floor_marker",
+    "wagpunk_floor_placerindicator",
+    "wagboss_robot_constructionsite_placerindicator",
+    "wagpunk_lever",
+    "wagpunk_workstation",
+    "wagpunk_cagewall",
+    "wagpunk_arena_collision",
+    "wagstaff_npc_wagpunk_arena",
+    "hermitcrab_fx_small",
+    "hermitcrab_fx_med",
+    "hermitcrab_fx_tall",
+
+    "alterguardian_phase1_lunarrift",
+    "moonstorm_static_nowag",
+    "moonstorm_static_roamer",
+
+    "wagstaff_containment_note",
+    "wagstaff_electricity_note",
+    "wagstaff_energy_note",
+    "wagstaff_materials_note",
+    "wagstaff_thermal_note",
+
+    "mutatedbird",
+
+    -- lunarhailbuildup
+    "moonglass",
+    "moonglass_charged",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -588,11 +655,13 @@ local function master_postinit(inst)
     inst:AddComponent("retrofitforestmap_anr")
     inst:AddComponent("specialeventsetup")
     inst:AddComponent("townportalregistry")
+    inst:AddComponent("linkeditemmanager")
     inst:AddComponent("sandstorms")
     inst:AddComponent("worldmeteorshower")
     inst:AddComponent("mermkingmanager")
     inst:AddComponent("malbatrossspawner")
     inst:AddComponent("crabkingspawner")
+    inst:AddComponent("rabbitkingmanager")
 
 	inst:AddComponent("flotsamgenerator")
 	inst:AddComponent("messagebottlemanager")
@@ -600,6 +669,7 @@ local function master_postinit(inst)
     if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
         inst:AddComponent("gingerbreadhunter")
     end
+    inst:AddComponent("snowballmanager")
 
     inst:AddComponent("feasts")
 
@@ -619,16 +689,36 @@ local function master_postinit(inst)
     inst:AddComponent("oceanicemanager")
     inst:AddComponent("sharkboimanager") -- Needs oceanicemanager.
 
-    inst:AddComponent("lunarhailmanager")
+    --inst:AddComponent("lunarhailmanager") -- NOTES(JBK): This component is deprecated.
     inst:AddComponent("lunarriftmutationsmanager")
 
     inst:AddComponent("wagpunk_manager")
+    inst:AddComponent("hermitcrab_relocation_manager")
+    inst:AddComponent("wagpunk_arena_manager")
 
     inst:AddComponent("forestdaywalkerspawner")
 
     if METRICS_ENABLED then
         inst:AddComponent("worldoverseer")
     end
+
+    -- We don't want to auto-spawn mimics, but they might be brought up from the caves,
+    -- so we might need to spawn them from existing mimics re-hiding.
+    inst:AddComponent("shadowthrall_mimics")
+
+    -- Meta 5
+    inst:AddComponent("decoratedgrave_ghostmanager")
+
+    -- Playing Cards
+    inst:AddComponent("playingcardsmanager")
+
+    -- Rifts 5
+    inst:AddComponent("lunaralterguardianspawner")
+    inst:AddComponent("wagboss_tracker")
+    inst:AddComponent("wanderingtraderspawner")
 end
 
-return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {tile_physics_init = tile_physics_init})
+return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {
+    tile_physics_init = tile_physics_init,
+    cancrossbarriers_flying = true,
+})

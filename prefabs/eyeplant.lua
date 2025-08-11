@@ -84,6 +84,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     MakeObstaclePhysics(inst, .1)
+    MakeCollidesWithElectricField(inst)
 
     inst.Transform:SetFourFaced()
 
@@ -94,6 +95,7 @@ local function fn()
 
     inst:AddTag("eyeplant")
     inst:AddTag("veggie")
+	inst:AddTag("lifedrainable")
     inst:AddTag("smallcreature")
     inst:AddTag("hostile")
 
@@ -102,6 +104,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.override_combat_fx_height = "low"
 
     inst:AddComponent("locomotor")
     inst.components.locomotor:SetSlowMultiplier( 1 )
@@ -131,6 +135,7 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:SetStateGraph("SGeyeplant")
+	inst.sg.mem.burn_on_electrocute = true
 
     inst:AddComponent("lootdropper")
 

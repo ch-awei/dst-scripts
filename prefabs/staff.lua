@@ -373,7 +373,7 @@ local function teleport_func(inst, target, pos, caster)
 
     local x, y, z = target.Transform:GetWorldPosition()
 	local target_in_ocean = target.components.locomotor ~= nil and target.components.locomotor:IsAquatic()
-	local no_teleport = target:HasTag("noteleport") --targetable by spell, but don't actually teleport
+	local no_teleport = target:HasTag("noteleport") or TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) --targetable by spell, but don't actually teleport
 	local loctarget
 	if not no_teleport then
 		loctarget = (target.components.minigame_participator ~= nil and target.components.minigame_participator:GetMinigame())
@@ -537,7 +537,7 @@ local function destroystructure(staff, target)
     end
 
     local ingredient_percent =
-        (   (target.components.finiteuses ~= nil and target.components.finiteuses:GetPercent()) or
+        (   (target.components.finiteuses ~= nil and not FunctionOrValue(recipe.decon_ignores_finiteuses, target) and target.components.finiteuses:GetPercent()) or
             (target.components.fueled ~= nil and target.components.inventoryitem ~= nil and target.components.fueled:GetPercent()) or
             (target.components.armor ~= nil and target.components.inventoryitem ~= nil and target.components.armor:GetPercent()) or
             1
@@ -547,15 +547,78 @@ local function destroystructure(staff, target)
     --     but the user and the host will hear them!
     local caster = staff.components.inventoryitem.owner
 
-    for i, v in ipairs(recipe.ingredients) do
-        if caster ~= nil and DESTSOUNDSMAP[v.type] ~= nil then
-            caster.SoundEmitter:PlaySound(DESTSOUNDSMAP[v.type])
+    -- If the target is a mimic, drop nightmarefuel instead of any of the recipe loot.
+    if target.components.itemmimic then
+        if caster then
+		    caster.SoundEmitter:PlaySound("dontstarve/creatures/monkey/poopsplat")
         end
-        if string.sub(v.type, -3) ~= "gem" or string.sub(v.type, -11, -4) == "precious" then
-            --V2C: always at least one in case ingredient_percent is 0%
-            local amt = v.amount == 0 and 0 or math.max(1, math.ceil(v.amount * ingredient_percent))
-            for n = 1, amt do
-                SpawnLootPrefab(target, v.type)
+        target.components.itemmimic:TurnEvil(caster)
+    else
+        for i, v in ipairs(recipe.ingredients) do
+            if caster ~= nil and DESTSOUNDSMAP[v.type] ~= nil then
+                caster.SoundEmitter:PlaySound(DESTSOUNDSMAP[v.type])
+            end
+            if string.sub(v.type, -3) ~= "gem" or string.sub(v.type, -11, -4) == "precious" then
+                --V2C: always at least one in case ingredient_percent is 0%
+                local amt = v.amount == 0 and 0 or math.max(1, math.ceil(v.amount * ingredient_percent))
+                for _ = 1, amt do
+                    SpawnLootPrefab(target, v.type)
+                end
+            end
+        end
+
+        if target.components.inventory ~= nil then
+            target.components.inventory:DropEverything()
+        end
+
+        if target.components.container ~= nil then
+            target.components.container:DropEverything(nil, true)
+        end
+
+        if target.components.spawner ~= nil and target.components.spawner:IsOccupied() then
+            target.components.spawner:ReleaseChild()
+        end
+
+        if target.components.occupiable ~= nil and target.components.occupiable:IsOccupied() then
+            local item = target.components.occupiable:Harvest()
+            if item ~= nil then
+                item.Transform:SetPosition(target.Transform:GetWorldPosition())
+                item.components.inventoryitem:OnDropped()
+            end
+        end
+
+        if target.components.trap ~= nil then
+            target.components.trap:Harvest()
+        end
+
+        if target.components.dryer ~= nil then
+            target.components.dryer:DropItem()
+        end
+
+        if target.components.harvestable ~= nil then
+            target.components.harvestable:Harvest()
+        end
+
+        if target.components.stewer ~= nil then
+            target.components.stewer:Harvest()
+        end
+
+        if target.components.constructionsite ~= nil then
+            target.components.constructionsite:DropAllMaterials()
+        end
+
+        if target.components.inventoryitemholder ~= nil then
+            target.components.inventoryitemholder:TakeItem()
+        end
+
+        target:PushEvent("ondeconstructstructure", caster)
+
+        if not target.no_delete_on_deconstruct then
+            if target.components.stackable ~= nil then
+                --if it's stackable we only want to destroy one of them.
+                target.components.stackable:Get():Remove()
+            else
+                target:Remove()
             end
         end
     end
@@ -571,61 +634,6 @@ local function destroystructure(staff, target)
     end
 
     staff.components.finiteuses:Use(1)
-
-    if target.components.inventory ~= nil then
-        target.components.inventory:DropEverything()
-    end
-
-    if target.components.container ~= nil then
-		target.components.container:DropEverything(nil, true)
-    end
-
-    if target.components.spawner ~= nil and target.components.spawner:IsOccupied() then
-        target.components.spawner:ReleaseChild()
-    end
-
-    if target.components.occupiable ~= nil and target.components.occupiable:IsOccupied() then
-        local item = target.components.occupiable:Harvest()
-        if item ~= nil then
-            item.Transform:SetPosition(target.Transform:GetWorldPosition())
-            item.components.inventoryitem:OnDropped()
-        end
-    end
-
-    if target.components.trap ~= nil then
-        target.components.trap:Harvest()
-    end
-
-    if target.components.dryer ~= nil then
-        target.components.dryer:DropItem()
-    end
-
-    if target.components.harvestable ~= nil then
-        target.components.harvestable:Harvest()
-    end
-
-    if target.components.stewer ~= nil then
-        target.components.stewer:Harvest()
-    end
-
-	if target.components.constructionsite ~= nil then
-		target.components.constructionsite:DropAllMaterials()
-	end
-
-    if target.components.inventoryitemholder ~= nil then
-		target.components.inventoryitemholder:TakeItem()
-	end
-
-    target:PushEvent("ondeconstructstructure", caster)
-
-	if not target.no_delete_on_deconstruct then
-		if target.components.stackable ~= nil then
-			--if it's stackable we only want to destroy one of them.
-			target.components.stackable:Get():Remove()
-		else
-			target:Remove()
-		end
-	end
 end
 
 local function HasRecipe(guy)
@@ -884,6 +892,9 @@ local function yellow()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
 
@@ -945,6 +956,9 @@ local function orange()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = blinkstaff_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
 
     if not TheWorld.ismastersim then
@@ -978,6 +992,9 @@ local function opal()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
 

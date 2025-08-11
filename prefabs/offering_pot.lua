@@ -118,7 +118,7 @@ local function OnHit(inst, worker, workleft)
     end
 end
 
-local function OnBuilt(inst)
+local function OnBuiltFn(inst)
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("idle", false)
 
@@ -326,6 +326,10 @@ local function MakeOfferingPot(name, build, large)
 
         inst._upgraded = large
 
+        inst.scrapbook_scale = large and .5 or nil
+        inst.scrapbook_animoffsetx = large and -50 or nil
+        inst.scrapbook_animoffsety = large and -70 or nil
+
         inst.UpdateDecor = UpdateDecor
         inst.RemoveMermCaller = RemoveMermCaller
         inst.ValidateMermGathering = ValidateMermGathering
@@ -354,7 +358,7 @@ local function MakeOfferingPot(name, build, large)
         inst:ListenForEvent("itemget",  inst.UpdateDecor)
         inst:ListenForEvent("itemlose", inst.UpdateDecor)
 
-        inst.OnBuilt = OnBuilt
+        inst.OnBuiltFn = OnBuiltFn
         inst.OnRemoveEntity = OnRemoved
 
         inst.OnSave = OnSave

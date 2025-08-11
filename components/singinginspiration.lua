@@ -33,8 +33,8 @@ local SingingInspiration = Class(function(self, inst)
 
     self.gainratemultipliers = SourceModifierList(self.inst) -- Only used in SingingInspiration:OnHitOther.
 
-    self.inst:ListenForEvent("onhitother", function(inst, data) self:OnHitOther(data)   end)
-    self.inst:ListenForEvent("attacked",   function(inst, data) self:OnAttacked(data) end)
+    self.inst:ListenForEvent("onhitother", function(_, data) self:OnHitOther(data) end)
+    self.inst:ListenForEvent("attacked",   function(_, data) self:OnAttacked(data) end)
 
     self.inst:ListenForEvent("death", function() self:SetInspiration(0) end)
 end,
@@ -174,7 +174,7 @@ function SingingInspiration:DoDelta(delta, forceupdate)
 end
 
 function SingingInspiration:CanAddSong(songdata, inst)
-    if songdata.RESTRICTED_TAG ~= nil and not self.inst:HasTag(songdata.RESTRICTED_TAG) then
+    if songdata.REQUIRE_SKILL ~= nil and not self.inst.components.skilltreeupdater:IsActivated(songdata.REQUIRE_SKILL) then
         return false
     end
 
@@ -386,7 +386,7 @@ function SingingInspiration:InstantInspire(songdata)
             for _, ent in ipairs(entities_near_me) do
                 if self.inst.components.combat:CanTarget(ent)
                     and not HasFriendlyLeader(ent, self.inst, PVP_enabled)
-                    and (not ent:HasTag("prey") or (ent:HasTag("prey") and ent:HasTag("hostile")))
+                    and (not ent:HasTag("prey") or ent:HasTag("hostile"))
                     then
 
                     fn(self.inst, ent)

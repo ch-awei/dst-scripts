@@ -4,6 +4,7 @@ local events =
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local actionhandlers =
@@ -36,7 +37,7 @@ local idle_on_animover = { EventHandler("animover", _ReturnToIdle) }
 ------------------------------------------------------------------------------------------------------------------------------
 
 local function MakeImmovable(inst)
-    inst.Physics:SetMass(0)
+    inst.Physics:SetMass(99999)
 end
 
 local function RestoreMobility(inst)
@@ -121,7 +122,7 @@ local states =
         timeline =
         {
             FrameEvent(27, function(inst)
-                ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .02, .12, inst, 30)
+                ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .02, .12, inst, 15)
 
                 inst:PerformBufferedAction()
             end),

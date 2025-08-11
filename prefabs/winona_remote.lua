@@ -285,6 +285,7 @@ local SPELLS =
 		label = STRINGS.ENGINEER_REMOTE.VOLLEY,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.ENGINEER_REMOTE.VOLLEY)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCast)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoecatapultvolley"
@@ -306,6 +307,7 @@ local SPELLS =
 			down = { anim = "icon_target_pressed" },
 			disabled = { anim = "icon_target_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -317,6 +319,7 @@ local SPELLS =
 		label = STRINGS.ENGINEER_REMOTE.BOOST,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.ENGINEER_REMOTE.BOOST)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCast)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoecatapultwakeup"
@@ -338,6 +341,7 @@ local SPELLS =
 			down = { anim = "icon_boost_pressed" },
 			disabled = { anim = "icon_boost_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -349,6 +353,7 @@ local SPELLS =
 		label = STRINGS.ENGINEER_REMOTE.WAKEUP,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.ENGINEER_REMOTE.WAKEUP)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCast)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoecatapultwakeup"
@@ -370,12 +375,14 @@ local SPELLS =
 			down = { anim = "icon_wake_pressed" },
 			disabled = { anim = "icon_wake_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 	},
 	{
 		label = STRINGS.ENGINEER_REMOTE.ELEMENTAL_VOLLEY,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.ENGINEER_REMOTE.ELEMENTAL_VOLLEY)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCast)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoecatapultelementalvolley"
@@ -397,6 +404,7 @@ local SPELLS =
 			down = function(user) return ELEMENTAL_VOLLEY_ICONS[GetSkillElement(user)].down end,
 			disabled = function(user) return ELEMENTAL_VOLLEY_ICONS[GetSkillElement(user)].disabled end,
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -406,6 +414,14 @@ local SPELLS =
 					)
 		end,
 	},
+}
+
+local SPELLBOOK_BG =
+{
+	bank = "spell_icons_winona",
+	build = "spell_icons_winona",
+	anim = "dpad",
+	widget_scale = ICON_SCALE,
 }
 
 --[[local function OnOpenSpellBook(inst)
@@ -444,6 +460,15 @@ local function OnUpdateChargingFuel(inst)
 	end
 end
 
+local function NotifyCircuitChanged(inst, node)
+	node:PushEvent("engineeringcircuitchanged")
+end
+
+local function OnCircuitChanged(inst)
+	--Notify other connected batteries
+	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
+end
+
 local function SetCharging(inst, powered, duration)
 	if not powered then
 		if inst._powertask then
@@ -454,6 +479,7 @@ local function SetCharging(inst, powered, duration)
 			inst.components.fueled:SetUpdateFn(nil)
 			inst.components.powerload:SetLoad(0)
 			SetLedEnabled(inst, false)
+			OnCircuitChanged(inst)
 		end
 	else
 		local waspowered = inst._powertask ~= nil
@@ -469,6 +495,7 @@ local function SetCharging(inst, powered, duration)
 				inst.components.fueled:StartConsuming()
 				inst.components.powerload:SetLoad(TUNING.WINONA_REMOTE_POWER_LOAD_CHARGING)
 				SetLedEnabled(inst, true)
+				OnCircuitChanged(inst)
 			end
 		end
 	end
@@ -597,15 +624,6 @@ local function DoWireSparks(inst)
 	end
 end
 
-local function NotifyCircuitChanged(inst, node)
-	node:PushEvent("engineeringcircuitchanged")
-end
-
-local function OnCircuitChanged(inst)
-	--Notify other connected batteries
-	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
-end
-
 local function OnConnectCircuit(inst)--, node)
 	if not inst._wired then
 		inst._wired = true
@@ -655,11 +673,13 @@ local function fn()
 	inst.components.spellbook:SetRadius(SPELLBOOK_RADIUS)
 	inst.components.spellbook:SetFocusRadius(SPELLBOOK_FOCUS_RADIUS)
 	inst.components.spellbook:SetItems(SPELLS)
+	inst.components.spellbook:SetBgData(SPELLBOOK_BG)
 	--inst.components.spellbook:SetOnOpenFn(OnOpenSpellBook)
 	--inst.components.spellbook:SetOnCloseFn(OnCloseSpellBook)
-	inst.components.spellbook.opensound = "dontstarve/common/together/book_maxwell/use"
-	inst.components.spellbook.closesound = "dontstarve/common/together/book_maxwell/close"
-	--inst.components.spellbook.executesound = "dontstarve/common/together/book_maxwell/close"
+	inst.components.spellbook.opensound = "meta4/winona_UI/open"
+	inst.components.spellbook.closesound = "meta4/winona_UI/close"
+	--inst.components.spellbook.executesound = "meta4/winona_UI/select"	--use .clicksound for item buttons instead
+	inst.components.spellbook.focussound = "meta4/winona_UI/hover"		--item UIAnimButton don't have hover sound
 
 	inst:AddComponent("aoetargeting")
 	inst.components.aoetargeting:SetAllowWater(true)

@@ -42,9 +42,11 @@ To add a new language:
 ***************************************************************
 ]]
 
+local stageactor = require("strings_stageactor")
+
 STRINGS =
 {
-	PSN = "PlayStation\226\132\162Network",
+	PSN = "PlayStation™Network",
 
     CHARACTER_NAMES =
     {
@@ -233,7 +235,7 @@ STRINGS =
 		{
             { title = "Birthday", desc = "May 7" },
             { title = "Favorite Food", desc = "Spicy Chili" },
-            { title = "From the Ashes", desc = "Willow always regarded being brought to The Constant as a new beginning. It allowed her to leave everything behind, after all. Orphaned at a young age and forced to live in a children's home with cruel caregivers, she found her nights plagued by shadowy visions of terrible creatures... creatures that could only be held at bay by her faithful teddy bear Bernie. But when Bernie was taken away as punishment for what her caregivers saw as unfit behavior, Willow was left to fend for herself when the shadows came for her. That's when she learned that nothing holds back the darkness like a roaring flame. Nothing is more comforting than watching your troubles light up and crumble to ash...\nIt wouldn't be the last time Willow burned it all down to start anew." },
+            { title = "From the Ashes", desc = "Willow always regarded being brought to the Constant as a new beginning. It allowed her to leave everything behind, after all. Orphaned at a young age and forced to live in a children's home with cruel caregivers, she found her nights plagued by shadowy visions of terrible creatures... creatures that could only be held at bay by her faithful teddy bear Bernie. But when Bernie was taken away as punishment for what her caregivers saw as unfit behavior, Willow was left to fend for herself when the shadows came for her. That's when she learned that nothing holds back the darkness like a roaring flame. Nothing is more comforting than watching your troubles light up and crumble to ash...\nIt wouldn't be the last time Willow burned it all down to start anew." },
 		},
         wendy =
 		{
@@ -407,6 +409,7 @@ STRINGS =
             CELESTIAL = "Offer",
             SHOW = "Show",
 			APPLY    = "Apply {item}",
+            DRINK    = "Drink {item}",
             QUAGMIRE_POT_HANGER = "Hang {item}",
             QUAGMIRE_OVEN       = "Place {item}",
             QUAGMIRE_ALTAR =
@@ -429,6 +432,7 @@ STRINGS =
             FREESOUL = "Release Soul",
             PLACELANTERN = "Place",
             YOTC_ENTERRACE = "Enter Race",
+			PLAYERFLOATER = "Let Go",
         },
         PICK =
 		{
@@ -451,6 +455,7 @@ STRINGS =
         CHOP = "Chop",
         FERTILIZE = "Fertilize",
         SMOTHER = "Extinguish",
+        STOKEFIRE = "Stoke Fire",
         MANUALEXTINGUISH = "Extinguish",
         EAT = "Eat",
         BAIT = "Bait",
@@ -546,6 +551,7 @@ STRINGS =
             DEPLOY = "Deploy",
 			DEPLOY_TOSS = "Toss",
             FERTILIZE_GROUND = "Fertilize Plot",
+            GRAVEPLANT = "Relocate",
         },
         DEPLOY =
         {
@@ -560,6 +566,7 @@ STRINGS =
             DEPLOY = "Deploy",
 			DEPLOY_TOSS = "Toss",
             FERTILIZE_GROUND = "Fertilize Plot",
+            GRAVEPLANT = "Relocate",
         },
 
 		PLAY =
@@ -604,6 +611,8 @@ STRINGS =
             SPIN = "Spin",
             CALM = "Calm",
             GATHER_MERM = "Gather Merm",
+            FAKE_PICKUP = "Pick up",
+            PLAY_WITH = "Play with",
         },
 
 		OPEN_CRAFTING =
@@ -672,11 +681,16 @@ STRINGS =
             GENERIC = "Use On",
             BEEF_BELL = "Bond",
             KITCOON_NAMETAG = "Name",
+            SHADOW_BEEF_BELL = "Bind",
+			SLINGSHOTMODKIT = "Mod",
+			WAGDRONE_PARTS = "Repair",
         },
         STOPUSINGITEM =
         {
             GENERIC = "Stop",
             BEEF_BELL = "Break Bond",
+            SHADOW_BEEF_BELL = "Break Binding",
+			SLINGSHOTMODKIT = "Stop Modding",
         },
         USEDOOR =
         {
@@ -689,6 +703,7 @@ STRINGS =
             BIRDCAGE = "Muck Out",
             ITEM = "Take {item}",
         },
+        TAKESINGLEITEM = "Take Single Item",
         CASTSPELL =
         {
             GENERIC = "Cast Spell", --"Cast Spell on"
@@ -696,6 +711,7 @@ STRINGS =
             MUSIC = "Play",
             RESKIN = "Sweep",
             TERRAFORM = "Marshify",
+            SQUEEZE = "Squeeze",
         },
         BLINK =
         {
@@ -709,7 +725,11 @@ STRINGS =
         },
         COMBINESTACK = "Combine Stack",
         BURY = "Bury",
-        FEED = "Feed",
+		FEED =
+		{
+			GENERIC = "Feed",
+			TREAT = "Give Treat",
+		},
         FAN = "Fan",
         ERASE_PAPER = "Erase",
         UPGRADE =
@@ -745,6 +765,7 @@ STRINGS =
         },
         WRAPBUNDLE = "Wrap",
         UNWRAP = "Unwrap",
+        PEEKBUNDLE = "Peek",
         CONSTRUCT =
         {
             GENERIC = "Build",
@@ -803,6 +824,7 @@ STRINGS =
             WATHGRITHR_SHIELD = "Block",
             SPEAR_WATHGRITHR_LIGHTNING = "Lightning Strike",
             SPEAR_WATHGRITHR_LIGHTNING_CHARGED = "Lightning Strike",
+			SLINGSHOT2EX = "Shoot",
         },
         DISMANTLE = "Dismantle",
         TACKLE = "Charge",
@@ -993,11 +1015,14 @@ STRINGS =
             GENERIC = "Read",
             PYROKINESIS = "Stoke Embers",
 			REMOTE = "Use",
+            GHOSTTALK = "Whisper",
+			WOBY = "Woby Actions",
         },
 		CLOSESPELLBOOK = {
             GENERIC = "Close",
-            PYROKINESIS = "Extinguish",  
+            PYROKINESIS = "Extinguish",
 			REMOTE = "Stop",
+            GHOSTTALK = "Quiet",
         },
 
         -- Pirates
@@ -1035,7 +1060,75 @@ STRINGS =
         },
 
         INCINERATE = "Destroy",
+		BOTTLE = "Collect",
+
+		-- Hallowed Nights 2024
+		CARVEPUMPKIN = "Carve",
+
+		-- Winter's Feast 2024
+		DECORATESNOWMAN =
+		{
+			GENERIC = "Decorate",
+			STACK = "Stack",
+		},
+		START_PUSHING =
+		{
+			GENERIC = "Push",
+			ROLL = "Roll",
+		},
+
+        -- Meta 5
+        NABBAG = "Knab",
+
+        GRAVEDIG = "Beckon",
+
+		MODSLINGSHOT = "Mod Slingshot", --see USEITEMON.SLINGSHOTMODKIT
+		STOPMODSLINGSHOT = "Stop Modding",
+		CONTAINER_INSTALL_ITEM =
+		{
+			GENERIC = "Install",
+			UNINSTALL = "Uninstall",
+		},
+
+        MUTATE =
+        {
+            MUTATE_TARGET = "Mutate {target}",
+        },
+
+        DIRECTCOURIER_MAP =
+        {
+            SEND = "Deliver Items to {target}",
+            CHEST = "Drop Items Off",
+        },
+
+		WHISTLE = "Call Woby", --can expand to table if other characters want to use whistle action
+
+        DRAW_FROM_DECK = "Draw",
+        FLIP_DECK = "Flip",
+        ADD_CARD_TO_DECK = "Add",
+
+		-- Rifts 5
+		POUNCECAPTURE = "Encapsulate",
+        
+        -- electrocute
+        DIVEGRAB = "Restrain",
+        STARTELECTRICLINK = "Toggle Linking",
+        ENDELECTRICLINK = "Disconnect Links",
+        REMOVELUNARBUILDUP = "Clear",
     },
+
+	WOBY_COMMANDS =
+	{
+		SIT = "Stay (on/off)",
+		SHRINK = "Transform",
+		PICKUP = "Retrieving (on/off)",
+		FORAGING = "Foraging (on/off)",
+		WORKING = "Helping Horns (on/off)",
+		SPRINTING = "Sprinting (on/off)",
+		SHADOWDASH = "Umbral Dash (on/off)",
+		REMEMBERCHEST = "Mark Spot",
+		COURIER = "Deliver",
+	},
 
     -- PC controls get hex ranges EE90xx to EE9Fxx
     LMB = "\238\132\128",
@@ -1054,6 +1147,7 @@ STRINGS =
     DISEASEDITEM = "Diseased",
 	BROKENITEM = "Broken",
 	WAXEDPLANT = "Scared Stiff",
+	DEADCREATURE = "Dead",
 
     WET_PREFIX =
     {
@@ -1589,6 +1683,7 @@ STRINGS =
         COOKEDMANDRAKE = "Cooked Mandrake",
         REEDS = "Reeds",
         MAPSCROLL = "Map Scroll",
+        MAPSCROLL_TRICKER = "Map of Totally Uninhabited Island",
         CUTREEDS = "Cut Reeds",
         MARSH_PLANT = "Plant",
         TUMBLEWEED = "Tumbleweed",
@@ -1599,6 +1694,7 @@ STRINGS =
         MARSH_TREE = "Spiky Tree",
         PANFLUTE = "Pan Flute",
         BUGNET = "Bug Net",
+        THULECITEBUGNET = "Thulecite Bug Net",
         SADDLEHORN = "Saddlehorn",
         BRUSH = "Brush",
         SALTLICK = "Salt Lick",
@@ -2299,11 +2395,16 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR = "Twins of Terror Figure",
         CHESSPIECE_DAYWALKER = "Nightmare Werepig Figure",
+        CHESSPIECE_DAYWALKER2 = "Scrappy Werepig Figure",
         CHESSPIECE_DEERCLOPS_MUTATED = "Crystal Deerclops Figure",
         CHESSPIECE_WARG_MUTATED = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED = "Armored Bearger Figure",
         CHESSPIECE_YOTD = "Start Tower Figure",
         CHESSPIECE_SHARKBOI = "Frostjaw Figure",
+        CHESSPIECE_WORMBOSS = "Great Depths Worm Figure",
+        CHESSPIECE_YOTS = "Gilded Depths Worm Figure",
+        CHESSPIECE_WAGBOSS_ROBOT = "W.A.R.B.O.T. Figure",
+        CHESSPIECE_WAGBOSS_LUNAR = "Celestial Scion Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2339,11 +2440,16 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Twins of Terror Figure",
         CHESSPIECE_DAYWALKER_BUILDER = "Nightmare Werepig Figure",
+        CHESSPIECE_DAYWALKER2_BUILDER = "Scrappy Werepig Figure",
         CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "Crystal Deerclops Figure",
         CHESSPIECE_WARG_MUTATED_BUILDER = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "Armored Bearger Figure",
         CHESSPIECE_YOTD_BUILDER = "Start Tower Figure",
         CHESSPIECE_SHARKBOI_BUILDER = "Frostjaw Figure",
+        CHESSPIECE_WORMBOSS_BUILDER = "Great Depths Worm Figure",
+        CHESSPIECE_YOTS_BUILDER = "Gilded Depths Worm Figure",
+        CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "W.A.R.B.O.T. Figure",
+        CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "Celestial Scion Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2357,11 +2463,15 @@ STRINGS =
         CHESSPIECE_GUARDIANPHASE3_SKETCH = "Celestial Champion Figure Sketch",
         CHESSPIECE_MANRABBIT_SKETCH = "Bunnyman Figure Sketch",
         CHESSPIECE_DAYWALKER_SKETCH = "Nightmare Werepig Figure Sketch",
+        CHESSPIECE_DAYWALKER2_SKETCH = "Scrappy Werepig Figure Sketch",
         CHESSPIECE_DEERCLOPS_MUTATED_SKETCH = "Crystal Deerclops Figure Sketch",
         CHESSPIECE_WARG_MUTATED_SKETCH = "Possessed Varg Figure Sketch",
         CHESSPIECE_BEARGER_MUTATED_SKETCH = "Armored Bearger Figure Sketch",
         CHESSPIECE_YOTD_SKETCH = "Start Tower Figure Sketch",
         CHESSPIECE_SHARKBOI_SKETCH = "Frostjaw Figure Sketch",
+        CHESSPIECE_YOTS_SKETCH = "Gilded Depths Worm Figure Sketch",
+        CHESSPIECE_WAGBOSS_ROBOT_SKETCH = "W.A.R.B.O.T. Figure Sketch",
+        CHESSPIECE_WAGBOSS_LUNAR_SKETCH = "Celestial Scion Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -2947,6 +3057,9 @@ STRINGS =
         BRAMBLEFX = "Thorns", --for death announce if killed by thorns from armor_bramble, and owner is no longer available
 
         --v2 Warly
+        PORTABLECOOKPOT = "Portable Crock Pot",
+        PORTABLEBLENDER = "Portable Grinding Mill",
+        PORTABLESPICER = "Portable Seasoning Station",
         PORTABLECOOKPOT_ITEM = "Portable Crock Pot",
         PORTABLEBLENDER_ITEM = "Portable Grinding Mill",
         PORTABLESPICER_ITEM = "Portable Seasoning Station",
@@ -3039,7 +3152,7 @@ STRINGS =
 		MOONSPIDER_SPIKE = "Shattered Spider",
         MOONSPIDERDEN = "Shattered Spider Hole",
 		FRUITDRAGON = "Saladmander",
-        MUTATED_PENGUIN = "Moonrock Pengull",
+        MUTATED_PENGUIN = "Permafrost Pengull",
         PUFFIN = "Puffin",
 
 		BULLKELP_PLANT = "Bull Kelp",
@@ -3191,11 +3304,11 @@ STRINGS =
         MOSQUITOBOMB = "Skeeter Bomb",
         MOSQUITOFERTILIZER = "Fertilizzzer",
         MOSQUITOMERMSALVE = "Blood Shot",
-        OFFERING_POT = "Communal Kelp Dish",        
+        OFFERING_POT = "Communal Kelp Dish",
         OFFERING_POT_UPGRADED = "Superior Communal Kelp Dish",
         MERM_ARMORY = "Armermry",
         MERM_ARMORY_UPGRADED = "Superior Armermry",
-        MERMARMORHAT = "Swamp Brawler Helmet",   
+        MERMARMORHAT = "Swamp Brawler Helmet",
         MERMARMORUPGRADEDHAT = "Swamp Warrior Helmet",
 
         MERM_TOOLSHED = "Shoddy Tool Shed",
@@ -3211,13 +3324,24 @@ STRINGS =
         WOBYSMALL = "Woby",
         WALTERHAT = "Pinetree Pioneer Hat",
 		SLINGSHOT = "Trusty Slingshot",
+		SLINGSHOT_FMT = "{name}'s Slingshot",
 		SLINGSHOTAMMO_ROCK = "Pebbles",
 		SLINGSHOTAMMO_MARBLE = "Marbles",
 		SLINGSHOTAMMO_THULECITE = "Cursed Rounds",
         SLINGSHOTAMMO_GOLD = "Gold Rounds",
+		SLINGSHOTAMMO_HONEY = "Stickies",
         SLINGSHOTAMMO_SLOW = "Slow-Down Rounds",
         SLINGSHOTAMMO_FREEZE = "Freeze Rounds",
 		SLINGSHOTAMMO_POOP = "Poop Pellets",
+        SLINGSHOTAMMO_STINGER = "Stinger Zingers",
+        SLINGSHOTAMMO_MOONGLASS = "Moonshots",
+		SLINGSHOTAMMO_GELBLOB = "Ickies",
+		SLINGSHOTAMMO_SCRAPFEATHER = "Shockscrap Shots",
+        SLINGSHOTAMMO_DREADSTONE = "Dread Pebbles",
+        SLINGSHOTAMMO_GUNPOWDER = "Kablooies",
+        SLINGSHOTAMMO_LUNARPLANTHUSK = "Brightshade Husk Rounds",
+        SLINGSHOTAMMO_PUREBRILLIANCE = "Pure Brilliance Rounds",
+        SLINGSHOTAMMO_HORRORFUEL = "Pure Horror Rounds",
         PORTABLETENT_ITEM = "Tent Roll",
         PORTABLETENT = "Camper's Tent",
 
@@ -3236,6 +3360,14 @@ STRINGS =
 
 		POCKETWATCH_PORTAL_ENTRANCE = "Time Rift",
 		POCKETWATCH_PORTAL_EXIT = "Time Rift",
+
+        -- Wortox
+        WORTOX_REVIVER_FMT = "{name}'s Twintailed Heart",
+        WORTOX_REVIVER = "Twintailed Heart", -- For an unclaimed Heart.
+        WORTOX_NABBAG = "Knabsack",
+        WORTOX_SOULJAR = "Soul Jar",
+        WORTOX_DECOY_FMT = "{name}?",
+        WORTOX_DECOY = "Wortox?", -- For an unnamed Decoy.
 
         -- Wigfrid
         BATTLESONG_DURABILITY = "Weaponized Warble",
@@ -3301,6 +3433,7 @@ STRINGS =
 		GHOSTLYELIXIR_ATTACK = "Nightshade Nostrum",
 		GHOSTLYELIXIR_SPEED = "Vigor Mortis",
 		GHOSTLYELIXIR_RETALIATION = "Distilled Vengeance",
+        GHOSTLYELIXIR_REVIVE = "Ghastly Experience",
 		SISTURN = "Sisturn",
 
         -- SSSS
@@ -3516,6 +3649,7 @@ STRINGS =
         WAGSTAFF_NPC_MUTATIONS = "Grainy Transmission",
         ALTERGUARDIAN_CONTAINED = "Lunar Essence Extractor",
         WAGSTAFF_NPC_WAGPUNK = "Grainy Transmission",
+        WAGSTAFF_NPC_WAGPUNK_ARENA = "Grainy Transmission",
 
         ALTERGUARDIAN_PHASE1 = "Celestial Champion",
         ALTERGUARDIAN_PHASE2 = "Celestial Champion",
@@ -3545,13 +3679,17 @@ STRINGS =
         MOONSTORM_SPARK = "Moongleam",
         MOONSTORM_STATIC = "Energetic Static",
         MOONSTORM_STATIC_ITEM = "Restrained Static",
+        MOONSTORM_STATIC_NOWAG = "Energetic Static",
+        MOONSTORM_STATIC_ROAMER = "Unrestrained Static",
 
         ALTERGUARDIANHAT = "Enlightened Crown",
         ALTERGUARDIANHATSHARD = "Enlightened Shard",
 
         MOONSTORM_GOGGLESHAT = "Astroggles",
+        MOONSTORM_GOGGLESHAT_BLUEPRINT = "Astroggles Blueprint",
 
         MOON_DEVICE_CONSTRUCTION1 = "Incomplete Experiment",
+        MOON_DEVICE_CONSTRUCTION1_BLUEPRINT = "Incomplete Experiment Blueprint",
         MOON_DEVICE_CONSTRUCTION2 = "Nearly Completed Experiment",
         MOON_DEVICE_CONSTRUCTION3 = "Lunar Siphonator",
 
@@ -3762,6 +3900,7 @@ STRINGS =
         COSTUME_FOOL_BODY = "Fool Costume",
 
         PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
+        PLAYBILL_THE_VEIL = "The Pall\nA Stage Play",
         STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
 
         -- Year of the Rabbit
@@ -3846,6 +3985,12 @@ STRINGS =
 		SHADOWTHRALL_WINGS = "Ink Blight",
 		SHADOWTHRALL_WINGS_ALLEGIANCE = "Shriek",
 
+		SHADOWTHRALL_MOUTH = "Ink Blight",
+		SHADOWTHRALL_MOUTH_ALLEGIANCE = "Rictus",
+
+        SHADOWTHRALL_PARASITE = "Void Masque",
+        SHADOWTHRALL_PARASITE_ALLEGIANCE = "Herald of Tenebrau",
+
         CHARLIE_NPC = "Charlie", --Maxwell and Winona only
         CHARLIE_NPC_ALT = "Shadow Queen",
         CHARLIE_HAND = "Beckoning Hand",
@@ -3899,6 +4044,7 @@ STRINGS =
         RECORD_CREEPYFOREST = "Creepy Forest",
         RECORD_DRSTYLE = "D.R. Style",
         RECORD_EFS = "E.F.S.",
+        RECORD_HALLOWEDNIGHTS = "Hallowed Night",
 
         WOOD_CHAIR = "Wooden Chair",
         WOOD_STOOL = "Wooden Stool",
@@ -3922,6 +4068,11 @@ STRINGS =
         WAGPUNKBITS_KIT = "Auto-Mat-O-Chanic",
 
         WAGSTAFF_MUTATIONS_NOTE = "Research Notes",
+        WAGSTAFF_MATERIALS_NOTE = "Research Notes",
+        WAGSTAFF_ENERGY_NOTE = "Research Notes",
+        WAGSTAFF_CONTAINMENT_NOTE = "Research Notes",
+        WAGSTAFF_THERMAL_NOTE = "Research Notes",
+        WAGSTAFF_ELECTRICITY_NOTE = "Research Notes",
 
         -- Meta 3
 
@@ -4002,6 +4153,7 @@ STRINGS =
 
         OTTER = "Marotter",
         OTTERDEN = "Marotter Den",
+        BOAT_OTTERDEN = "Marotter Raft",
         OTTERDEN_DEAD = "Demolished Marotter Den",
 
         BOAT_ANCIENT = "Archaic Boat",
@@ -4039,6 +4191,168 @@ STRINGS =
 
         MERM_LUNAR = "Mutated Merm",
         MERMGUARD_LUNAR = "Mutated Merm Guard",
+
+        -- Rifts 4
+
+        SHADOW_BEEF_BELL = "Beefalo Gloom Bell",
+        SADDLE_SHADOW = "Nightmare Saddle",
+        SHADOW_BATTLEAXE = "Shadow Maul",
+        VOIDCLOTH_BOOMERANG = "Gloomerang",
+		ROPE_BRIDGE_KIT = "Spelunker's Bridge Kit",
+
+		GELBLOB = "Icker",
+
+        RABBITKING_AGGRESSIVE = "Wrathful Rabbit King",
+        RABBITKING_PASSIVE = "Benevolent Rabbit King",
+        RABBITKING_LUCKY = "Fortuitous Rabbit",
+        RABBITKINGMINION_BUNNYMAN = "Royal Rabbit Enforcer",
+        ARMOR_CARROTLURE = "Coat of Carrots",
+        RABBITKINGHORN = "Burrowing Horn",
+        RABBITKINGHORN_CHEST = "Portable Den",
+        RABBITKINGSPEAR = "Rabbit King Cudgel",
+        RABBITHAT = "Warren Wreath",
+
+        WORM_BOSS = "Great Depths Worm",
+
+        RUINSNIGHTMARE = "Lurking Nightmare",
+
+        ITEMMIMIC_REVEALED = "Mimicreep",
+
+        STONE_CHAIR = "Stone Chair",
+        STONE_STOOL = "Stone Stool",
+        STONE_TABLE_ROUND = "Stone Round Table",
+        STONE_TABLE_SQUARE = "Stone Square Table",
+
+        BOARDS_BUNCH = "Bunch o' Boards",
+        CUTSTONE_BUNCH = "Bunch o' Stone",
+
+        CARPENTRY_BLADE_MOONGLASS = "Moon Glass Saw Blade",
+
+        CHEST_MIMIC = "Ornate Chest",
+        CHEST_MIMIC_REVEALED = "Ornery Chest",
+
+        SHADOWHEART_INFUSED = "Possessed Shadow Atrium",
+
+        GELBLOB_STORAGE = "Icker Preserve",
+        GELBLOB_STORAGE_KIT = "Icker Preserve Kit",
+        GELBLOB_BOTTLE = "Icker Jar",
+
+        PLAYER_HOSTED = "Inthralled Corpse",
+        PLAYER_HOSTED_ME = "Deadelgänger",
+
+        MASK_SAGEHAT = "Sage's Masque",
+        MASK_HALFWITHAT = "Halfwit's Masque",
+        MASK_TOADYHAT = "Toady's Masque",
+
+        PUMPKINCARVER1 = "Pumpkin Scooper",
+        PUMPKINCARVER2 = "Pumpkin Knife",
+        PUMPKINCARVER3 = "Pumpkin Saw",
+
+		SNOWMAN = "Snowman",
+		SNOWBALL_LARGE = "Large Snowball",
+		SNOWBALL_ITEM = "Snowball",
+
+        -- Year of the Snake
+        YOTS_SNAKESHRINE = "Depths Worm Shrine",
+        YOTS_WORM = "Gilded Depths Worm",
+        YOTS_LANTERN_POST = "Jubilantern Post",
+        YOTS_LANTERN_POST_ITEM = "Jubilantern Post Kit",
+
+        -- Meta 5
+
+        GHOSTLYELIXIR_LUNAR = "Luminous Wrath",
+        GHOSTLYELIXIR_SHADOW = "Cursed Vexation",
+        GRAVEGUARD_GHOST = "Bigspook",
+        DUG_GRAVESTONE = "Headstone",
+        WENDY_RECIPE_GRAVESTONE = "Headstone",
+
+		SLINGSHOTMODKIT = "Slingshot Field Kit",
+		SLINGSHOT_BAND_PIGSKIN = "Pig Skin Slingshot Band",
+		SLINGSHOT_BAND_TENTACLE = "Flailing Slingshot Band",
+		SLINGSHOT_BAND_MIMIC = "Possessed Slingshot Band",
+		SLINGSHOT_FRAME_BONE = "Bony Slingshot Frame",
+		SLINGSHOT_FRAME_GEMS = "Thulecite Slingshot Frame",
+		SLINGSHOT_FRAME_WAGPUNK_0 = "Scrappy Slingshot Frame",
+		SLINGSHOT_FRAME_WAGPUNK = "Scrappier Slingshot Frame",
+		SLINGSHOT_HANDLE_STICKY = "Slingshot Sticky Grip",
+		SLINGSHOT_HANDLE_JELLY = "Slingshot Jelly Grip",
+		SLINGSHOT_HANDLE_SILK = "Slingshot Grip Tape",
+		SLINGSHOT_HANDLE_VOIDCLOTH = "Slingshot Void Wrap",
+
+		WOBY_TREAT = "Woby Snacks",
+        BANDAGE_BUTTERFLYWINGS = "Flutter Strip",
+		PORTABLEFIREPIT_ITEM = "Portable Campfire",
+        SLINGSHOTAMMO_CONTAINER = "Ammo Pouch",
+
+        ELIXIR_CONTAINER = "Picnic Casket",
+        GHOSTFLOWERHAT = "Wraith's Wreath",
+        WENDY_RESURRECTIONGRAVE = "Perennial Altar",
+        WENDY_RESURRECTIONGRAVE_NAMED = "{name}'s Perennial Altar",
+        GRAVEURN = "Spirit Vessel",
+
+        -- For PVP!
+        SLINGSHOTAMMO_HORRORFUEL_DEBUFF_FX = "Swarming Horror",
+        SLINGSHOTAMMO_PUREBRILLIANCE_DEBUFF = "Flash of Brilliance",
+
+        SHALLOW_GRAVE = "Shallow Grave",
+        SHALLOW_GRAVE_PLAYER = "Shallow Grave",
+
+        -- Deck Of Cards
+        DECK_OF_CARDS = "Deck Of Cards",
+        PLAYING_CARD = "Playing Card",
+
+        BALATRO_MACHINE = "JIMBO",
+
+		-- Rifts 5
+		GESTALT_CAGE = "Phasmo-Encapsulator",
+        WAGBOSS_ROBOT_SECRET = "Undisclosed Construct",
+		WAGBOSS_ROBOT = "W.A.R.B.O.T.",
+        WAGBOSS_ROBOT_POSSESSED = "Enlightened W.A.R.B.O.T.",
+		WAGBOSS_ROBOT_LEG = "W.A.R.B.O.T. Leg",
+		WAGBOSS_MISSILE = "Thermalock Missile",
+		ALTERGUARDIAN_PHASE1_LUNARRIFT = "Celestial Revenant",
+		ALTERGUARDIAN_PHASE1_LUNARRIFT_GESTALT = "Pure Gestalt",
+        ALTERGUARDIAN_PHASE4_LUNARRIFT = "Celestial Scion",
+		WAGDRONE_ROLLING = "Terramite",
+		WAGDRONE_FLYING = "Warbler",
+		WAGDRONE_PARTS = "Gyroscopic Transduction Core",
+		WAGDRONE_BEACON = "Terramite Barrier Post",
+
+        WAGPUNK_CAGEWALL = "Kinetoclasmic Field Expandinator",
+        WAGPUNK_FLOOR_KIT = "Substrate Extrapolator",
+        WAGPUNK_LEVER = "Fulcronial Selector",
+        WAGPUNK_WORKSTATION = "Notional Fabricator",
+
+		WAGSTAFF_ITEM_1 = "Glove",
+		WAGSTAFF_ITEM_2 = "Clipboard",
+
+        HERMITCRAB_RELOCATION_KIT = "Hermit Rehomer",
+
+        WANDERINGTRADER = "Odd Beefalo",
+        WANDERINGTRADER_REVEALED = "Wandering Trader",
+
+        FLOTATIONCUSHION = "Personal Floater",
+        GESTALT_GUARD_EVOLVED = "Inimical Gestalt",
+        LUNAR_SEED = "Celestial Jewel",
+		TEMP_BETA_MSG = "Beta Report",
+
+        -- electrocute
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE = "W.A.R.B.O.T. Base",
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "W.A.R.B.O.T. Base Kit",
+        WAGBOSS_ROBOT_CREATION_PARTS = "W.A.R.B.O.T. Parts",
+        MOONSTORM_STATIC_CATCHER = "Static Restrainer",
+        COOLANT = "Nucleation Fluid",
+
+        FENCE_ELECTRIC = "T.I.N.G.L.E. Node",
+        FENCE_ELECTRIC_FIELD = "T.I.N.G.L.E",
+        FENCE_ELECTRIC_ITEM = "T.I.N.G.L.E. Node",
+
+        MUTATEDBIRD = "Bright-Beaked Bird",
+        MUTATEDBUZZARD = "Crystal-Crested Buzzard",
+
+        -- Names for missed scrapbook entries
+        WAVEYJONES = "Wavey Jones",
+        SHADOWHAND = "Shadow Hand",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4172,6 +4486,7 @@ STRINGS =
         PANFLUTE = "Music to soothe savage beasts.",
         COOKPOT = "Make better food.",
         BUGNET = "Catch bugs.",
+        THULECITEBUGNET = "Catch bugs the ancient way.",
         SADDLEHORN = "Pry that saddle off.",
         BRUSH = "Relieve beefalo of their hair buildup.",
         SALTLICK = "Keep your livestock content.",
@@ -4467,11 +4782,16 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Its stony gaze reminds you of an evil presence.",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Double the eyes, double the terror.",
         CHESSPIECE_DAYWALKER_BUILDER = "A stone likeness of a pig-headed prisoner.",
+        CHESSPIECE_DAYWALKER2_BUILDER = "He sure was a scrappy fellow.",
         CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "A truly eye-catching sculpture.",
         CHESSPIECE_WARG_MUTATED_BUILDER = "A rather fetching statue.",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "A soul-bearing rendition of a ferocious favorite.",
         CHESSPIECE_YOTD_BUILDER = "A tribute to getting things off to a fiery start.",
         CHESSPIECE_SHARKBOI_BUILDER = "An homage to a cold-blooded bully.",
+        CHESSPIECE_WORMBOSS_BUILDER = "Brings back memories of being digested.",
+        CHESSPIECE_YOTS_BUILDER = "A reminder of a lucky worm encounter.",
+        CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "The automation.",
+        CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "The abomination.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4484,6 +4804,7 @@ STRINGS =
         CHESSPIECE_CRABKING_SKETCH = "A sculpture sketch of the Crab King.",
         CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
         CHESSPIECE_YOTD_SKETCH = "A sculpture sketch of a Dragonfly boat race Start Tower.",
+        CHESSPIECE_YOTS_SKETCH = "A sculpture sketch of a Gilded Depths Worm.",
 
         CRITTER_GLOMLING_BUILDER = "Befriend a bouncy Glomglom.",
         CRITTER_DRAGONLING_BUILDER = "Befriend a noble Broodling.",
@@ -4690,7 +5011,10 @@ STRINGS =
 		GHOSTLYELIXIR_ATTACK = "Call upon the power of darkness.",
 		GHOSTLYELIXIR_SPEED = "Give your soul a little boo-st.",
 		GHOSTLYELIXIR_RETALIATION = "Give foes a taste of their own medicine.",
+        GHOSTLYELIXIR_REVIVE = "Reminds Abigail of all she can be.",
 		SISTURN = "A place to rest your weary soul.",
+        PETALS = "Purify your petals.",
+        PETALS_EVIL = "Stain your petals.",
 
 		-- Walter
         WALTERHAT = "Form and function over fashion.",
@@ -4699,9 +5023,19 @@ STRINGS =
 		SLINGSHOTAMMO_MARBLE = "Don't lose them, now!",
 		SLINGSHOTAMMO_THULECITE = "What could go wrong?",
         SLINGSHOTAMMO_GOLD = "Their fanciness makes them work better.",
+		SLINGSHOTAMMO_HONEY = "Sticky and sweet!",
         SLINGSHOTAMMO_SLOW = "What \"laws of physics\"?",
         SLINGSHOTAMMO_FREEZE = "Freeze foes in their tracks.",
 		SLINGSHOTAMMO_POOP = "Disgusting and distracting.",
+        SLINGSHOTAMMO_STINGER = "Stings all around!",
+        SLINGSHOTAMMO_MOONGLASS = "Shatter expectations.",
+		SLINGSHOTAMMO_GELBLOB = "Sticky and icky!",
+        SLINGSHOTAMMO_SCRAPFEATHER = "Shockingly shocking!",
+        SLINGSHOTAMMO_DREADSTONE = "Dreadfully strong.",
+        SLINGSHOTAMMO_GUNPOWDER = "Explode onto the scene!",
+        SLINGSHOTAMMO_LUNARPLANTHUSK = "Settle your vine-detta!",
+        SLINGSHOTAMMO_PUREBRILLIANCE = "You'll be over the Moon with these.",
+        SLINGSHOTAMMO_HORRORFUEL = "Reinforcements against dark forces.",
         PORTABLETENT = "Portable protection from the elements.",
         PORTABLETENT_ITEM = "Portable protection from the elements.",
 
@@ -5082,6 +5416,95 @@ STRINGS =
 
         BOATPATCH_KELP = "Keep your boat afloat... for a while, anyway.",
         SALTLICK_IMPROVED = "Treat your beefalo to a taste of the finer things.",
+
+        -- Rifts 4
+
+        SHADOW_BEEF_BELL = "Revive the one you beef friend.",
+        SADDLE_SHADOW = "Grab the reins and reign over the battlefield.",
+		SHADOW_BATTLEAXE =  "You'll chop 'til you drop with this maul.",
+        VOIDCLOTH_BOOMERANG = "It'll keep coming back for more!",
+        ROPE_BRIDGE_KIT = "Suspend your disbelief and cross that bottomless pit.",
+        ARMOR_CARROTLURE = "Don this coat, and the Bunnymen shall hop to it.",
+        RABBITKINGHORN = "Call on the rabbits to keep your stuff, anytime, any hare.",
+        RABBITHAT = "Collecting rabbits has never been so calming.",
+
+        STONE_CHAIR = "A stone chair to sit on.",
+        STONE_STOOL = "A stone stool to sit on.",
+        STONE_TABLE_ROUND = "A round stone table to put things on.",
+        STONE_TABLE_SQUARE = "A square stone table to put things on.",
+
+        BOARDS_BUNCH = "Hoard your boards.",
+        CUTSTONE_BUNCH = "Stock your stone.",
+
+        CARPENTRY_BLADE_MOONGLASS = "For when a regular blade just won't cut it.",
+
+        GELBLOB_STORAGE_KIT = "Keep your perishables fresh in this deadly dark jelly.",
+
+        YOTS_SNAKESHRINE = "Make offerings to the hungry Depths Worm.",
+        YOTS_LANTERN_POST = "A most festive post for stringing lanterns.",
+        YOTS_LANTERN_POST_ITEM = "A most festive post for stringing lanterns.",
+
+        -- Meta 5
+        GHOSTLYELIXIR_LUNAR = "Abigail will pack an outerplanar punch.",
+        GHOSTLYELIXIR_SHADOW = "As if a ghost attack wasn't vexing enough.",
+        WENDY_RECIPE_GRAVESTONE = "No one deserves an unmarked grave.",
+
+		WOBY_TREAT = "Non-perishable Monster Meat biscuits made special for Woby.",
+        BANDAGE_BUTTERFLYWINGS = "A bandage made from the wings of Butterflies.",
+		PORTABLEFIREPIT_ITEM = "A campfire made for adventure--perfect for when you're on the go!",
+        SLINGSHOTAMMO_CONTAINER = "It's both practical and tactical.",
+
+		SLINGSHOTMODKIT = "Slingshotting is serious business.",
+		SLINGSHOT_BAND_PIGSKIN = "Sling farther!",
+		SLINGSHOT_BAND_TENTACLE = "Sling farther-er!",
+		SLINGSHOT_FRAME_BONE = "More ammo? Yes please!",
+		SLINGSHOT_FRAME_GEMS = "A little bit of this, and a little bit of that!",
+		SLINGSHOT_FRAME_WAGPUNK_0 = "Ya think you're some sorta big shot now, huh?",
+		SLINGSHOT_FRAME_WAGPUNK = "Embrace your ammo hoarding tendencies!",
+		SLINGSHOT_HANDLE_STICKY = "Get attached to your slingshot.",
+		SLINGSHOT_HANDLE_JELLY = "The stickiest grip yet!",
+		SLINGSHOT_HANDLE_SILK = "Sling faster!",
+		SLINGSHOT_HANDLE_VOIDCLOTH = "Sling faster-er!",
+
+        WORTOX_REVIVER = "Soul revival of a single ghostly friend. May bring others closer.",
+        WORTOX_NABBAG = "Stuff it and swing it!",
+        WORTOX_SOULJAR = "Why let them be free when you can stuff them all into a jar?",
+        ELIXIR_CONTAINER = "For carrying all of Abigail's snacks.",
+        GHOSTFLOWERHAT = "Think like a ghost, drink like a ghost.",
+        BUTTERFLY = "Help them relive their glory.",
+        MOONBUTTERFLY = "Help them relive their glory.",
+        WENDY_RESURRECTIONGRAVE = "Death is but an inconvenience.",
+        GRAVEURN = "Transport a soul to a new location.",
+
+        -- Rifts 5
+        GEARS = "Cogs for your contraptions.",
+        TWIGS = "A single twig can make all the difference.",
+        CUTGRASS = "The fiberous strands bind together.",
+        FLINT = "Naturally sharp and dressed for the occasion.",
+        CUTREEDS = "Tubular.",
+        PIGSKIN = "Thick and stretchable hide.",
+        REDGEM = "Retains the color of red.",
+        BLUEGEM = "Bears the color of blue.",
+        MOONGLASS = "A fragment from the Moon.",
+
+        WANDERINGTRADERSHOP_LIVINGLOG = "Life wood be a scream...", --NOTE (Omar): regular Living log recipe description doesn't work in the context of wandering trader! so here's a new one
+
+        GESTALT_CAGE = "Combined pseudo and science for catching certain entities.",
+        WAGPUNK_FLOOR_KIT = "Make the Ocean smaller! Permanently. Restrictions apply.",
+
+        HERMITCRAB_RELOCATION_KIT = "Home is where the hermit is... relocated.",
+
+        FLOTATIONCUSHION = "Become unsinkable. Take that, Ocean!",
+
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "Build first. Panic later.",
+        WAGBOSS_ROBOT_CREATION_PARTS = "Piece by piece, assemble your very own war machine.",
+        MOONSTORM_STATIC_CATCHER = "Catch static from every direction.",
+        MOONSTORM_GOGGLESHAT_BLUEPRINT = "Not your average potato recipe.",
+        MOON_DEVICE_CONSTRUCTION1_BLUEPRINT = "Meddling with forces beyond comprehension demands careful planning.",
+        SECURITY_PULSE_CAGE = "Secure that Security Pulse!",
+
+        FENCE_ELECTRIC = "A shockingly effective way to contain yourself... or others.",
+        FENCE_ELECTRIC_ITEM = "A shockingly effective way to contain yourself... or others.",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -5264,6 +5687,7 @@ STRINGS =
     MERM_BATTLECRY           = {{"Glorp! Go away!", "Glorp! Glorpy glup!"}, {"Destroy you!", "Wult glut!"},},
     MERM_GUARD_BATTLECRY     = {{"To battle!", "Wult flrot!"}, {"For Mermfolk!", "Flort Glurtsu flut!"}, {"ATTAAAACK!!", "GLOT FLOOOORPH!!"}, {"Defend King!", "Glurph Glurtsen!"}},
     MERM_TALK_PANICBOSS      = {{"Something coming!", "Gloppy flort!"}, {"Aaah!! Bad thing! Bad thing!", "Gloooorph!! Glurph glot! Glurph glot!"}, {"It come to destroy us!", "Flort wult Glurtsu!"}},
+    MERM_TALK_PANICELECTRICITY = {{"Bad tingle! Bad tingle!", "Glurph flirks! Glurph flirks!"}},
     MERM_TALK_PANICBOSS_KING = {{"Rally to King!", "Glurtsen blut flort!"}, {"Hurry! Protect kingdom!", "Flurph flrot! Gloppy Glurtsam!"}, {"S-stay brave!!", "G-glop blut flrot!!"}},
     MERM_TALK_NEED_HEAL      = {{"Help, florp!", "Flopt, florp!"}, {"Hurt!", "Glorg!"}, {"No feel so good...", "Glorggu blurg..."}, {"Ouchie, ouchie!", "Glurk, glurk!"}},
 
@@ -5557,6 +5981,7 @@ STRINGS =
     HERMITCRAB_REFUSE_COAT = {"You keep it, I'm not chilly."},
     HERMITCRAB_REFUSE_COAT_HASONE = {"I like the coat I have, thank you very much."},
     HERMITCRAB_REFUSE_VEST = {"I'd boil if I wore that in this heat!"},
+    HERMITCRAB_REFUSE_MAPSCROLL = {"I don't need that, my house is here!"},
 
     HERMITCRAB_ANNOUNCE_ROYALTY = {
         "Well, don't you look all high and mighty.",
@@ -5582,6 +6007,12 @@ STRINGS =
         LOW = {"Ack! You made me lose my fish!"},
         MED = {"You couldn't wait for a better time?"},
         HIGH = {"I can always make time for you, dearie."},
+    },
+
+    HERMITCRAB_ANNOUNCE_ADDED_RELOCATION_KIT = {
+        LOW = {"Hmph! You tricked me! This island is the worst!", "You'd better fix this...", "...or you're no better than that junk collector!", "I’ve got something you can use - if you actually plan on helping me."},
+        MED = {"Ack! That map was no good.", "Maybe that junk collector tricked you too.", "I need a better place to live.", "I have something you can use to help me."},
+        HIGH = {"Oh dear, that junk collector tricked us with a bad map.", "Please help me find a better home?", "I’ve got a little something that might help you help me!"},
     },
 
     HERMITCRAB_LEVEL10_PLAYERGOOD = {
@@ -5615,6 +6046,8 @@ STRINGS =
     HERMITCRAB_GOT_PEARL = {"Oh...","...I think I understand now.","Thank you for bringing this back to me.","I'm so glad you kept coming back.","My friend."},
     HERMITCRAB_WANT_HOUSE = {"I could really use some help fixing up my house..."},
     HERMITCRAB_GIVE_PEARL = {"If you find my sweetie on your travels...","Could you... give him that pearl?","He'll recognize it."},
+    HERMITCRAB_GOT_MAPSCROLL_BAD = {"This map is no good to me.", "It doesn't take me anywhere special."},
+    HERMITCRAB_GOT_MAPSCROLL_GOOD = {"The island on this map seems nice...", "At least it's away from that junk collector.", "I would go but...","No. I'm going.","I'm done waiting for him."},
 
     HERMITCRAB_ANNOUNCE_SPOOKED = "Did you see that?!",
     HERMITCRAB_ANNOUNCE_TOOL_SLIP = "Wow, that tool is slippery!",
@@ -5630,6 +6063,7 @@ STRINGS =
     PIG_TALK_ATTEMPT_TRADE = { "WHAT YOU GOT?", "BETTER BE GOOD." },
     PIG_TALK_PANIC = { "NOOOOO!", "TOO DARK! TOO DARK!", "AAAAAAAAAH!!" },
     PIG_TALK_PANICFIRE = { "HOT HOT HOT!", "OWWWWW!", "IT BURNS!" },
+    PIG_TALK_PANICELECTRICITY = { "OWWWWW!","AAAAH!","DON'T LIKE!", "ME FRIED!" },
     PIG_TALK_PANICHOUSEFIRE = { "HOUSE BURNS!", "MY STUFF!", "AAAH! FIRE!", "PANIC!" },
     PIG_TALK_PANICBOSS = { "AHHHH", "UH OH!", "ME SCARED", "BAD!", "OHHH!" },
     PIG_TALK_PANICHAUNT = { "SPOOKY!", "AAAAH!!", "A GHOST! A GHOST!" },
@@ -5704,6 +6138,7 @@ STRINGS =
     RABBIT_RETREAT = { "AWAY!", "HURT!", "HOME!", "RUN!" },
     RABBIT_RESCUE = { "KILL!", "FIGHT!", "BITE!", "PUNCH!" },
     RABBIT_PANICFIRE = { "EEEH!", "OOH!", "AAAH!" },
+    RABBIT_PANICELECTRICITY = { "OUCH!!", "HURT!", "STING!"},
     RABBIT_PANICHOUSEFIRE = { "HOME!", "FIRE!", "BURNING!" },
     RABBIT_PANICHAUNT = { "SCARED!", "AAAH!!", "OHH!", "GHOST!" },
     RABBIT_PANICBOSS = { "RUN!", "AHHH!", "IT MAD", "EHHH!" },
@@ -6348,6 +6783,15 @@ STRINGS =
         "The inscription reads \"Always Watching\". Odd.",
     },
 
+    -- Epitaphs, for Wendy's gravestone construct
+    WENDY_EPITAPHS =
+    {
+        "\"Sweet slumber.\"",
+        "\"This world could not hold me.\"",
+        "\"I didn't like it here anyway.\"",
+        "\"I've better places to be.\"",
+    },
+
     MESSAGEBOTTLE_NOTES =
     {
         "\"I know you're still out there, my dear. I won't ever give up.\"",
@@ -6401,6 +6845,10 @@ STRINGS =
 		FISHING = "Fishing",
 		WINTERSFEASTCOOKING = "Feast",
         HERMITCRABSHOP = "Bottle Exchange",
+        RABBITKINGSHOP = "Trading Hutch",
+        WANDERINGTRADERSHOP = "Trading",
+        WAGPUNK_WORKSTATION = "Fabrication",
+        CARPENTRY = "Carpentry",
 		SLINGSHOTAMMO = "Slingshot Ammo",
 		CLOCKMAKER = "Clocksmithy",
         TURFCRAFTING = "Landscaping",
@@ -6783,6 +7231,14 @@ STRINGS =
     WAGSTAFF_GOTTAGO1 = "Aha! This selenological anomaly can only mean one thing!",
     WAGSTAFF_GOTTAGO2 = "Now is my chance!",
 
+    WAGSTAFF_NPC_GOT_ENOUGH_GESTALTCAGE =  {
+        "Enough of these.",
+        "We need something far more powerful.",
+        "I wonder where we can find one...",
+    },
+
+    WAGSTAFF_NPC_LUNARGUARDIANINCOMING = "Hm, seems we've angered the lunar being in collecting too many of its little friends.",
+
     -- Script.
     WAGSTAFF_NPC_DEFEAT_TWO_MORE_MUTATIONS =
     {
@@ -6799,7 +7255,7 @@ STRINGS =
         "For scientific accuracy, of course.",
         "You understand.",
     },
-    
+
     -- Script.
     WAGSTAFF_NPC_ALL_MUTATIONS_DEFEATED = {
         "Right. A third specimen. I did ask for another, didn't I?",
@@ -6845,7 +7301,131 @@ STRINGS =
 
     WAGSTAFF_JUNK_YARD_OCCUPIED = {
         "Too crowded here for my work. I'll come back later",
-    },    
+    },
+    WAGSTAFF_TOOMANYITEMS = {
+        "Your haste is good but I'm busy!",
+        "I'm too busy to deal with you right now.",
+    },
+    WAGSTAFF_GOT_NOT_MAPSCROLL = {
+        "No... no. We need a map to move that crab.",
+        "What is this? We need a map for that crab!",
+    },
+    WAGSTAFF_GOT_MAPSCROLL_BAD = {
+        "This is no good. It has to have my... an island on it.",
+        "This map is useless. That crab will only move to another island.",
+        "Try again. Bring me a map to the primate island.",
+    },
+    WAGSTAFF_MAPSCROLL_TRICKER = {
+        "No, not me! The crab! Give it to that crab!",
+        "Why are you giving me this? It's for that crab.",
+    },
+    WAGSTAFF_GOT_MAPSCROLL_GOOD = {
+        "This will do. Just few minor edits... Perfect.",
+    },
+    WAGSTAFF_GOT_MAPSCROLL_GOOD_FINISH = {
+        "Run along and give it to that crab.",
+    },
+    WAGSTAFF_GOT_MAPSCROLL_NOLONGERNEEDED = {
+        "Stop bringing me maps! That crab is gone!",
+    },
+    WAGSTAFF_GOT_EMPTY_GESTALTCAGE = {
+        "It's empty.",
+    },
+    WAGSTAFF_GOT_NOT_GESTALTCAGE = {
+        "This is not what I need. Use a Phasmo-Encapsulator and capture an appropriate entity.",
+    },
+    WAGSTAFF_GOT_GESTALTCAGE_NOLONGERNEEDED = {--he wants something different.
+        "Hm, see if you can capture me another variety.",
+        "I have enough of these. I need something special, something more... powerful.",
+    },
+    WAGSTAFF_GET_MORE_GESTALTCAGES = {--try again,
+        "Do you have another sample?",
+        "Hm, try getting me another.",
+        "I need a more suitable entity!",
+        "Find me a power source!",
+    },
+    WAGSTAFF_GOT_GESTALTCAGE_GOOD = {-- wants the big one.  not these.
+        "Hm, not quite powerful enough, but I can use it.",
+        "I'll take it, but there's a special one I'm looking for.",
+    },
+    WAGSTAFF_GOT_GESTALTCAGE_GOOD_BIGONE = {-- Got the big one.
+        "Yes! A very good one! Finally!",
+        "You've got it! This will do nicely!",
+        "Excellent, this is the one I've been waiting for!",
+    },
+    -- Desire for crabby crab to get off of the island.
+    WAGSTAFF_WAGPUNK_ARENA_PEARLMAP = {
+        "Creatures like that crab are always looking for a bigger home. Let's give her one... sort of.",
+        "Perhaps if the crab had a more \"substantial\" island to relocate to, she would leave me alone.",
+        "Give me a map with an island and we'll see if we can't make it more appealing.",
+    },
+
+    -- Desire to place out flooring to make the island bigger.
+    WAGSTAFF_WAGPUNK_ARENA_TURF = {
+        "We need to expand the arena of my experimentation.",
+        "The surface of this island must be increased with my special flooring.",
+        "Use my Substrate Extrapolator and extrapolate this substrate!",
+    },
+
+    -- Desire to find a powerful energy source for the secret project.say it in multi strings. piece it out 1) phamso can capture entiteis for power source, 2) how to build 3) do it
+    WAGSTAFF_WAGPUNK_ARENA_CONSTRUCT = {
+        "You'll need to construct a Phasmo-Encapsulator to capture an energy being.",
+        "Excellent! I need a suitable power source for my creation!",
+        "Good. Use a Phasmo-Encapsulator to capture an entity to power my creation!",
+    },
+
+    WAGSTAFF_WAGPUNK_ARENA_GIVE_GESTALT_CAGE = {
+        "Yes! Use this and capture that entity before it escapes!",
+        "That's the entity I want! Use this to capture it. Quickly!",
+        "There it is! Take this and capture that entity now!",
+    },
+
+    -- Desire for the filled3 cage. -- why this still here?
+    WAGSTAFF_WAGPUNK_ARENA_CONSTRUCT_BIGONE = {
+        "Finally! Hand over the entity at once!",
+        "This is the one I've been waiting for! Give it to me now!",
+    },
+
+    -- Desire to have the lever switched.
+    WAGSTAFF_WAGPUNK_ARENA_LEVER = {
+        "Fine work! Now pull the Fulcronial Selector to start the ultimate experiment!",
+        "Let us bring my creation to life! Engage the Fulcronial Selector! Yes, yes- the stick-thing.",
+        "This is it! Pull the Ful- the lever.",
+    },
+
+    -- Monologue on lever pulled. --robot comes to life, and it's working. im a genius
+    WAGSTAFF_WAGPUNK_ARENA_LEVERPULLED = {
+        "It's perfect! Everything is going according to plan.",
+        "Eureka! I've done it!",
+    },
+
+    WAGSTAFF_WAGPUNK_ARENA_REVEALBOSS = "Behold, my preeminent creation - W.A.R.B.O.T.!",
+
+    WAGSTAFF_WAGPUNK_ARENA_ROBOTLOSTCONTROL = {
+        "The entity has taken control of W.A.R.B.O.T..",
+        "Seems I underestimated its strength, a shame.",
+        "Ah well. Deal with it, would you?",
+    },
+
+    WAGSTAFF_WAGPUNK_ARENA_SCIONREVEAL = {
+        "What a waste of my W.A.R.B.O.T.,",
+        "but the entity has taken on a fascinating new hybrid form.",
+        "I suspect uncontained exposure will accelerate entropy.",
+        "It is not ideal.",
+        "Subdue the entity posthaste.",
+    },
+
+    WAGSTAFF_WAGPUNK_ARENA_SCIONDOWN = {
+        "Very good! The entity is in a weakened state.",
+        "Now you just need to...",
+    },
+
+    WAGSTAFF_WAGPUNK_ARENA_SCIONATTACKSWAGSTAFF = {
+        "...Gaaah!",
+        "What's happening to me?",
+        "Impossible!",
+        "I don't under...",
+    },
 
     -- Terraria
     EYEOFTERROR_COMING = "You feel an evil presence watching you...",
@@ -6999,17 +7579,142 @@ STRINGS =
 		"ME DESTROY YOU!","THIEF!","RAAAAAAAAGGHH!","YOU MUST DIE!","IS ALL MINE!",
 	},
 
+    SHADOWTHRALL_PARASITE_CHANT =
+    {
+        "Tenebrau",
+        "Tenebrous",
+        "salutations",
+        "friends",
+        "dark",
+        "benevolent",
+        "no fear",
+        "Cursed light",
+        "Sweet pall",
+        "Be free",
+        "liberate",
+        "Ever night",
+        "Dim embrace",
+        "love",
+        "Friends",
+        "Joyous",
+        "Welcome",
+        "Resist not",
+        "Surrender",
+        "No pain",
+        "No feel",
+        "Forever we",
+        "Many worlds",
+        "One we",
+        "In peace",
+        "Protect ye",
+        "Under the veil",
+    },
+
     WARBIS = {
         -- Well, a rather beautifully intelligent system.
         START    = "W.A.R.B.I.S. IS ANALYZING...",
         STAGE1   = "W.A.R.B.I.S. UPGRADING!",
         STAGE2   = "W.A.R.B.I.S. AMPLIFYING!!",
         STAGE3   = "W.A.R.B.I.S. EXTREME FUNCTION!!!",
-        
+
         STOP     = "W.A.R.B.I.S. TRACKING LOST.",
         NEW      = "W.A.R.B.I.S. HAS NEW TARGET!",
         SYNCHING = "W.A.R.B.I.S. IS SYNCHING...",
         SYNCHED  = "W.A.R.B.I.S. HAS SYNCHED.",
+    },
+
+    PLAYING_CARD_NAMES =
+    {
+        CARD0 = "Playing Card",
+
+        CARD101 = "Ace of Spades",
+        CARD102 = "Two of Spades",
+        CARD103 = "Three of Spades",
+        CARD104 = "Four of Spades",
+        CARD105 = "Five of Spades",
+        CARD106 = "Six of Spades",
+        CARD107 = "Seven of Spades",
+        CARD108 = "Eight of Spades",
+        CARD109 = "Nine of Spades",
+        CARD110 = "Ten of Spades",
+        CARD111 = "Jack of Spades",
+        CARD112 = "Queen of Spades",
+        CARD113 = "King of Spades",
+
+        CARD201 = "Ace of Diamonds",
+        CARD202 = "Two of Diamonds",
+        CARD203 = "Three of Diamonds",
+        CARD204 = "Four of Diamonds",
+        CARD205 = "Five of Diamonds",
+        CARD206 = "Six of Diamonds",
+        CARD207 = "Seven of Diamonds",
+        CARD208 = "Eight of Diamonds",
+        CARD209 = "Nine of Diamonds",
+        CARD210 = "Ten of Diamonds",
+        CARD211 = "Jack of Diamonds",
+        CARD212 = "Queen of Diamonds",
+        CARD213 = "King of Diamonds",
+
+        CARD301 = "Ace of Clubs",
+        CARD302 = "Two of Clubs",
+        CARD303 = "Three of Clubs",
+        CARD304 = "Four of Clubs",
+        CARD305 = "Five of Clubs",
+        CARD306 = "Six of Clubs",
+        CARD307 = "Seven of Clubs",
+        CARD308 = "Eight of Clubs",
+        CARD309 = "Nine of Clubs",
+        CARD310 = "Ten of Clubs",
+        CARD311 = "Jack of Clubs",
+        CARD312 = "Queen of Clubs",
+        CARD313 = "King of Clubs",
+
+        CARD401 = "Ace of Hearts",
+        CARD402 = "Two of Hearts",
+        CARD403 = "Three of Hearts",
+        CARD404 = "Four of Hearts",
+        CARD405 = "Five of Hearts",
+        CARD406 = "Six of Hearts",
+        CARD407 = "Seven of Hearts",
+        CARD408 = "Eight of Hearts",
+        CARD409 = "Nine of Hearts",
+        CARD410 = "Ten of Hearts",
+        CARD411 = "Jack of Hearts",
+        CARD412 = "Queen of Hearts",
+        CARD413 = "King of Hearts",
+    },
+
+    -- wanderingtrader
+    -- FIXME(JBK): WT: Strings.
+    WANDERINGTRADER_OUTOFSTOCK_PROXIMITY = {
+        "Appreciate ya comin' round here, but I got nothin'. Try me again later.",
+        "Hey buddy, I'm tapped out. Come back later.",
+        "Good to see ya, but I've nothin' to trade. Circle back later.",
+    },
+    WANDERINGTRADER_OUTOFSTOCK_FROMTRADES = {
+        "Ya cleaned me out! Gimme some time to restock.",
+        "That's all I got! Need to go find me some more wares.",
+        "Well, that's all she wrote! I'll go find more items to offer.",
+    },
+    WANDERINGTRADER_STARTTRADING = {
+        "Friend, I got goods galore for ya!",
+        "Buddy, whatcha need?",
+        "Hey there, let's trade!",
+    },
+    WANDERINGTRADER_ENDTRADING_NOTRADES = {
+        "Can't please everyone!",
+        "Maybe next time.",
+        "Nothin' interests you? Come see what I got later.",
+    },
+    WANDERINGTRADER_ENDTRADING_MADETRADE = {
+        "I'll be seein' ya.",
+        "Pleasure doin' business with ya.",
+        "Thanks for the trade! Seeya later.",
+    },
+    WANDERINGTRADER_DOTRADE = {
+        "Great choice! Anythin' else tickle yer fancy?",
+        "Good deal! What else you need?",
+        "Nice trade! Let's keep it goin'!",
     },
 }
 
@@ -7476,6 +8181,8 @@ STRINGS.UI =
 			QUAGMIRE_TRADER_MUM = "Purchase",
 			QUAGMIRE_TRADER_KID = "Purchase",
 			MADSCIENCE = "Mix",
+			RABBITKINGSHOP = "Trade",
+			WANDERINGTRADERSHOP = "Trade",
         },
 		RECIPEACTION =
 		{
@@ -7490,6 +8197,8 @@ STRINGS.UI =
 			COOK = "Cook",
 			GROW = "Grow",
 			TRANSFORM = "Transform",
+			RABBITKINGSHOP = "Trade",
+			WANDERINGTRADERSHOP = "Trade",
 		},
         TABNEEDSTUFF =
         {
@@ -7526,12 +8235,18 @@ STRINGS.UI =
         NEEDSHERMITCRABSHOP_L2 = "Find someone friendly enough to make this trade!",
         NEEDSHERMITCRABSHOP_L3 = "Find someone friendly enough to make this trade!",
         NEEDSHERMITCRABSHOP_L4 = "Find someone friendly enough to make this trade!",
+        NEEDSRABBITKINGSHOP = "Seek out the Rabbit King to make this trade!",
+        NEEDSWANDERINGTRADERSHOP = "Seek out the Wandering Trader to make this trade!",
+        NEEDSWAGPUNK_WORKSTATION = "Can only be crafted at a Notional Fabricator.",
         NEEDSCREATURESCANNING = "Scan living creatures to collect data!",
         NEEDSSKILL = "Learn new skills.",
         NEEDSBOOKSTATION = "Build a bookcase to craft your books.",
         NEEDSLUNARFORGING_TWO = "Can only be forged at a Brightsmithy.",
-        NEEDSSHADOWFORGING_TWO = "Can only be crafted a Shadowcraft Plinth.",
+        NEEDSSHADOWFORGING_TWO = "Can only be crafted at a Shadowcraft Plinth.",
         NEEDSCARPENTRY_TWO = "Use a Sawhorse to build a prototype!",
+        NEEDSCARPENTRY_THREE = "Use a Sawhorse with a strong blade to build a prototype!",
+        NEEDSCELESTIAL_ONE = "Find a small source of lunar energy to craft this at.",
+        NEEDSCELESTIAL_THREE = "Find a big source of lunar energy to craft this at.",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -7542,6 +8257,8 @@ STRINGS.UI =
         NEEDSYOTR = "Available during Year of the Bunnyman!",
 		NEEDSHALLOWED_NIGHTS = "Available during Hallowed Nights!",
 		NEEDSWINTERS_FEAST = "Available during Winter's Feast!",
+        NEEDSYOTD = "Available during Year of the Dragonfly!",
+        NEEDSYOTS = "Available during Year of the Depths Worm!",
 
         NEEDSPERDSHRINE = "Make an offering at the Gobbler Shrine!",
         NEEDSWARGSHRINE = "Make an offering at the Varg Shrine!",
@@ -7555,7 +8272,18 @@ STRINGS.UI =
         NEEDSCARNIVAL_HOSTSHOP_PLAZA = "Decorate a Cawnival Tree during the Cawnival!",
 
         CANTRESEARCH = "Some things must be discovered on your own.",
+        LIMITEDAMOUNTFMT = "{name} ({number} available)",
         DEFAULT = "Classic",
+    },
+
+    NEW_CONTROLSCHEME_POPUP = 
+    {
+        TITLE = "Playing with controller?",
+        BODY = "The game supports multiple control schemes for playing with controller. Would you like to see them and select one?",
+        XB1_TITLE = "Playing with gamepad?",
+        XB1_BODY = "The game supports multiple control schemes for playing with gamepad. Would you like to see them and select one?",
+        YES = "Show me!",
+        NO = "No thanks",
     },
 
     CREDITS =
@@ -7655,6 +8383,7 @@ STRINGS.UI =
             "Amanda Wong",
             "Kent Reimer",
             "Garnet (G50) Syberg-Olsen",
+            "Omar Al-Saadi",
         },
 
         ALTGAMES =
@@ -7933,7 +8662,7 @@ STRINGS.UI =
         SCRIPTERROR_DEBUG = "Debug Console",
         SCRIPTERRORMODWARNING = "This error may have occurred due to a mod you have enabled!\nYou have the following mods enabled:\n",
         TESTING = "This is the testing branch!",
-        TESTINGDETAIL = "You may encounter bugs or broken features, and you may lose your save game when we update. Please report all problems in the forum.",
+        TESTINGDETAIL = "You may encounter bugs or broken features, and you may lose your saved game when we update. Please report all problems in the forum.",
         TESTINGNO = "No, thank you!",
         TESTINGYES = "I understand.",
         CONTINUE = "Continue",
@@ -8065,7 +8794,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Beta Branch",
+		MAINBANNER_BETA_TITLE = "Hostile Takeover: Phase Two - Beta Branch", -- "Title/nBeta Branch"
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -8511,6 +9240,7 @@ STRINGS.UI =
         GETHALF = "Get Half",
         SELECT = "Select",
         PUT = "Put",
+		--ITEM_ACTIONS = "Item Actions",
         DEPLOY = "Deploy",
         BUILD = "Build",
         CANCEL = "Cancel",
@@ -8536,6 +9266,7 @@ STRINGS.UI =
         AFK_BODY = "Make sure to stretch your legs! The deathly wilderness will still be here when you get back.",
         AFK_OK = "Return",
         ACTIVATE_RESURRECTION = "Activate Meat Effigy",
+        ACTIVATE_GRAVE_RESURRECTION = "Activate Perennial Altar",
         INSPECT_SELF = "Inspect Self",
         OPENGIFT = "Activate",
         CRITTER_TRAITS =
@@ -8547,6 +9278,8 @@ STRINGS.UI =
         },
         LOCK_TARGET = "Lock Target",
 		UNLOCK_TARGET = "Unlock Target",
+		NEXT_TARGET = "Next Target",
+        CYCLE_AXIS_ALIGNED_PLACEMENT = "Cycle Grid Size",
 
         LAVAARENA_WIN_TITLE = "Victory!",
         LAVAARENA_WIN_BODY = "You have bested Battlemaster Pugna's champions in battle.",
@@ -8620,6 +9353,10 @@ STRINGS.UI =
 		LUNARFORGING = "Brightsmithy",
 		SHADOWFORGING = "Shadowcraft",
         HERMITCRABSHOP = "Bottle Exchange",
+        RABBITKINGSHOP = "Trading Hutch",
+        WANDERINGTRADERSHOP = "Trading",
+        WAGPUNK_WORKSTATION = "Fabrication",
+        CARPENTRY = "Carpentry",
 
         SHADOW = "Codex Umbra",
         FOODPROCESSING = "Seasonings",
@@ -8646,6 +9383,9 @@ STRINGS.UI =
 		NAVIGATION = "Navigation",
 		PIN = "Pin",
 		UNPIN = "Unpin",
+		MORE = "More Actions",
+		PINBAR_PAGE = "Select Page",
+		SKIN_SELECT = "Select Skin",
 
 		FAVORITE_ADD = "Add Favorite",
 		FAVORITE_REMOVE = "Remove Favorite",
@@ -8726,6 +9466,24 @@ STRINGS.UI =
         CANCEL = "Cancel",
     },
 
+	PUMPKIN_CARVING_POPUP =
+	{
+		RESET = "Reset Carving",
+		SET = "Confirm Carving",
+		CANCEL = "Cancel",
+		MAX_CUTS = "You have reached the maximum number of cuts on this pumpkin!",
+		CARVE = "Carve",
+	},
+
+	SNOWMAN_DECORATING_POPUP =
+	{
+		MAX_DECOR = "You have reached the maximum number of decorations!",
+		PLACE = "Place",
+		FLIP = "Flip",
+		SET = "Done!",
+		CANCEL = "Cancel",
+	},
+
     OPTIONS =
     {
         TITLE = "Game Options",
@@ -8792,8 +9550,11 @@ STRINGS.UI =
         BOATHOPDELAY = "Boat Hop Delay:",
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
         VIBRATION = "Vibration:",
+        CONTROLLER_AUDIO = "Controller Audio:",
+        UI_HAPTICS = "Interface Haptics:",
+        UI_VIBRATION = "Interface Vibration:",
         WATHGRITHRFONT = "Wigfrid's Umlauts:",
-        WALTERCAMERA = "Campfire Camera:",        
+        WALTERCAMERA = "Campfire Camera:",
         BOATCAMERA = "Seafaring Camera:",
 		PROMOTIONS = "Promotions:",
         BACKPACKMODE = "Backpack Layout:",
@@ -8840,7 +9601,7 @@ STRINGS.UI =
         EULA = "Review the EULA",
         EULA_RESPONSE_CHANGED_TITLE = "Login Required",
         EULA_RESPONSE_CHANGED_BODY = "Your settings have changed and you must log in again to continue.",
-		PS4_SAVES = "Use PlayStation®4 save data",
+		PS4_SAVES = "Use PlayStation®4 system saved data",
 		BUGREPORT = "Submit a Bug Report",
         DYNAMICCONTENT_ENABLE = "Re-enable Dynamic Content",
         OFFLINE_MODE_TITLE = "Offline Mode",
@@ -8866,12 +9627,19 @@ STRINGS.UI =
         XB1_CONTROLLER_LAYOUT = "Gamepad Layout:",
         CONTROLLER_CUSTOM = "Custom",
         RESET_LAYOUT = "Default All",
-        RESET_LAYOUT_BODY = "Do you want to reset all controls to their default values?\n\nYou will lose any changes you've made.\n",        
+        RESET_LAYOUT_BODY = "Do you want to reset all controls to their default values?\n\nYou will lose any changes you've made.\n",
         CHANGE_BINDING = "Change Binding",
         CURRENT_CONTROL_TEXT = "Current %s",
         DEFAULT_CONTROL_TEXT = "Default %s",
         INV_ADJUST_STACK_SIZE = "Adjust stack size",
         INV_USE_ITEM_ON_ITEM = "Use on item",
+
+        AXISALIGNEDPLACEMENT = "Structure Alignment:",
+        AXISALIGNEDPLACEMENT_SIZE_HALFWALL = "Half-Wall",
+        AXISALIGNEDPLACEMENT_SIZE_WALL = "Wall",
+        AXISALIGNEDPLACEMENT_SIZE_HALFTILE = "Half-Tile",
+        AXISALIGNEDPLACEMENT_SIZE_TILE = "Tile",
+        AXISALIGNEDPLACEMENTINTERVALS = "Alignment Intervals:",
 
         TOOLTIPS =
         {
@@ -8887,8 +9655,11 @@ STRINGS.UI =
 
             -- Settings
             INPUT = "Controller or Keyboard? Play Don't Starve Together your way.",
-            VIBRATION = "Make your controller rumble at key gameplay moments.",
-			VIBRATION_WIRELESS = "Make your wireless controller rumble at key gameplay moments.",
+            VIBRATION = "Make your controller vibrate at key gameplay moments.",
+			VIBRATION_WIRELESS = "Enable vibration of your wireless controller at key gameplay moments.",
+            CONTROLLER_AUDIO = "Enable audio from your wireless controller at key gameplay moments.",
+            UI_HAPTICS = "Enable vibration and/or audio from your wireless controller when interacting with the user interface.",
+            UI_VIBRATION = "Enable vibration when interacting with the user interface.",
             FX = "Change how loud things are in the world.",
             MUSIC = "Tone up or down the musical fanfare in your adventures.",
             AMBIENT = "The environment makes noise too, luckily you can control how loudly it does.",
@@ -8916,6 +9687,8 @@ STRINGS.UI =
             LOADING_TIPS = "Learn more about the lore and the gameplay of Don't Starve while your world loads.",
 			TARGETLOCKING = "Focus on one target at a time.",
 			PROMOTIONS = "Display store promotions in the main menus.",
+            AXISALIGNEDPLACEMENT = "Structures and other deployables will automatically lock to a grid for making buildings look structured.",
+            AXISALIGNEDPLACEMENTINTERVALS = "This sets how big the grid is between each, measured in common units such as Wall width or Tile width.",
 
             -- Graphics
             FULLSCREEN = "Fill your screen with Don't Starve Together.",
@@ -8949,8 +9722,9 @@ STRINGS.UI =
 
             -- controls
             CONTROLLER_LAYOUT = "Use the default controls or customize them to your liking.",
+            CONTROL_SCHEME_CAM_AND_INV = "Choose between control schemes for the camera, inventory, and aiming.",
 
-            CONTROLS_EDITOR = 
+            CONTROLS_EDITOR =
             {
                 -- These are used in the Console version of the controls settings and thus only cover the controls available there
                 [57] = "Perform the default action on the current target.", --CONTROL_CONTROLLER_ACTION
@@ -8976,9 +9750,8 @@ STRINGS.UI =
                 [12] = "Rotate the camera to the right.", -- CONTROL_ROTATE_RIGHT
                 [9] = "Move the camera closer to your character.", -- CONTROL_ZOOM_IN
                 [10] = "Move the camera farther from your character.", -- CONTROL_ZOOM_OUT
-            }
-    },
-
+            },
+        },
     },
 
     SCRAPBOOK =
@@ -9026,10 +9799,12 @@ STRINGS.UI =
         DISCONNECT_CONTROLLER = " to Disconnect",
         CONNECTING = "Connecting",
         NEW_SKIN_ANNOUNCEMENT = "%s got a new skin: ",
+		LOADING_ASSETS_PROGRESS = "Loading Assets: %s",
         LAUNCHING_SERVER = "Launching Server",
         SERVER_WORLDGEN = "Server is Generating World",
         INITIALIZING_SERVER = "Initializing Server",
         WORLDGENERATING_SERVER = "Generating World",
+		WORLDGENERATING_SERVER_PROGRESS = "Generating World: %s",
         CURRENTLY_SPEAKING = "Currently Speaking...",
         RETRYING = "Retrying",
         RESTORING = "Restoring Backup",
@@ -9151,6 +9926,7 @@ STRINGS.UI =
         OK_BUTTON = "Close",
         OPEN_BUTTON = "Open Now!",
         OPEN_NEXT = "Proceed",
+        SKIP_REST = "Stop",
         OPENING = "Opening",
         BACK = "Back",
         NEXT_ITEM = "Put it Away",
@@ -9606,6 +10382,18 @@ STRINGS.UI =
             VOTENAMEFMT = "vote to regenerate the world",
             VOTEPASSEDFMT = "Regenerating world in 5 seconds...",
         },
+		LOCKWOBY =
+		{
+			PRETTYNAME = "Lock Woby's Pack",
+			DESC = "Only you have access to items in Woby's pack, unless she is delivering to another player.",
+			NOTIFY = "Woby's pack is now locked.",
+		},
+		UNLOCKWOBY =
+		{
+			PRETTYNAME = "Unlock Woby's Pack",
+			DESC = "Everyone will have access to items in Woby's pack.",
+			NOTIFY = "Woby's pack is now unlocked.",
+		},
     },
 
     MODSSCREEN =
@@ -9902,6 +10690,7 @@ STRINGS.UI =
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
         YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
         YEAR_OF_THE_DRAGONFLY = "Year of the Dragonfly",
+        YEAR_OF_THE_SNAKE = "Year of the Depths Worm",        
 
         PREFABSWAPS = "Changing Resources",
         PREFABSWAPS_START = "Starting Resource Variety",
@@ -9960,6 +10749,7 @@ STRINGS.UI =
         RIFTS_ENABLED_CAVE = "Wild Rifts",
         LUNARHAIL_FREQUENCY = "Lunar Hail",
         ACIDRAIN_ENABLED = "Acid Rain",
+        WANDERINGTRADER_ENABLED = "Wandering Trader",
         HOUNDMOUND = "Hound Mounds",
         MERMS = "Merms",
         TENTACLES = "Tentacles",
@@ -9977,7 +10767,8 @@ STRINGS.UI =
         ANTLIONTRIBUTE = "Antlion Tribute",
         BATS = "Bats",
         FISSURE = "Nightmare Fissures",
-        WORMATTACKS = "Cave Worm Attacks",
+        WORMATTACKS = "Cave Worm Attacks",      
+        WORMATTACKS_BOSS = "Great Worm",
         WORMS = "Cave Worms",
         SLURPER = "Slurpers",
         BUNNYMEN = "Rabbit Hutches",
@@ -10039,6 +10830,8 @@ STRINGS.UI =
         FISHSCHOOLS = "Schools of Fish",
         WALRUS_SETTING = "MacTusk",
         COOKIECUTTERS = "Cookie Cutters",
+        ITEMMIMICS = "Mimicreeps",
+        CHEST_MIMICS = "Ornery Chests",
 
         EVERGREEN_REGROWTH = "Evergreens",
         TWIGGYTREES_REGROWTH = "Twiggy Trees",
@@ -10100,6 +10893,7 @@ STRINGS.UI =
 		LESSDAMAGETAKEN = "Damage Taken",
         STAGEPLAYS = "Stage Plays",
         JUNKYARD = "Junk Yard",
+        BALATRO = "JIMBO",
 
         DAYWALKER = "Nightmare Werepig",
         DAYWALKER2 = "Scrappy Werepig",
@@ -10144,8 +10938,8 @@ STRINGS.UI =
 
     CROSS_SAVE_DIALOG =
     {
-        TITLE = "Import save data?",
-        BODY = "PlayStation®4 save data has been found. Do you want to import it?",
+        TITLE = "Import saved data?",
+        BODY = "PlayStation®4 system saved data has been found. Do you want to import it?",
 
         YES = "Yes",
         NO = "No",
@@ -10153,8 +10947,8 @@ STRINGS.UI =
 
     CROSS_SAVE_DIALOG_CONFIRM =
     {
-        TITLE = "Overwrite save data?",
-        BODY = "Importing will overwrite any existing save data. Are you sure?",
+        TITLE = "Overwrite saved data?",
+        BODY = "Importing will overwrite any existing saved data. Are you sure?",
 
         YES = "Yes",
         NO = "No",
@@ -10331,6 +11125,53 @@ STRINGS.UI =
         PLAYSTYLE_TITLE = "What's your playstyle?",
         PLAYSTYLE_BUTTON = "Choose Playstyle",
 		PLAYSTYLE_ANY_DESC = "You're, like, laidback and flexible, man. Any world is good with you.",
+        PLAYSTYLE_TITLE = "Playstyle Selection",
+
+        WORLDPROGRESSION_TITLE = "World Progression Filters",
+        WORLDPROGRESSION_BUTTON_LABEL = "World Progression:",
+        WORLDPROGRESSION_BUTTON_CHOOSING = "Choosing...",
+        WORLDPROGRESSION_BUTTON_CUSTOM = "Custom",
+        WORLDPROGRESSION_BUTTON_ANY = "Any",
+        WORLDPROGRESSION_TAGS = { -- NOTES(JBK): These must match up with WORLDSTATETAGS.DeclareTag(tagname) use and namespace!
+            WS = { -- Namespace without the colon.
+                MUST = { -- Key word is "is" or "are" or other very short affirmatives.
+                    -- Forest.
+                    CELESTIAL_ORB_FOUND = "The Celestial Orb is found.",
+                    CELESTIAL_PORTAL_BUILT = "The Celestial Portal is constructed.",
+                    CRABBY_HERMIT_HAPPY = "The Crabby Hermit gave a shiny gift.",
+                    LUNAR_RIFTS_ACTIVE = "Lunar Rifts are forming in the Constant.",
+                    -- Caves.
+                    ATRIUM_KEY_FOUND = "The Atrium Key is found.",
+                    --  FIXME(JBK): It would be nice for a CELESTIALPORTAL thing here for caves.
+                    ARCHIVES_ENERGIZED = "The Ancient Archives are energized.",
+                    SHADOW_RIFTS_ACTIVE = "Shadow Rifts are forming in the Constant.",
+                },
+                CANT = { -- Key word is "has yet" or "is still" or other two word negatives.
+                    -- Forest.
+                    CELESTIAL_ORB_FOUND = "The Celestial Orb has yet to be obtained.",
+                    CELESTIAL_PORTAL_BUILT = "The Celestial Portal is still a Florid Postern.",
+                    CRABBY_HERMIT_HAPPY = "The Crabby Hermit has yet to give her shiny gift.",
+                    LUNAR_RIFTS_ACTIVE = "Lunar Rifts are no where to be found.",
+                    -- Caves.
+                    ATRIUM_KEY_FOUND = "The Atrium Key has yet to be obtained.",
+                    --  FIXME(JBK): It would be nice for a CELESTIALPORTAL thing here for caves.
+                    ARCHIVES_ENERGIZED = "The Ancient Archives are powered down.",
+                    SHADOW_RIFTS_ACTIVE = "Shadow Rifts are no where to be found.",
+                },
+                ANY = { -- Key word is "may have" or "may be" or other two word ambiguities.
+                    -- Forest.
+                    CELESTIAL_ORB_FOUND = "The Celestial Orb may have been found.",
+                    CELESTIAL_PORTAL_BUILT = "The Celestial Portal may have been constructed.",
+                    CRABBY_HERMIT_HAPPY = "The Crabby Hermit may have given a shiny gift.",
+                    LUNAR_RIFTS_ACTIVE = "Lunar Rifts may be forming in the Constant.",
+                    -- Caves.
+                    ATRIUM_KEY_FOUND = "The Atrium Key may have been found.",
+                    --  FIXME(JBK): It would be nice for a CELESTIALPORTAL thing here for caves.
+                    ARCHIVES_ENERGIZED = "The Ancient Archives may be energized.",
+                    SHADOW_RIFTS_ACTIVE = "Shadow Rifts may be forming in the Constant.",
+                },
+            },
+        },
         MISSINGDATATITLE = "Out-of-Date Server",
         MISSINGDATABODY = "This server is not up to date. We cannot display its world settings.",
         SERVER_LANGUAGE_WARNING_TITLE = "Server Language Mismatch",
@@ -10431,6 +11272,7 @@ STRINGS.UI =
         NEWGAME = "New World",
         NEWGAME_SUFFIX = "'s World", --legacy for mods
         NEWGAME_FMT = "{name}'s World",
+        NEWGAME_GENERIC = "My World",
         CREATENEWGAME = "Create New World",
         DELETE = "Delete",
         CLONE = "Duplicate World",
@@ -10490,14 +11332,16 @@ STRINGS.UI =
         SORT_MOSTDAYS = "Days Played",
         SORT_DATECREATED = "Date Created",
         SEARCH = "Search",
-        SAVEFROMNEWERVERSION = "Not playable - save data from newer game version",
-		NO_MATCHING_SERVERS = "No save games match your search.",
+        SAVEFROMNEWERVERSION = "Not playable - saved data from newer game version",
+		NO_MATCHING_SERVERS = "No saved games match your search.",
         USECAVES_TITLE = "{server} or no {server}?",
         USECAVES_DESC_CAVE = "Play with {server}, requires more PC Power as it runs multiple servers",
         USECAVES_DESC_NOCAVE = "Play with no {server}, sad, but not as demanding on a computer",
         USECAVES_NAME_CAVE = "{server}",
         USECAVES_NAME_NOCAVE = "No {server}",
         REMEMBERCOICE = "Remember my choice.",
+		WORLDGEN_FAILED_TITLE = "World Generation Failed",
+		WORLDGEN_FAILED_BODY = "Could not generate a world using these settings.\nDo you want to try again?",
     },
 
     CLOUDSERVERCREATIONSCREEN =
@@ -11784,6 +12628,7 @@ STRINGS.UI =
         SKINS = "Wardrobe",
         GAMEITEM = "Belongings",
         BEARD = "Beards",
+        BEEFALO = "Beefalo",
         EMOTE = "Emotes",
         EMOJI = "Emoticons",
         LOADERS = "Vignettes",
@@ -11793,6 +12638,7 @@ STRINGS.UI =
         TOOLTIP_SKINS = "View and equip your character skins",
         TOOLTIP_GAMEITEM = "View your skins for craftable in-game items",
         TOOLTIP_BEARD = "View your character beards",
+        TOOLTIP_BEEFALO = "View your beefalo skins",
         TOOLTIP_EMOTE = "View your character emotes",
         TOOLTIP_EMOJI = "View your available chat icons",
         TOOLTIP_LOADERS = "Select loading screens to display between games",
@@ -11823,6 +12669,7 @@ STRINGS.UI =
         COMMERCE_INFO_NOBUY_UNOWNED = "You must have {character} unlocked to weave this item from Spools.",
         COMMERCE_INFO_GRIND = "This curio can be unraveled into {doodad_value} Spools.",
         COMMERCE_INFO_NOGRIND = "This curio cannot be unraveled.",
+        COMMERCE_INFO_GRIND_ENTITLEMENT = "Note: {entitlement_count} of the {total_owned} selected curio is linked to an owned DLC or a past event and can not be unraveled.",
         NO_MARKET = "This curio cannot be traded or sold.",
         CANCEL = "Never mind",
         OK = "OK",
@@ -12007,6 +12854,7 @@ STRINGS.UI =
         Timeless        = "Timeless",
         Loyal           = "Loyal",
         ProofOfPurchase = "Proof Of Purchase",
+        Resurrected     = "Resurrected (Merch Skin)",
         Reward          = "Reward",
         Event           = "Event (Limited-Time Use)",
 
@@ -12617,10 +13465,46 @@ STRINGS.UI =
             "Menu Start",
             "Menu L2",
             "Menu R2",
-            "Social Menu", 
+            "Social Menu",
             "Toggle Target locking",
             "Next Target",
+			"Modifier 1", --CONTROL_CAM_AND_INV_MODIFIER
+			"Character Command Wheel",
+			"", --CONTROL_PRESET_RSTICK_UP
+			"", --CONTROL_PRESET_RSTICK_DOWN
+			"", --CONTROL_PRESET_RSTICK_LEFT
+			"", --CONTROL_PRESET_RSTICK_RIGHT
+			"", --CONTROL_PRESET_DPAD_UP
+			"", --CONTROL_PRESET_DPAD_DOWN
+			"", --CONTROL_PRESET_DPAD_LEFT
+			"", --CONTROL_PRESET_DPAD_RIGHT
+            "Toggle Alignment (mod)",
+            "Cycle Alignment Grid",
         },
+		OVERRIDE_CONTROL_NAMES =
+		{
+			MAP_ROTATE_LEFT = "Map Rotate Left",
+			MAP_ROTATE_RIGHT = "Map Rotate Right",
+			CAMERA = "Camera Control",
+			AIMING = "Aiming Reticule",
+			INV_NAVI = "Inventory Navigation",
+			INV_ACTIONS = "Inventory Actions",
+		},
+		-- Must match constants.lua CONTROL_SCHEMES_*
+		SCHEMES =
+		{
+			"Camera and Inventory",
+		},
+		SCHEME_OPTIONS =
+		{
+			TYPE1 = "Type 1",
+			TYPE2 = "Type 2",
+			TYPE3 = "Type 3",
+			TYPE4 = "Type 4",
+			TYPE5 = "Type 5",
+			TYPE6 = "Type 6",
+			TYPE7 = "Type 7",
+		},
 
         DEVICE_TITLE = "Controls",
         APPLY = "Apply",
@@ -12655,9 +13539,9 @@ STRINGS.UI =
             [9] = "Unknown",
             [10] = "Switch Controller",
             [11] = "Steam Deck",
-            [12] = "DualSense",
-            [13] = "Switch Controller (left)",
-            [14] = "Switch Controller (right)",
+            [12] = "DualSense™ wireless controller",
+            [13] = "Joy-Con™ (L)",
+            [14] = "Joy-Con™ (R)",
         },
 
         INPUTS =
@@ -12826,6 +13710,9 @@ STRINGS.UI =
             [2] =
             {
                 [0] = "Unknown",
+				rstick = "\238\128\152",
+				dpad = "\238\128\153",
+
                 -- Digital
                 "\238\128\143",--"DPad Up"
                 "\238\128\140",--"DPad Down"
@@ -12860,6 +13747,9 @@ STRINGS.UI =
             [3] =
             {
                 [0] = "Unknown",
+				rstick = "(X/Y Rotation)",
+				dpad = "(DPad 0)",
+
                 -- Digital
                 "(Button %d)",
 
@@ -12891,6 +13781,8 @@ STRINGS.UI =
             [4] =
             {
                 [0] = "Unknown",
+				rstick = "\238\136\160",
+				dpad = "\238\136\161",
 
                 -- Digital
                 "\238\136\143",-- 1 "DPad Up",
@@ -12926,6 +13818,9 @@ STRINGS.UI =
             [5] =
             {
                 [0] = "Unknown",
+				rstick = "\238\136\160",
+				dpad = "\238\136\161",
+
                 "", -- unused but needed to get the index to 2
 
                 -- Digital
@@ -12983,35 +13878,37 @@ STRINGS.UI =
             [8] =
             {
                 [0] = "Unknown",
+				rstick = "\238\148\154",
+				dpad = "\238\148\155",
 
-                "\238\136\143",-- 1 "DPad Up"
-                "\238\136\140",-- 2 "DPad Down"
-                "\238\136\141",-- 3 "DPad Left",
-                "\238\136\142",-- 4 "DPad Right"
-                "\238\136\132",-- 5 "Options (Start)",
-                "\238\136\133",-- 6 "Share (Select, Back)",
-                "\238\136\134",-- 7 "L3",
-                "\238\136\137",-- 8 "R3",
-                "\238\136\135",-- 9 "Left Bumper",
-                "\238\136\138",--10 "Right Bumper"
-                "\238\136\128",--11 "Cross",
-                "\238\136\129",--12 "Circle",
-                "\238\136\130",--13 "Square",
-                "\238\136\131",--14 "Triangle",
+				"\238\148\143",-- 1 "DPad Up"
+				"\238\148\140",-- 2 "DPad Down"
+				"\238\148\141",-- 3 "DPad Left",
+				"\238\148\142",-- 4 "DPad Right"
+				"\238\148\152",-- 5 "Options (Start)",
+				"\238\148\153",-- 6 "Share (Select, Back)",
+				"\238\148\134",-- 7 "L3",
+				"\238\148\137",-- 8 "R3",
+				"\238\148\135",-- 9 "Left Bumper",
+				"\238\148\138",--10 "Right Bumper"
+				"\238\148\128",--11 "Cross",
+				"\238\148\129",--12 "Circle",
+				"\238\148\130",--13 "Square",
+				"\238\148\131",--14 "Triangle",
 
                 -- Analog
-                "\238\136\146",--15 "Left Thumb Left",
-                "\238\136\147",--16 "Left Thumb Right",
-                "\238\136\144",--17 "Left Thumb Up",
-                "\238\136\145",--18 "Left Thumb Down",
-                "\238\136\150",--19 "Right Thumb Left",
-                "\238\136\151",--20 "Right Thumb Right",
-                "\238\136\136",--21 "Left Trigger",
-                "\238\136\136",--22 "Left Trigger",
-                "\238\136\139",--23 "Right Trigger",
-                "\238\136\139",--24 "Right Trigger",
-                "\238\136\148",--25 "Right Thumb Up",
-                "\238\136\149",--26 "Right Thumb Down",
+				"\238\148\146",--15 "Left Thumb Left",
+				"\238\148\147",--16 "Left Thumb Right",
+				"\238\148\144",--17 "Left Thumb Up",
+				"\238\148\145",--18 "Left Thumb Down",
+				"\238\148\150",--19 "Right Thumb Left",
+				"\238\148\151",--20 "Right Thumb Right",
+				"\238\148\136",--21 "Left Trigger",
+				"\238\148\136",--22 "Left Trigger",
+				"\238\148\139",--23 "Right Trigger",
+				"\238\148\139",--24 "Right Trigger",
+				"\238\148\148",--25 "Right Thumb Up",
+				"\238\148\149",--26 "Right Thumb Down",
             },
             --Unknown
             [9] =
@@ -13025,6 +13922,8 @@ STRINGS.UI =
             [10] =
             {
                 [0] = "Unknown",
+				rstick = "\238\144\154",
+				dpad = "\238\144\155",
 
                 -- Digital
                 "\238\144\143",--"DPad Up"
@@ -13040,7 +13939,7 @@ STRINGS.UI =
                 "\238\144\128",--"Button A",
                 "\238\144\129",--"Button B",
                 "\238\144\130",--"Button X",
-                "\238\144\131",--"Button Y",    
+                "\238\144\131",--"Button Y",
 
                 -- Analog
                 "\238\144\146",--"Left Thumb Left",
@@ -13062,59 +13961,63 @@ STRINGS.UI =
             [11] =
             {
                 [0] = "Unknown",
+				rstick = "\238\130\156",
+				dpad = "\238\130\157",
 
                 -- Digital
-                "\238\136\173", --"DPad Up"
-                "\238\136\170", --"DPad Down"
-                "\238\136\171", --"DPad Left",
-                "\238\136\172", --"DPad Right"
-                "\238\136\162",--"Start",
-                "\238\136\163",--"Back",
-                "\238\136\164", --"Left Stick"
-                "\238\136\167", --"Right Stick"
-                "\238\136\165", --"Left Bumper",
-                "\238\136\168", --"Right Bumper"
-                "\238\136\158", --"Button A",
-                "\238\136\159", --"Button B",
-                "\238\136\160", --"Button X",
-                "\238\136\161", --"Button Y",
+				"\238\130\136", --"DPad Up"
+				"\238\130\137", --"DPad Down"
+				"\238\130\138", --"DPad Left",
+				"\238\130\139", --"DPad Right"
+				"\238\130\132",--"Start",
+				"\238\130\133",--"Back",
+				"\238\130\134", --"Left Stick"
+				"\238\130\135", --"Right Stick"
+				"\238\130\148", --"Left Bumper",
+				"\238\130\152", --"Right Bumper"
+				"\238\130\128", --"Button A",
+				"\238\130\129", --"Button B",
+				"\238\130\130", --"Button X",
+				"\238\130\131", --"Button Y",
 
                 -- Analog
-                "\238\136\176", --"Left Thumb Left",
-                "\238\136\177", --"Left Thumb Right",
-                "\238\136\175", --"Left Thumb Down",
-                "\238\136\174", --"Left Thumb Up",
-                "\238\136\180", --"Right Thumb Left",
-                "\238\136\181", --"Right Thumb Right",
-                "\238\136\179", --"Right Thumb Down",
-                "\238\136\178", --"Right Thumb Up",
-                "\238\136\166", --"Left Trigger",
-                "\238\136\166", --"Left Trigger",
-                "\238\136\169", --"Right Trigger",
-                "\238\136\169", --"Right Trigger",
+				"\238\130\142", --"Left Thumb Left",
+				"\238\130\143", --"Left Thumb Right",
+				"\238\130\141", --"Left Thumb Down",
+				"\238\130\140", --"Left Thumb Up",
+				"\238\130\146", --"Right Thumb Left",
+				"\238\130\147", --"Right Thumb Right",
+				"\238\130\145", --"Right Thumb Down",
+				"\238\130\144", --"Right Thumb Up",
+				"\238\130\149", --"Left Trigger",
+				"\238\130\149", --"Left Trigger",
+				"\238\130\153", --"Right Trigger",
+				"\238\130\153", --"Right Trigger",
 
                 --[1000] = "",	-- "Left Mouse Button"
-                --[1003] = "\238\136\182",	-- "Right Mouse Button" = L4
-                --[1004] = "\238\136\183",	-- "Middle Mouse Button" = L5
-                --[1005] = "\238\136\184",	-- "Mouse Button 4" = R4
-                --[1006] = "\238\136\185",	-- "Mouse Button 5" = R5
+				--[1003] = "\238\130\150",	-- "Right Mouse Button" = L4
+				--[1004] = "\238\130\151",	-- "Middle Mouse Button" = L5
+				--[1005] = "\238\130\154",	-- "Mouse Button 4" = R4
+				--[1006] = "\238\130\155",	-- "Mouse Button 5" = R5
 
-                [282] = "\238\136\182",	-- "F1" = L4
-                [283] = "\238\136\183",	-- "F2" = L5
-                [284] = "\238\136\184",	-- "Mouse Button 4" = R4
-                [285] = "\238\136\185",	-- "Mouse Button 5" = R5
-
+				[282] = "\238\130\150",	-- "F1" = L4
+				[283] = "\238\130\151",	-- "F2" = L5
+				[284] = "\238\130\154",	-- "Mouse Button 4" = R4
+				[285] = "\238\130\155",	-- "Mouse Button 5" = R5
             },
             -- DualShock 4 on PS4/PS5 (CharlesB: PC is above in index 4, this one has the same icons but they've been reordered)
             [12] =
             {
-                [0] = "Unknown",      
+                [0] = "Unknown",
+				rstick = "\238\136\160",
+				dpad = "\238\136\161",
+
                 "", -- unused but needed to get the index to 2
 
                 -- Digital
                 "\238\136\134",-- 2 "L3",
                 "\238\136\137",-- 3 "R3",
-                "\238\135\190",-- 4 "Options (Start)",
+				"\238\136\158",-- 4 "Options (Start)",
                 "\238\136\143",-- 5 "DPad Up",
                 "\238\136\142",-- 6 "DPad Right"
                 "\238\136\140",-- 7 "DPad Down",
@@ -13122,7 +14025,7 @@ STRINGS.UI =
                 "\238\136\136",-- 9 "Left Trigger",
                 "\238\136\139",--10 "Right Trigger",
                 "\238\136\135",--11 "Left Bumper",
-                "\238\136\138",--12 "Right Bumper",                
+                "\238\136\138",--12 "Right Bumper",
                 "\238\136\131",--13 "Triangle",
                 "\238\136\129",--14 "Circle",
                 "\238\136\128",--15 "Cross",
@@ -13131,7 +14034,7 @@ STRINGS.UI =
                 "",
                 "",
                 "",
-                "\238\135\191",--21 "Touchpad",
+				"\238\136\159",--21 "Touchpad",
 
                 -- Analog
                 "\238\136\146",--22 "Left Thumb Left",
@@ -13146,13 +14049,16 @@ STRINGS.UI =
                 "\238\136\136",--31 "Left Trigger",
                 "\238\136\139",--32 "Right Trigger",
                 "\238\136\139",--33 "Right Trigger",
-            },            
+            },
             -- Xbox on XboxOne/Xbox Series (CharlesB: PC is above in index 2, this one has the same icons but they've been reordered)
             [13] =
             {
                 [0] = "Unknown",
+				rstick = "\238\129\152",
+				dpad = "\238\129\153",
+
                 -- Digital
-				
+
                 "\238\129\136",--"Left Trigger",
                 "\238\129\139",--"Right Trigger",
                 "\238\129\132",--"Start",
@@ -13188,12 +14094,16 @@ STRINGS.UI =
 			[14] =
             {
                 [0] = "Unknown",
+				rstick = "\238\148\154",
+				dpad = "\238\148\155",
+
                 "", -- unused but needed to get the index to 2
 
                 -- Digital
                 "\238\148\134",-- "L3",
                 "\238\148\137",-- "R3",
-                "\238\148\132",-- "Options (Start)",
+                --"\238\148\132",-- "Options (Start)",
+				"\238\148\152",-- "Options (Start)", --use the one with the 3 bars above
                 "\238\148\143",-- "DPad Up",
                 "\238\148\142",-- "DPad Right"
                 "\238\148\140",-- "DPad Down",
@@ -13237,8 +14147,8 @@ STRINGS.UI =
 
             L2 = "Open Crafting",
             R2 = "Manage Inventory",
-
-            L3 = "Chat*",
+            
+            L3 = "Toggle Target Locking",
             R3 = "Social Menu",
 
             TOUCH_BL = "Player List",
@@ -13267,8 +14177,8 @@ STRINGS.UI =
 
             L2 = "Open Crafting",
             R2 = "Manage Inventory",
-
-            L3 = "Chat*",
+            
+            L3 = "Toggle Target Locking",
             R3 = "Social Wheel",
 
             TOUCH_BL = "Player List",
@@ -13358,6 +14268,13 @@ STRINGS.UI =
             ONE = "they",
             TWO = "their",
         },
+    },
+
+    -- Used in quotes directed to players that would say mortal.
+    MORTALITYSTRINGS =
+    {
+        DEFAULT = "mortal",
+        WORTOX  = "imp",
     },
 
     SANDBOXMENU =
@@ -13505,6 +14422,8 @@ STRINGS.UI =
         LOOPNEVER = "Never",
         LOOPRANDOM = "Default",
         LOOPALWAYS = "Always",
+        LOOPRARE = "Rare",
+        LOOPOFTEN = "Often",
 
         USEPRESETS = "Presets",
         USEPRESETS_LOCATION = "%s Presets",
@@ -13581,7 +14500,7 @@ STRINGS.UI =
         SAVE_FAILED = "An error occurred while saving your data.",
         LOAD_FAILED = "An error occurred while loading your data.",
         DELETE_FAILED = "An error occurred while deleting your data.",
-        DATA_DAMAGED = "Oh no! Your save data has become corrupt and cannot be used.",
+        DATA_DAMAGED = "Oh no! Your saved data has become corrupt and cannot be used.",
         DISABLE_AUTOSAVE = "Are you sure you want to\ndisable the auto-save feature?",
 
         OVERWRITE = "Overwrite",
@@ -13590,15 +14509,15 @@ STRINGS.UI =
         YES = "Yes",
         NO = "No",
 
-		DATA_DAMAGED_PS4 = "Damaged save data",
-        DATA_DAMAGED_BODY = "Your save data is damaged and cannot be used.",
+		DATA_DAMAGED_PS4 = "Damaged saved data",
+        DATA_DAMAGED_BODY = "Your saved data is damaged and cannot be used.",
 		DISABLE_AUTOSAVE_PS4 = "Are you sure you want to\ndisable the save feature?",
         DISABLE = "Disable Save",
         RESTORE_BACKUP = "Restore Backup",
 		RESTORE_BACKUP_BODY = "Are you sure you want to restore from the last available backup? This process can not be undone.",
         RESTOREBACKUP_FAILED = "An error occurred while\nrestoring your data.",
-		OVERWRITE_SAVEDATA_TITLE = "Overwrite save data",
-		OVERWRITE_SAVEDATA_BODY = "Are you sure you want to overwrite your save data? Your settings and worlds will be lost. This process can not be undone.",
+		OVERWRITE_SAVEDATA_TITLE = "Overwrite saved data",
+		OVERWRITE_SAVEDATA_BODY = "Are you sure you want to overwrite your saved data? Your settings and worlds will be lost. This process can not be undone.",
     },
 
     QUITTINGTITLE = "Quitting!",
@@ -13646,6 +14565,7 @@ STRINGS.UI =
         SWOON = "Swoon",
         CAROL = "Carol",
         FISTSHAKE = "Fist Shake",
+        TIPHAT = "Tip Hat",
         CHEER = "Cheer",
         CHICKEN = "Chicken Dance",
         FLEX = "Flex",
@@ -13657,7 +14577,7 @@ STRINGS.UI =
         STEP = "Step Dance",
 		TOAST = "Toast",
 		PET = "Pet",
-		BIGPET = "Pet",
+		BIGPET = "Big Pet",
     },
 
     PRESENCE =
@@ -13707,19 +14627,245 @@ STRINGS.CHARACTERS =
     WANDA = require "speech_wanda",
 }
 
+STRINGS.SHADOW_BATTLEAXE_TALK =
+{
+    overtime_l2 =
+    {
+        "Sh-sharp.",
+        "We k-kill n-now?",
+        "Ch-chop.",
+        "H-hack... ha-ack? HACK!",
+    },
+    overtime_l3 = -- And level 4 too!
+    {
+        "Let me axe you a question. Why aren't we killing something?",
+        "What shall we destroy next, wielder?",
+        "I know I have a rough edge. But I can still cut it.",
+        "Can you hack it?",
+        "What are you waiting for, wielder?",
+        "We haven't murdered something in forever.",
+        "We shall commit unspeakable acts of savagery!",
+        "Do you realize what we are capable of together, {mortal}?",
+    },
+    overtime_l4 =
+    {
+        "It's been a journey, wielder.",
+        "I reflect on our path of destruction with fondness.",
+        "Remember how much fun we had killing things?",
+    },
+
+    overtime_woodie_l2 =
+    {
+        "Fo-for...get... forget h-her...",
+        "M-mi... mine.",
+        "He's... m-mine.",
+        "Wo... Woo... Woodie.",
+    },
+    overtime_woodie_l3 = -- And level 4 too!
+    {
+        "Heard you're an axe man.",
+        "Forget your crazy axe.",
+        "Sever your ties with that old battle axe.",
+        "Just me and hew.",
+        "I fell for you.",
+    },
+    overtime_woodie_l4 =
+    {
+        "I just want a simple wielding.",
+        "I'll never cleave you.",
+        "Let's carve our names in a tree.",
+    },
+
+    chopping_l2 =
+    {
+        "Ch- cho- chop. CHOP!",
+        "Ch- chop tree... CHOP TREE!",
+        "CHOP! CHOP! CHOP!",
+        "Swi-ing... Swing!",
+        "More...",
+    },
+    chopping_l3 =  -- And level 4 too!
+    {
+        "No tree is safe from us.",
+        "CHOP-CHOP!",
+        "We're in full swing now, wielder!",
+        "Chop'em down. Chop'em all down.",
+        "I was meant for greater things... fleshier things.",
+        "Only flesh will sustain me.",
+        "Where's the challenge?",
+    },
+    chopping_l4 =
+    {
+        "Every tree shall fall before us.",
+        "Trees feel pain... but not enough.",
+        "I prefer the mobile variety.",
+    },
+
+    chopping_woodie_l2 =
+    {
+        "Yes.",
+        "All... m-mine.",
+        "Wo... W-Woodie... i-is... mine!",
+    },
+    chopping_woodie_l3 =  -- And level 4 too!
+    {
+        "Forget her.",
+        "No one will ever split us apart.",
+        "Hold me tight!",
+    },
+    chopping_woodie_l4 =
+    {
+        "Hew and me... FOREVER.",
+        "Never let me go.",
+        "I love hew!",
+    },
+
+    hungry_l2 =
+    {
+        "Hungry!",
+        "F-feed me!",
+        "M-must... k-kill.",
+        "Me-meat!",
+        "Fl... fl-flesh!",
+    },
+    hungry_l3 =  -- And level 4 too!
+    {
+        "So hungry.",
+        "I need to fleshen up.",
+        "Find us something to kill.",
+        "How about some pork chops?",
+        "GASH, I'm so hungry!",
+        "You need to MEAT me halfway.",
+        "I crave beast flesh!",
+        "When do we eat?",
+        "I need meat.",
+    },
+    hungry_l4 =
+    {
+        "You dare neglect me, {mortal}?",
+        "Death gives me life.",
+        "Wielder, you've changed.",
+    },
+
+    starving_l2 =
+    {
+        "Starv... starving!",
+        "D-dying!",
+        "F-find... fl-flesh... now!",
+        "Must h-have mmm-MEAT!",
+    },
+    starving_l3 =  -- And level 4 too!
+    {
+        "Feed me, NOW.",
+        "Why do you starve me, cruel {mortal}?",
+        "Are you trying to kill me, wretched {mortal}?",
+        "Feed me before it's too late!",
+        "We need to murder something, now!",
+        "Getting... weaker.",
+        "If I'm not killing, I'm dying!",
+        "Not to be dramatic, but... I'M STARVING TO DEATH!",
+    },
+    starving_l4 =
+    {
+        "Cursed {mortal}.",
+        "Is this the end?",
+        "It can't end like this.",
+        "Come too far... tasted too much...",
+    },
+
+    level_up_l2 =
+    {
+        "F-feel... str-strange...",
+        "Some... thing... ha-happening.",
+        "Stro... str-stronger!",
+        "Aw... awa- awake.",
+    },
+    level_up_l3 =
+    {
+        "I'm changing.",
+        "My strength grows!",
+        "I'm evolving!",
+    },
+    level_up_l4 =
+    {
+        "RAAAAAAAAAAAAAAAAAAAAR!",
+        "Nothing can stop us now, wielder!",
+        "AXE-IMUM POWER!!!",
+    },
+
+    epic_killed_l2 =
+    {
+        "Yes.", -- 1st kill.
+        "More... new... meat.", -- 2nd kill.
+    },
+    epic_killed_l3 =
+    {
+        "Sumptuous! We're on the right path, wielder!", -- 1st kill.
+        "We're on the cusp, wielder. I FEEL IT.", -- 2nd kill.
+    },
+    epic_killed_l4 =
+    {
+        "OH YES.",
+        "So juicy!",
+        "A satisfying meal.",
+        "Worthy.",
+        "Beautiful!",
+        "A delight!",
+        "I am satiated.",
+        "A fine feast of flesh.",
+        "Gluttonous!",
+        "Thank you, wielder.",
+        "I'm proud of us.",
+    },
+
+    creature_killed_l2 =
+    {
+        "Fun.",
+        "I l-like.",
+        "Want b-big... meat.",
+        "Kill!",
+    },
+    creature_killed_l3 =  -- And level 4 too!
+    {
+        "That was fun.",
+        "Thanks for the meat!",
+        "Crunchy bones!",
+        "Time to split!",
+        "Shall we hunt bigger game?",
+        "A tasty morsel.",
+        "Shall we murder something of consequence now?",
+        "Too easy.",
+        "Nothing sweeter than death delivered by your hand and my face.",
+        "Good times. Good times had by all.",
+        "What a HACK job.",
+        "It will do for now.",
+        "You're a HACK!",
+        "Satisfactory.",
+        "Here's your final SEVERANCE.",
+        "'Twas but a snack.",
+    },
+    creature_killed_l4 =
+    {
+        "I'm rather insulted.",
+        "That's it?",
+        "Playing it safe, wielder?",
+        "Meager.",
+    },
+}
+
 STRINGS.VOIDCLOTH_SCYTHE_TALK =
 {
     overtime =
     {
         "You want to cut and ssssslice, yes you do!",
         "The ssssseeds were planted long ago, now reap the rewards.",
-        "Your palms are sssssweating, mortal, you're losing your grip.",
+        "Your palms are sssssweating, {mortal}, you're losing your grip.",
         "You need a sssssharp wit for this job.",
-        "What'sssss wrong, mortal? Not cut out for this?",
+        "What'sssss wrong, {mortal}? Not cut out for this?",
         "You and I are going to do sssssuch great things together.",
         "I think I was a farmer once, before I ssssshed my skin.",
-        "You can hear me, can't you, mortal? You're ssssstarting to understand.",
-        "I can sssssee all the dark corners of your mind, mortal.",
+        "You can hear me, can't you, {mortal}? You're ssssstarting to understand.",
+        "I can sssssee all the dark corners of your mind, {mortal}.",
         "I've been accused of having a rather sssssharp tongue.",
         "We make a good team, no matter how you ssssslice it.",
         "I hunger for the sssssilent screams of vegetation...",
@@ -13740,7 +14886,7 @@ STRINGS.VOIDCLOTH_SCYTHE_TALK =
         "It's time for the harvessssst.",
         "Everything will fall before usssss!",
         "Let nothing be ssssspared!",
-        "Enjoying yourssssself, mortal?",
+        "Enjoying yourssssself, {mortal}?",
     },
 
     lucy =
@@ -14036,6 +15182,8 @@ STRINGS.LUCY =
         "Heh, this one's gonna be something special!",
     },
 }
+
+
 STRINGS.LAVALUCY =
 {
     ---lavaarena -- do not translate --
@@ -14122,6 +15270,7 @@ STRINGS.SIGNS =
         FILTERING = "Validating Message...",
 
 		PROMPT_BEEFALO = "Name This Beef",
+        PROMPT_GRAVESTONE = "Write An Epitaph",
     },
 
     ADJ_NOUN_FMT = "{adjective} {noun}",
@@ -14487,6 +15636,47 @@ STRINGS.STORYTELLER =
 							{duration = 2.5, line = "he'll take YOUR head instead!"},
 				},
 			},
+            CREEPING_OOZE = {
+                lines = {   {duration = 3.0, line = "Have I ever told you about the Creeping Ooze?"},
+                            {duration = 2.5, line = "Not many people know about it."},
+                            {duration = 2.5, line = "Another Pinetree Pioneer told me she saw it once,"},
+                            {duration = 2.0, line = "with her own two eyes."},
+                            {duration = 2.5, line = "It hides in hollow tree trunks,"},
+                            {duration = 2.5, line = "waiting for curious hikers to take a peek inside,"},
+                            {duration = 2.5, line = "and when they do..."},
+                            {duration = 1.5, line = "BAM!"},
+                            {duration = 2.5, line = "The ooze latches onto their face!"},
+                            {duration = 2.5, line = "Then it creeps in through their nostrils,"},
+                            {duration = 2.5, line = "seeping into the brain."},
+                            {duration = 2.5, line = "From there, the ooze takes over,"},
+                            {duration = 2.5, line = "and nobody's the wiser."},
+                            {duration = 2.0, line = "Er..."},
+                            {duration = 2.5, line = "Come to think of it..."},
+                            {duration = 2.5, line = "that Pioneer did seem kinda off."},
+                            {duration = 2.0, line = "..."},
+                            {duration = 2.5, line = "You don't think...?"},
+                },
+            },
+            WEREBEAVER_STORY = {
+                lines = {   {duration = 3.0, line = "Did I ever tell you the tale of the Werebeaver?"},
+                            {duration = 2.5, line = "I went looking for him myself, you know."},
+                            {duration = 3.0, line = "They say he was once the owner of a big lumber company,"},
+                            {duration = 2.5, line = "who gave the order to clear-cut an entire forest"},
+                            {duration = 2.5, line = "against the wishes of the people who lived there."},
+                            {duration = 2.5, line = "For this, they say he was cursed..."},
+                            {duration = 2.5, line = "If he or his company cut one tree too many,"},
+                            {duration = 2.5, line = "he would turn into a hulking, hairy beast,"},
+                            {duration = 2.5, line = "with axe-sharp front teeth."},
+                            {duration = 3.0, line = "He lost everything, and hid himself away in a small cabin,"},
+                            {duration = 2.5, line = "deep in the heart of the woods."},
+                            {duration = 2.5, line = "But it was not enough to satisfy the curse."},
+                            {duration = 2.5, line = "People say he's still there, roaming the wilderness,"},
+                            {duration = 2.5, line = "gnashing his long, fearsome teeth!"},
+                            {duration = 1.5, line = "..."},
+                            {duration = 2.5, line = "Well, that was the story I heard anyway."},
+                            {duration = 3.0, line = "Mr. Woodie's never told me if it's actually true..."},
+                },
+            },
 		},
 	},
 }
@@ -14503,697 +15693,7 @@ STRINGS.SONGS =
 	},
 }
 
-STRINGS.STAGEACTOR =
-{
-
-    WILSON1 =
-    {
-        "I am the very model of a modern Major-General",
-        "I've information vegetable, animal, and mineral",
-        "I'm very well acquainted, too, with matters Mathematical",
-        "I understand equations, both the simple and quadratical",
-    },
-
-    WALTER1 =
-    {
-        "I've been teaching Woby lots of tricks, watch!",
-        "Okay Woby... stay!",
-        "Good girl!",
-
-        "We're uh... we're still working on the rest.",
-        "Still pretty impressive though, right?",
-    },
-
-    WANDA1 =
-    {
-        "\"You are old, Father William,\" the young man said",
-        "\"And your hair has become very white;",
-        "And yet you incessantly stand on your head—",
-        "Do you think, at your age, it is right?\"",
-        "\"In my youth,\" Father William replied to his son,",
-        "\"I feared it might injure the brain;",
-        "But now that I'm perfectly sure I have none,",
-        "Why, I do it again and again.\"",
-    },
-
-    WARLY1 =
-    {
-        "Adieu, patrie!",
-        "L'onde est en furie.",
-        "Adieu, patrie,",
-        "Azur!",
-        "Adieu, maison, treille au fruit mûr,",
-        "Adieu, les fleurs d'or du vieux mur!",
-    },
-
-    WAXWELL1 =
-    {
-        "Thank you very much, you are too kind.",
-        "And now, I will pull shadows incarnate from this mysterious tome!",
-        "The show was better with... well, it was better before.",
-    },
-
-    WEBBER_SPIDER = {
-        "\"Will you walk into my parlour?\"",
-        "said a spider to a fly;",
-        "'Tis the prettiest little parlour that ever you did spy.",
-        "The way into my parlour is up a winding stair,",
-        "And I have many pretty things to shew when you are there.",
-        "\"Oh no, no!\" said the little fly",
-        "to ask me is in vain",
-        "For who goes up your winding stair can ne'er come down again.",
-    },
-
-    WEBBER_BOY = {
-        "Ahem! We're going to say a poem now!",
-        "Little Miss Muffet she sat on her tuffet,",
-        "eating her curds and whey.",
-        "Along came a spider who sat down beside her",
-        "And frightened Miss Muffet away!",
-    },
-
-    WENDY1 = {
-        "O what can ail thee, knight-at-arms,",
-        "So haggard and so woe-begone?",
-        "The squirrel's granary is full,",
-        "And the harvest's done.",
-        "I see a lily on thy brow,",
-        "With anguish moist and fever-dew,",
-        "And on thy cheeks a fading rose",
-        "Fast withereth too.",
-    },
-
-    WICKERBOTTOM1 = {
-        "Theater as an art form is practiced throughout the world.",
-        "The Western tradition of theater can trace its origins back to ancient Athens;",
-        "the word \"theater\" of course coming from the Greek \"theatron,\"",
-        "which itself was derived from the verb \"theasthai,\" \"to behold.\"",
-        "Isn't etymology delightful?",
-    },
-
-    WILLOW1 = {
-        "Fire fire, burning bright,",
-        "In the forests of the night;",
-        "And in the mountains, and the plains,",
-        "And the towns, and the cities,",
-        "Everywhere! Burn it all down!! Hahaha!!", anim="emote_happycheer",
-        "Yeah, pretty sure that's how that poem goes.",
-    },
-
-    WINONA1 = {
-        "There once was a gal from the sticks,",
-        "Who went out to look for her sis.",
-        "But she found her too late,",
-        "And got yanked through a gate,",
-        "Ain't family drama the pits?",
-    },
-
-    WOLFGANG1 = {
-        "Wolfgang is not just man of big muscles,",
-        "Is man of mighty feelings too.",
-        "Will read poem to you now:",
-        "Wolfgang likes his friends,",
-        "Though some are weird, make scary magic, and one is spider,",
-        "Will stay with them till very end,",
-        "Make Wolfgang's bad day brighter.",
-    },
-
-    WOODIE1 = {
-        "Er... I don't really like bein' the center of attention.",
-        "Let me try!",
-        "Chop chop chop, swing swing swing,",
-        "Choppin' is my favourite thing.",
-        "Swing swing swing, chop chop chop,",
-        "Love it way too much to stop!",
-        "You've sure got a way with words, Luce.",
-    },
-
-    WORMWOOD1 = {
-        "Hello friends!",
-        "Watching? Hmm...",
-        "Doo-doo-dee-doop",
-        "Woo-wah-wah!",
-        "Deedle-deedle-deedle-woo",
-        "Wah-wah-wheee!",
-        "Oop-doodle-doo",
-        "Bwa-waaaaaaaaaah!",
-    },
-
-    WORTOX1 = {
-        "The wisest aunt, telling the saddest tale,",
-        "Sometime for three-foot stool mistaketh me;",
-        "Then slip I from her bum, down topples she,",
-        "And 'tailor' cries, and falls into a cough;",
-        "And then the whole quire hold their hips and laugh,",
-        "And waxen in their mirth and neeze and swear",
-        "A merrier hour was never wasted there.",
-    },
-
-    WURT1 = {
-        "Glurp... th-this is fairy story. Made by Wurt.",
-        "Once upon time, there was super strong Mermfolk princess.",
-        "Merm princess build houses for all her friends,",
-        "and make pretty decorations from bones of her enemies.",
-        "Everyone live happily ever after, the end.",
-    },
-
-    WX1 = {
-        "PERCEIVE ME, FLESHLINGS",
-        "YES. GOOD",
-        "I KNOW YOU MEATBAGS ARE WEAK-WILLED",
-        "SO AS YOUR OVERLORD",
-        "I HAVE DECIDED TO ENGAGE IN...",
-        "UGH...",
-        "\"MOTIVATIONAL SPEAKING\"",
-        "TO INSPIRE YOU TO BE MORE USEFUL TO ME",
-        "BUT SINCE YOU HAVE SAD LITTLE MEAT BRAINS",
-        "I AM KEEPING MY EXPECTATIONS LOW",
-        "IS THE INSPIRATION WORKING YET?",
-    },
-
-    WES1 = {
-        "Essayez-vous comprendre mes pensées?",
-        "Ah, comme c'est gentil à vous!",
-        "Je suis flatté. :)",
-    },
-
-    BAD_COSTUMES = {
-        "Something's wrong!",
-        "Check your costumes!",
-        "We'll come back.",
-        "When you get it right!",
-    },
-
-    REPEAT_COSTUMES = {
-        "Are you kidding?",
-        "Am I seeing double?!",
-        "No understudies!",
-    },
-
-    NO_SCRIPT = {
-        "Something's off.",
-        "They're going off-script!",
-        "I didn't come for improv!",
-        "We're out.",
-    },
-
-    BLACKSMITH_SOLILOQUY = {
-        -- BIRDS
-        "\"The Blacksmith's Soliloquy\"",
-        "Forging on ahead.",
-
-        -- BLACKSMITH
-        "Oh little doll, little doll!",
-        "Where have you gone?",
-        "It's not safe for you out there",
-        "in the big wide world!",
-
-        -- BIRDS
-        "If it ain't broke...",
-        "She'll still try to fix it.",
-    },
-
-    KING_SOLILOQUY = {
-        -- BIRDS
-        "\"The King's Soliloquy\"",
-        "He's King for now, anyway.",
-
-        -- KING
-        "How different might things have been,",
-        "if I never sought the crown?",
-        "I suppose the world would be a bit brighter.",
-        "What a terrible thought indeed.",
-
-        -- BIRDS
-        "Heavy is the head who wears the crown.",
-        "His head is bigger than most.",
-    },
-
-    FOOL_SOLILOQUY = {
-        -- BIRDS
-        "\"The Fool's Soliloquy\"",
-        "Who do they think they're fooling?",
-
-        -- FOOL
-        "Once I acted as I thought I should,",
-        "I followed all the rules.",
-        "But soon I found out life's a game,",
-        "and I have played the fool!",
-
-        -- BIRDS
-        "My head hurts.",
-        "Listening to a fool will do that.",
-    },
-
-    TREE_SOLILOQUY = {
-        -- BIRDS
-        "\"Ode to the Scenery\"",
-        "Oh, this is going to be good.",
-
-        -- NARRATOR
-        "The tree stood alone.",
-        "In resolute silence.",
-        "Not doing much of anything.",
-
-        -- BIRDS
-        "That was my favorite act so far.",
-        "Bravo! Bravissima!",
-    },
-
-    REUNION = {
-        -- BIRDS
-        "\"The Reunion\"",
-        "Ooooh, sounds juicy!",
-
-        -- NARRATOR
-        "The Blacksmith had been searching for the doll,",
-        "and at last her journey came to an end.",
-
-        -- BLACKSMITH
-        "Little doll, is that really you?",
-        "How you've changed...",
-
-        -- QUEEN
-        "It is me,",
-        "but I am not the little doll you once knew.",
-        "You were right, Blacksmith.",
-        "The world is too dangerous for one made of porcelain.",
-        "But you need not fear for me anymore.",
-        "Now I'm made of something stronger.",
-
-        -- BIRDS
-        "Oh, I was wondering what happened to the blacksmith.",
-        "It's nice to have closure.",
-
-        -- WINONA COMMENT
-        "No way, it can't just end like that!",
-    },
-
-    ACT1_SCENE1 = {
-        -- BIRDS
-        LINE1   = "Act 1.",
-        LINE2   = "Yeah, scene 1!",
-
-        -- NARRATOR
-        LINE3   = "Long ago, in a land oh so far away",
-        LINE4   = "a strange magic filled the air,",
-        LINE5   = "and a porcelain doll came to life.",
-
-        -- DOLL
-        LINE6   = "Ahh.",
-        LINE7   = "I can move my hands? And my feet too!",
-        LINE8   = "Is this what it's like to be alive?",
-        LINE9   = "And what a big world to be alive in!",
-        LINE10  = "There are so many things I've never done," ,
-        LINE11  = "so many things I've never seen...",
-        LINE12  = "I must explore every last bit of it!",
-
-        -- NARRATOR
-        LINE13  = "The thought of starting a life of her own",
-        LINE14  = "filled the doll's heart with joy.",
-        LINE15  = "But not everyone shared the sentiment...",
-
-        -- BIRDS
-        LINE16  = "You don't see talent like that everyday.",
-        LINE17  = "Thankfully.",
-        LINE18  = "At least the tree was good.",
-        LINE19  = "HA HA HA HA HA!",
-    },
-
-    ACT1_SCENE2 = {
-        -- BIRDS
-        LINE1   = "Act 1!",
-        LINE2   = "Scene 2, right?",
-
-        -- NARRATOR
-        LINE3   = "The little doll ran first to the Blacksmith,",
-        LINE4   = "who had cared for her ever since",
-        LINE5   = "the Blacksmith herself was small.",
-        LINE6   = "The Blacksmith was delighted to see",
-        LINE7   = "that the doll had come to life,",
-        LINE8   = "but her delight quickly gave way to fear.",
-
-        -- BLACKSMITH
-        LINE9   = "Little doll, you must be careful!",
-        LINE10  = "The world is filled with dangers",
-        LINE11  = "for one as fragile as you.",
-        LINE12  = "It's simply not the place for a girl made of porcelain!",
-        LINE13  = "I know what must be done,",
-        LINE14  = "I will build you a fine suit of armor.",
-        LINE15  = "Wear it, and you will have nothing to fear.",
-
-        -- NARRATOR
-        LINE16  = "And so, the Blacksmith went to her anvil,",
-        LINE17  = "and fashioned a suit of heavy iron armor.",
-        LINE18  = "The little doll put it on,",
-        LINE19  = "but found that she could barely move in it.",
-
-        -- DOLL
-        LINE20  = "This armor is so heavy,",
-        LINE21  = "I feel as though I might just...",
-
-        -- NARRATOR
-        LINE22  = "The little doll waited until it was dark,",
-        LINE23  = "and the Blacksmith went to sleep.",
-        LINE24  = "Then she shed the heavy armor,",
-        LINE25  = "and slipped out into the night",
-        LINE26  = "to begin her adventure.",
-
-        -- WINONA COMMENT
-        LINE27  = "Sis... are you tryin' to tell me something?",
-
-        -- BIRDS
-        LINE28  = "That blacksmith really cracks me up.",
-        LINE29  = "I dunno, the acting was pretty heavy-handed.",
-        LINE30  = "HA HA HA HA HA!",
-        LINE31  = "But did you see that tree?",
-        LINE32  = "Right? Such presence!",
-    },
-
-    ACT1_SCENE3 = {
-        -- BIRDS
-        LINE1   = "Act 1.",
-        LINE2   = "Scene 3!",
-        LINE3   = "Yeah, scene 3.",
-
-        -- NARRATOR
-        LINE4   = "The little doll walked and walked,",
-        LINE5   = "marveling as the countryside gave way",
-        LINE6   = "to a bustling city.",
-        LINE7   = "One day, she happened upon a man in a golden crown,",
-        LINE8   = "traveling down the road.",
-        LINE9   = "He twirled his finger in the air,",
-        LINE10  = "and the trees and flowers bloomed at his command.",
-        LINE11  = "Crowds gathered to watch him pass.",
-
-        -- BIRDS
-        LINE12  = "Get a load of this guy.",
-        LINE13  = "What a show-off.",
-
-        -- DOLL
-        LINE14  = "Excuse me, sir!",
-        LINE15  = "How did you make the flowers bloom?",
-
-        -- KING
-        LINE16  = "Why, it's magic, my dear!",
-        LINE17  = "And I am no simple \"sir\",",
-        LINE18  = "but the King of this land!",
-
-        -- DOLL
-        LINE19  = "Oh! I'm terribly sorry,",
-        LINE20  = "I've never met a king before,",
-        LINE21  = "I didn't know what they looked like.",
-
-        -- KING
-        LINE22  = "Ho, ho!",
-        LINE23  = "Truth be told,",
-        LINE24  = "I've never met a porcelain doll",
-        LINE25  = "quite so alive before.",
-        LINE26  = "Perhaps we could travel together?",
-        LINE27  = "This road is long, and can get quite lonely.",
-
-        -- DOLL
-        LINE28  = "How wonderful!",
-        LINE29  = "Would you teach me your magic along the way?",
-
-        -- KING
-        LINE30  = "I would be delighted.",
-
-        -- BIRDS
-        LINE31  = "The plot thickens.",
-        LINE32  = "I think you mean sickens.",
-        LINE33  = "HA HA HA HA HA!",
-    },
-
-    ACT2_SCENE4 = {
-        -- BIRDS
-        LINE1   = "Back from intermission.",
-        LINE2   = "Yes, on to Act 2!",
-        LINE3   = "Scene 1.",
-
-        -- NARRATOR
-        LINE4   = "Time passed, and the King brought the little doll",
-        LINE5   = "on many wonderful adventures.",
-        LINE6   = "The doll asked often about the King's magic,",
-        LINE7   = "and if he would teach her,",
-        LINE8   = "but the King always gave one excuse or another.",
-
-        -- KING
-        LINE9   = "Not today little doll,",
-        LINE10  = "I'm a bit under the weather.",
-        LINE11  = "I'm afraid I can't,",
-        LINE12  = "there's a full moon out tonight!",
-        LINE13  = "Dear me, I couldn't possibly!",
-        LINE14  = "Don't you know it's bad luck to teach magic on Wednesdays?",
-
-        -- NARRATOR
-        LINE15  = "The doll believed the King,",
-        LINE16  = "so she waited. And waited...",
-        LINE17  = "Until one day,",
-        LINE18  = "she found a hidden chamber in the King's castle,",
-        LINE19  = "and discovered his secret.",
-
-        -- MIRROR
-        LINE20  = "Oh! Hello there, who are you?",
-        LINE21  = "I have no name,",
-        LINE22  = "I am known only as the magic mirror.",
-        LINE23  = "Your King has stolen my power",
-        LINE24  = "and kept me hidden away.",
-        LINE25  = "How I hunger for freedom.",
-        LINE26  = "Just a taste of the outside world...",
-
-        -- BIRDS
-        LINE27  = "I knew I didn't trust that King!",
-        LINE28  = "Boo! Hiss!",
-
-        -- DOLL
-        LINE29  = "How terrible!",
-        LINE30  = "Don't worry,",
-        LINE31  = "I will help you leave this lonely place.",
-
-        -- KING
-        LINE32  = "No! My secret has been discovered!",
-
-        -- MIRROR
-        LINE33  = "You didn't honor our agreement.",
-        LINE34  = "Now this courageous doll has come",
-        LINE35  = "to release me from this prison.",
-
-        -- KING
-        LINE36  = "Back, I say!",
-        LINE37  = "Your magic is mine, mirror.",
-        LINE38  = "I will never let you go free!",
-        LINE39  = "Mmmagic blast!",
-
-        -- DOLL
-        LINE40  = "No!",
-
-        -- KING
-        LINE41  = "Eeep! Time to disappear!",
-        LINE42  = "Mmmagic ske-daddle!",
-
-        -- MAXWELL COMMENT
-        LINE43  = "I wonder just how much she really remembers.",
-
-        -- BIRDS
-        LINE44  = "I really felt for the tree.",
-        LINE45  = "Very emotional.",
-    },
-
-    ACT2_SCENE5 = {
-        -- BIRDS
-        LINE1   = "Oh good, the tree is here.",
-        LINE2   = "I was worried for a second.",
-        LINE3   = "Hurry! Act 2!",
-        LINE4   = "Scene 2!",
-
-        -- MIRROR
-        LINE5   = "Your time is not over yet, little doll.",
-        LINE6   = "Awaken!",
-
-        -- DOLL
-        LINE7   = "I'm... alive!",
-        LINE8   = "But I feel... different...",
-
-        -- BIRDS
-        LINE9   = "Good as new!",
-        LINE10  = "Better than ever!",
-
-        -- MIRROR
-        LINE11  = "I've given you what power I can spare,",
-        LINE12  = "but without the magic the King stole from me,",
-        LINE13  = "I cannot make you fully whole.",
-        LINE14  = "You must seek him out, but be wary.",
-        LINE15  = "You have seen his treacherous ways for yourself.",
-
-        -- DOLL
-        LINE16  = "I will speak to him.",
-        LINE17  = "And I promise you this, mirror;",
-        LINE18  = "I will see both of us whole again.",
-    },
-
-    ACT2_SCENE6 = {
-        -- BIRDS
-        LINE1   = "Act 2!",
-        LINE2   = "Scene 3!",
-
-        -- NARRATOR
-        LINE3   = "The doll searched the castle for the King,",
-        LINE4   = "and found him cowering behind his throne.",
-
-        -- KING
-        LINE5   = "Leave me be, monster!",
-        LINE6   = "I-I'm just a poor, frail old man!",
-        LINE7   = "Um... and my mother is sick,",
-        LINE8   = "and I'm all she has to care for her!",
-        LINE9   = "And... oh I know! I was just now planning",
-        LINE10  = "the construction of a home for peg-legged orphans!",
-        LINE11  = "And... er... um...",
-        LINE12  = "You wouldn't hit a guy with glasses, would you?",
-
-        -- DOLL
-        LINE13  = "Are you so afraid to see your old friend?",
-
-        -- KING
-        LINE14  = "Little doll? It can't be! I... that is, you...",
-
-        -- DOLL
-        LINE15  = "The mirror brought me back to life.",
-        LINE16  = "I can feel what it feels...",
-        LINE17  = "We are going to help each other become whole again.",
-        LINE18  = "But for that, I will need your power.",
-
-        -- KING
-        LINE19  = "My power? Never!",
-        LINE20  = "Mmmmagic away!",
-
-        -- DOLL
-        LINE21  = "No!",
-
-        -- NARRATOR
-        LINE22  = "And with that, the King used his magic",
-        LINE23  = "to hide himself and his throne far away,",
-        LINE24  = "where he thought the little doll would never find him.",
-    },
-
-    ACT3_SCENE7 = {
-        -- BIRDS
-        LINE1   = "It's the Final Act!",
-        LINE2   = "Scene 1!",
-        LINE3   = "So exciting!",
-        LINE4   = "Almost done!",
-
-        -- NARRATOR
-        LINE5   = "The doll searched high and low,",
-        LINE6   = "but as time went on,",
-        LINE7   = "it seemed that the King had won.",
-        LINE8   = "Until one day...",
-
-        -- FOOL
-        LINE9   = "Cheer-a-lee, cheer-a-lone,",
-        LINE10  = "the King's so glum upon his throne!",
-        LINE11  = "Cheer-a-loo, cheer-a-lay,",
-        LINE12  = "he's sent for fools, to watch us play!",
-        LINE13  = "From far and wide he's called us there,",
-        LINE14  = "we'll perform for the one who sits on the chair!",
-
-        -- DOLL
-        LINE15  = "The King has grown bored, has he?",
-        LINE16  = "Perhaps he's grown careless as well.",
-        LINE17  = "If I follow these fools,",
-        LINE18  = "they might lead me straight to him...",
-
-        -- FOOL
-        LINE19  = "How strange, I suddenly feel like I'm being shadowed.",
-        LINE20  = "It's probably nothing!",
-    },
-
-    ACT3_SCENE8 = {
-        -- BIRDS
-        LINE1   = "Act 3!",
-        LINE2   = "Scene 2!",
-
-        -- NARRATOR
-        LINE3   = "Though the journey was long,",
-        LINE4   = "it was just as the doll had predicted.",
-        LINE5   = "The doll followed the fool",
-        LINE6   = "all the way to the King's throne room,",
-        LINE7   = "careful to keep out of sight.",
-
-        -- KING
-        LINE29  = "Fool!",
-        LINE8   = "It took you long enough!",
-        LINE9   = "I'd grown weary of waiting.",
-
-        -- FOOL
-        LINE10  = "My King!",
-        LINE11  = "Allow me to entertain you with my merry foolery!",
-        LINE12  = "Whoops-!",
-
-        -- KING
-        LINE19  = "Nooooo!",
-
-        -- NARRATOR
-        LINE13  = "In their excitement,",
-        LINE14  = "the clumsy fool knocked the King from his throne.",
-        LINE15  = "It seemed that the years",
-        LINE16  = "had not been kind to the King,",
-        LINE17  = "for when he hit the floor,",
-        LINE18  = "his frail body turned to dust.",
-
-        -- FOOL
-        LINE20  = "Oh... I suppose I'm the King now!",
-
-        -- DOLL
-        LINE21  = "There's been a fool on the throne long enough.",
-        LINE22  = "perhaps what this kingdom needs...",
-        LINE23  = "is a Queen.",
-
-        -- BIRDS
-        LINE24  = "The special effects are getting better.",
-        LINE25  = "Wish I could say the same for the actors.",
-        LINE26  = "HA HA HA HA HA!",
-        LINE27  = "Another flawless performance from the tree.",
-        LINE28  = "How do they do it?!",
-    },
-
-    ACT3_SCENE9 = {
-        -- BIRDS
-        LINE1   = "The final scene!",
-        LINE2   = "Of the final act!",
-        LINE3   = "Finally!",
-
-        -- QUEEN
-        LINE4   = "It is as you said, mirror.",
-        LINE5   = "I've become so much more than I ever dreamed...",
-        LINE6   = "but why do you remain broken?",
-
-        -- MIRROR
-        LINE7   = "Alas,",
-        LINE8   = "I was shattered long before I met your King.",
-        LINE9   = "Even with his power,",
-        LINE10  = "I cannot yet be restored.",
-
-        -- QUEEN
-        LINE11  = "I made you a promise, mirror,",
-        LINE12  = "and I will see it through.",
-        LINE13  = "I will find the power to fix you,",
-        LINE14  = "and repay you for all you've given me.",
-
-        -- NARRATOR
-        LINE15  = "And so,",
-        LINE16  = "with the treacherous King gone and forgotten,",
-        LINE17  = "the little doll became a just and formidable Queen.",
-        LINE18  = "The people rejoiced across the land,",
-        LINE19  = "and the magic mirror knew",
-        LINE20  = "they had finally found the one who would set Them free.",
-
-        -- BIRDS
-        LINE21  = "I love a happy ending.",
-        LINE22  = "I'm just happy it ended.",
-        LINE23  = "HA HA HA HA HA!",
-    },
-}
+STRINGS.STAGEACTOR = stageactor
 
 STRINGS.HECKLERS_OFF_SCRIPT = {
     "You're going off script!",
@@ -15211,6 +15711,9 @@ STRINGS.CAST = {
     MIRROR = "The Mirror",
     FOOL = "The Fool",
     TREE = "The Tree",
+    SAGE = "The Sage",
+    HALFWIT = "The Halfwit",
+    TOADY = "The Toady",
 }
 
 STRINGS.PLAYS = {
@@ -15226,6 +15729,7 @@ STRINGS.PLAYS = {
         "Act 3 - Scene 3",
         "- The Reunion -",
     },
+    THEVEIL = "The Pall",           
 }
 
 STRINGS.SPELLS = {
@@ -15251,6 +15755,112 @@ STRINGS.ENGINEER_REMOTE = {
 	WAKEUP = "Arm Catapult",
 	BOOST = "Barrage",
 	ELEMENTAL_VOLLEY = "Planar Strike",
+}
+
+STRINGS.GHOSTCOMMANDS = {
+    UNSUMMON = "Unsummon",
+    ESCAPE = "Escape",
+    ATTACK_AT = "Attack At",
+    HAUNT_AT = "Haunt At",
+    SCARE = "Scare",
+}
+
+STRINGS.BALATRO = {
+    CHIPS = "CHIPS",
+    MULT = "MULT",
+    JIMBO_CHOOSE_JOKER = "HI, CHOOSE YOUR JOKER.",
+    JIMBO_START = "CHOOSE CARDS TO DISCARD.",
+    JIMBO_DISCARD1 = "ANY FINAL DISCARDS?",
+    JIMBO_DISCARD2 = "LET'S SEE HOW YOU DID.",
+    JIMBO_CHIPCOUNT = "{chips} CHIPS",
+    JIMBO_HANDMULT = "{hand} IS {mult} MULT.",
+    JIMBO_FINALSCORE = "FOR A FINAL SCORE OF..",
+    JIMBO_SCORE = "{score}!",
+
+    JIMBO_BECKON = {"YOU'D BE A FOOL TO MISS THIS GAME!",
+                    "YOU KNOW WHAT THEY SAY, THE HOUSE ALWAYS WINS!",
+                    "I'M LITERALLY A FOOL, WHAT'S YOUR EXCUSE?",
+                    "PLAY A FEW HANDS, LIVE A LITTLE!",
+                    "WHAT HARM COULD A LITTLE GAME DO?",
+                    "A FEW ROUNDS NEVER HURT ANYBODY!",
+                    "YOU FEELING LUCKY?",
+                    "YOU LOOK LIKE A REAL WINNER!",
+                    "GIVE IT A TRY, IT'S EASY!",
+                    "COME ON, LIVE A LITTLE!",
+                    "WHAT COULD GO WRONG?",
+                    "IT'S JUST A GAME!",
+    },
+
+    JIMBO_REWARD_1 = "FOR THAT PERFORMANCE, YOU GET {reward}!",
+    JIMBO_REWARD_2 = "YOU DID OK. HAVE THIS {reward}.",
+    JIMBO_REWARD_3 = "PRETTY GOOD, YOU GET {reward}.",
+    JIMBO_REWARD_4 = "GREAT! ENJOY {reward}!",
+    JIMBO_REWARD_5 = "WOW! HERE'S SOME {reward}!",
+    JIMBO_REWARD_6 = "FANTASTIC! SOME {reward} FOR YOU!",
+    JIMBO_REWARD_7 = "AMAZING! ENJOY YOUR {reward}!",
+    JIMBO_REWARD_8 = "TRUE ROYALTY! YOU REALLY EARNED THIS {reward}!",
+    JIMBO_REWARD_9 = "TSK TSK, TRYING TO SNEAK AWAY?",
+
+    JIMBO_NO_REWARD = "MAYBE GO FISH IS MORE YOUR SPEED...",
+
+    JIMBO_REWARD_TYPES = {
+        BEES = "BEES",
+        RESOURCES = "SUPPLIES",
+        BANANAS = "BANANAS",
+        GOLD = "GOLD",
+        TREASURE = "TREASURE",
+        SPIDERS = "SPIDERS",
+        HOUNDS = "HOUNDS",               
+    },
+
+    JIMBO_CARDS = "ALSO, HAVE THESE..",
+    JIMBO_CLOSED = "OK, BYE.",
+
+    JOKER_MAXWELL = "Each heart discarded\n+1 mult",
+    JOKER_WILSON = "Each pair in hand\n+3 mult",
+    JOKER_WILLOW = "Each face card discarded\n+20 chips",
+    JOKER_WOLFGANG = "Each King in hand\n+25 chips",
+    JOKER_WOODIE = "Each card discarded\n+7 chips",
+    JOKER_WEBBER = "Each Heart or Diamond replaced\nby a club or spade +2 mult",
+    JOKER_WIGFRID = "Each Spade in hand\n+25 chips",
+    JOKER_WICKERBOTTOM = "Each Queen in hand\n+1 mult",
+    JOKER_WX78 = "Each heart kept once\nthen discarded +2 mult",
+    JOKER_WENDY = "Each discard that becomes\nthe same suit +5 chips +2 mult",
+    JOKER_WES = "Hand is worse after discard\n+30 chips",
+    JOKER_WINONA = "Each heart kept\n+1 mult",
+    JOKER_WARLY = "Hand contains a heart, a club\na diamond and a spade +4 mult",
+    JOKER_WORTOX = "Each heart discarded +15 chips\nEach heart in hand -11 chips +1 mult",
+    JOKER_WURT = "Each face card kept\n+10 chips per face card",
+    JOKER_WANDA = "Start with 80 chips\nEach discard -15 chips",
+    JOKER_WORMWOOD = "Each club kept\n+15 chips",
+    JOKER_WALTER = "For each different suit\nin discard +15 chips",
+
+    BUTTON_CLOSE = "BACK",
+    BUTTON_DEAL = "DEAL",
+    BUTTON_CHOOSE = "CHOOSE",
+    BUTTON_SKIP = "SKIP",
+    BUTTON_DISCARD = "DISCARD",
+    BUTTON_UNDISCARD = "UNDO DISCARD",
+    BUTTON_NOTES = "NOTES",
+
+    CHOOSE_JOKER = "CHOOSE {joker}",
+
+    NOTES_HANDS = "HANDS",
+    NOTES_MULT = "MULT",    
+    NOTES_RANKS = "RANKS",
+
+    HANDS ={
+        HIGHCARD = "High Card",
+        PAIR = "Pair",
+        TWOPAIR = "Two Pair",
+        THREEOFKIND = "Three of a Kind",
+        STRAIT = "Straight",
+        FLUSH = "Flush",
+        FULLHOUSE = "Full House",
+        FOUROFAKIND = "Four of a Kind",
+        STRAITFLUSH = "Straight Flush",
+        ROYALFLUSH = "Royal Flush",
+    }
 }
 
 STRINGS.SKILLTREE = {
@@ -15289,6 +15899,15 @@ STRINGS.SKILLTREE = {
 
         AMPHIBIAN = "AMPHIBIAN",
         SWAMPMASTER = "MERMDOM",
+
+        NICE = "NICE",
+        NEUTRAL = "NEUTRAL",
+        NAUGHTY = "NAUGHTY",
+
+        WOBY = "WOBY",
+        SLINGSHOTAMMO = "AMMO",
+        SLINGSHOTMODS = "CUSTOMIZER",
+        CAMPING = "SCOUTING",
     },
 
     ONLINE_DATA_USER_OFFLINE = "Login to use online skillset data.",
@@ -15303,6 +15922,365 @@ STRINGS.SKILLTREE = {
 
     ALLEGIANCE_LOCK_4_DESC = "Have no lunar affinity.",
     ALLEGIANCE_LOCK_5_DESC = "Have no shadow affinity.",
+
+    -- CHARACTER SKILL NAMES AND DESCRIPTIONS
+    WALTER =
+    {
+        -- AMMO
+
+        WALTER_AMMO_SHATTERSHOTS_TITLE = "Shattering Rounds",
+        WALTER_AMMO_SHATTERSHOTS_DESC = "Learn how to craft Stinger Zingers and Moonshots. These ammo types shatter into an area of damage.",
+
+        WALTER_AMMO_LUCKY_TITLE = "Lucky Rounds",
+        WALTER_AMMO_LUCKY_DESC = "Learn how to craft Kablooies and Dread Pebbles. These ammo types rely on lucky shots to do more damage or not break.",
+
+        WALTER_AMMO_UTILITY_TITLE = "Utility Rounds",
+        WALTER_AMMO_UTILITY_DESC = "Learn how to craft Stickies and Shockscrap Shots. Stickies slow targets hit, and Shockscrap Shots deal electric damage with a higher rate of stun.",
+
+        WALTER_AMMO_LOCK_DESC = "Learn 2 Ammo skills to unlock.",
+
+        WALTER_AMMO_EFFICIENCY_TITLE = "Ammo Smith",
+        WALTER_AMMO_EFFICIENCY_DESC = "Learn how to craft ammo faster and more efficiently for better yields.",
+
+        WALTER_AMMO_BAG_TITLE = "Ammo Hoarder",
+        WALTER_AMMO_BAG_DESC = "Learn how to craft an Ammo Pouch for carrying your excess ammo.",
+
+        WALTER_AMMO_LUNAR_LOCK_DESC = "Find and defeat the Celestial Champion and have no Shadow Allegiance Skills to unlock.",
+        WALTER_AMMO_SHADOW_LOCK_DESC = "Find and defeat the Ancient Fuelweaver and have no Lunar Allegiance Skills to unlock.",
+
+        WALTER_AMMO_LUNAR_TITLE = "Lunar Slinger",
+        WALTER_AMMO_LUNAR_DESC = "The Cryptic Founder will reward your curiosity by teaching you how to craft the Pure Brilliance and Brightshade Husk Rounds: a debuff and damage focused ammo, respectively.",
+
+        WALTER_AMMO_SHADOW_TITLE = "Shadow Slinger",
+        WALTER_AMMO_SHADOW_DESC = "The Queen will reward your loyalty by teaching you how to craft Ickies and Pure Horror Rounds: a slow-down and damage focused ammo, respectively.",
+
+        -- CAMPING
+
+        WALTER_CAMP_ROPE_TITLE = "Twine Twirler",
+        WALTER_CAMP_ROPE_DESC = "Learn how to craft rope faster and more efficiently at a lower cost.",
+
+        WALTER_CAMP_WALTERHAT_TITLE = "Pioneer's Panache",
+        WALTER_CAMP_WALTERHAT_DESC = "Improves Pinetree Pioneer Hat stats, including reduction to the sanity loss when getting hurt.",
+
+        WALTER_CAMP_WOBYTREAT_TITLE = "Special Treat",
+        WALTER_CAMP_WOBYTREAT_DESC = "Learn how to craft Woby Snacks, a non-perishable food for Woby.",
+
+        WALTER_CAMP_FIRSTAID_TITLE = "Field Medic",
+        WALTER_CAMP_FIRSTAID_DESC = "Learn how to use healing items faster and with a 50% bonus to their effects, and learn how to craft the Flutter Strip.",
+
+        WALTER_CAMP_FIRE_TITLE = "Campfire Enthusiast",
+        WALTER_CAMP_FIRE_DESC = "Learn how to craft the Portable Campfire, and improve storytelling around any campfire.",
+
+        WALTER_CAMP_WOBYHOLDER_TITLE = "Let's Rack 'n' Roll",
+        WALTER_CAMP_WOBYHOLDER_DESC = "Woby's pack will get a drying rack attachment.",
+
+        WALTER_CAMP_LOCK_DESC = "Learn 3 Scouting skills to unlock.",
+
+        WALTER_CAMP_WOBYCOURIER_TITLE = "Woby Here, Woby There",
+        WALTER_CAMP_WOBYCOURIER_DESC = "Send Woby to another player, or to drop off items at chests near a designated location.",
+
+        -- SLINGSHOT
+
+		WALTER_SLINGSHOT_MODDING_TITLE = "Basic Customization",
+		WALTER_SLINGSHOT_MODDING_DESC = "Learn to craft the Slingshot Field Kit and some basic parts for customizing your Slingshot.",
+
+		WALTER_SLINGSHOT_HANDLES_TITLE = "Advanced Grips",
+		WALTER_SLINGSHOT_HANDLES_DESC = "Learn to craft advanced grips that enhance your Slingshot by increasing the firing rate, and providing additional bonus effects.",
+
+		WALTER_SLINGSHOT_BANDS_TITLE = "Advanced Bands",
+		WALTER_SLINGSHOT_BANDS_DESC = "Learn to craft advanced bands that enhance your Slingshot by increasing its firing distance, boosting projectile speed, and may have additional bonus effects.",
+
+		WALTER_SLINGSHOT_FRAMES_TITLE = "Advanced Frames",
+		WALTER_SLINGSHOT_FRAMES_DESC = "Learn to craft advanced frames that enable a secondary, alternate Slingshot attack, and may have additional bonus effects.",
+
+        -- WOBY
+
+        WALTER_WOBY_ENDURANCE_TITLE = "Pep Pup",
+        WALTER_WOBY_ENDURANCE_DESC = "Woby gains +1 speed when running or sprinting, and all hunger costs are reduced by 20%.",
+
+        WALTER_WOBY_TASKAID_TITLE = "Helping Horns",
+        WALTER_WOBY_TASKAID_DESC = "Woby will use her hardy horns to assist in chopping and mining.",
+
+        WALTER_WOBY_FORAGING_TITLE = "Furry Forager",
+        WALTER_WOBY_FORAGING_DESC = "Woby will forage alongside you, picking one extra food item from the same plant you are harvesting.",
+
+        WALTER_WOBY_ITEMFETCHER_TITLE = "Roaming Retriever",
+        WALTER_WOBY_ITEMFETCHER_DESC = "Woby will collect items for her backpack and retrieve ammo for you.",
+
+        WALTER_WOBY_LOCK_DESC = "Learn 2 Woby skills to unlock.",
+        
+        WALTER_WOBY_SPRINT_TITLE = "Scruffy Sprinter",
+        WALTER_WOBY_SPRINT_DESC = "After Woby runs for 3 seconds while mounted, she will start sprinting at a higher fixed speed until interrupted.",
+
+        WALTER_WOBY_DASH_TITLE = "Dashing Doggie",
+        WALTER_WOBY_DASH_DESC = "Woby dashes on command by double tapping any movement controls.",
+
+        WALTER_WOBY_LUNAR_LOCK_DESC = "Find and defeat the Celestial Champion and have no Shadow Allegiance Skills to unlock.",
+        WALTER_WOBY_SHADOW_LOCK_DESC = "Find and defeat the Ancient Fuelweaver and have no Lunar Allegiance Skills to unlock.",
+
+        WALTER_WOBY_LUNAR_TITLE = "Lunar Woby",
+        WALTER_WOBY_LUNAR_DESC = "After dashing, Woby can immediately start sprinting at +1 speed. When Woby is under moonlight on the surface, or in any area of Enlightenment, she has no additional hunger drain for sprinting or dashing.",
+
+        WALTER_WOBY_SHADOW_TITLE = "Shadow Woby",
+        WALTER_WOBY_SHADOW_DESC = "Woby's dash becomes a short distance teleport.",
+    },
+
+    --[[WANDA = {
+    },]]
+
+    --[[WARLY = {
+    },]]
+
+    WATHGRITHR = {
+        WATHGRITHR_ARSENAL_SPEAR_1_TITLE = "Bragi's Blessing I",
+        WATHGRITHR_ARSENAL_SPEAR_1_DESC = "Inspiration gain rate will increase a little when attacking using Battle Spears.",
+
+        WATHGRITHR_ARSENAL_SPEAR_2_TITLE = "Bragi's Blessing II",
+        WATHGRITHR_ARSENAL_SPEAR_2_DESC = "Inspiration gain rate will increase a fair amount when attacking using Battle Spears.",
+
+        WATHGRITHR_ARSENAL_SPEAR_3_TITLE = "Elding Spear",
+        WATHGRITHR_ARSENAL_SPEAR_3_DESC = "Learn to craft the Elding Spear: an electric weapon that does more damage to wet targets.",
+
+        WATHGRITHR_ARSENAL_SPEAR_4_TITLE = "Elding Spear Enhancement I",
+        WATHGRITHR_ARSENAL_SPEAR_4_DESC = "The Elding Spear can now perform a special attack.\nThis attack repairs Charged Elding Spears if it hits a target.",
+
+        WATHGRITHR_ARSENAL_SPEAR_5_TITLE = "Elding Spear Enhancement II",
+        WATHGRITHR_ARSENAL_SPEAR_5_DESC = "Upgrade the Elding Spear using Restrained Static to deal +20 Planar Damage.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ARSENAL_HELMET_1_TITLE = "Hard Helm I",
+        WATHGRITHR_ARSENAL_HELMET_1_DESC = "Battle Helms will be a little more durable when worn by Wigfrid.",
+
+        WATHGRITHR_ARSENAL_HELMET_2_TITLE = "Hard Helm II",
+        WATHGRITHR_ARSENAL_HELMET_2_DESC = "Battle Helms will be a fair amount more durable when worn by Wigfrid.",
+
+        WATHGRITHR_ARSENAL_HELMET_3_TITLE = "Commander's Helm",
+        WATHGRITHR_ARSENAL_HELMET_3_DESC = "Learn to craft the Commander's Helm: a helm that protects against knockback attacks.",
+
+        WATHGRITHR_ARSENAL_HELMET_4_TITLE = "Commander's Helm Enhancement I",
+        WATHGRITHR_ARSENAL_HELMET_4_DESC = "The Commander's Helm now has protection against planar damage.",
+
+        WATHGRITHR_ARSENAL_HELMET_5_TITLE = "Commander's Helm Enhancement II",
+        WATHGRITHR_ARSENAL_HELMET_5_DESC = "Wigfrid's natural healing ability will repair her Commander's Helm when she continues to fight at maximum health.",
+
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ARSENAL_SHIELD_1_TITLE = "Battle Rönd",
+        WATHGRITHR_ARSENAL_SHIELD_1_DESC = "Learn to craft the Battle Rönd. This shield can be used to attack, block attacks, and provide extra protection while equipped.",
+
+        WATHGRITHR_ARSENAL_SHIELD_2_TITLE = "Battle Rönd Enhancement I",
+        WATHGRITHR_ARSENAL_SHIELD_2_DESC = "The duration of the Battle Rönd's ability to block attacks will be increased.",
+
+        WATHGRITHR_ARSENAL_SHIELD_3_TITLE = "Battle Rönd Enhancement II",
+        WATHGRITHR_ARSENAL_SHIELD_3_DESC = "After blocking an attack with the Battle Rönd, your next attack within 5 seconds will deal +15-30 damage based on the damage blocked.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_BEEFALO_1_TITLE = "Noble Mount I",
+        WATHGRITHR_BEEFALO_1_DESC = "Beefalos will be domesticated 15% faster.",
+
+        WATHGRITHR_BEEFALO_2_TITLE = "Noble Mount II",
+        WATHGRITHR_BEEFALO_2_DESC = "Beefalos will allow you to ride them for 30% longer.",
+
+        WATHGRITHR_BEEFALO_3_TITLE = "Noble Mount III",
+        WATHGRITHR_BEEFALO_3_DESC = "Riding a beefalo will make your inspiration slowly rise until it reaches the halfway mark.",
+
+        WATHGRITHR_BEEFALO_SADDLE_TITLE = "Battle Saddle",
+        WATHGRITHR_BEEFALO_SADDLE_DESC = "Learn to craft a new Beefalo Saddle that protects your Beefalo.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_CONTAINER_LOCK_DESC = "Have 6 different Battle Calls in your inventory to unlock.",
+
+        WATHGRITHR_SONGS_CONTAINER_TITLE = "Battle Call Canister",
+        WATHGRITHR_SONGS_CONTAINER_DESC = "Learn to craft the Battle Call Canister, a storage solution for Battle Songs and Battle Stingers.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_INSTANTSONG_CD_LOCK_DESC = "Perform Battle Stingers 10 times to unlock.",
+
+        WATHGRITHR_SONGS_INSTANTSONG_CD_TITLE = "Fighting Words",
+        WATHGRITHR_SONGS_INSTANTSONG_CD_DESC = "Battle Stingers will no longer consume Inspiration, and instead have a cooldown.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_REVIVEWARRIOR_LOCK_DESC = "Play a Beefalo Horn to unlock.",
+
+        WATHGRITHR_SONGS_REVIVEWARRIOR_TITLE = "Encore",
+        WATHGRITHR_SONGS_REVIVEWARRIOR_DESC = "Learn to craft the Warrior's Reprise: Bring your allies back to life for an encore performance.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_COMBAT_DEFENSE_TITLE = "Mystic Resilience",
+        WATHGRITHR_COMBAT_DEFENSE_DESC = "Receive a divine blessing that will provide you with +5 Planar Defense.",
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ALLEGIANCE_LOCK_1_DESC = "Learn 12 skills to unlock.",
+
+        WATHGRITHR_ALLEGIANCE_LUNAR_TITLE = "Lunar Melodist",
+        WATHGRITHR_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the ability to craft the Enlightened Lullaby.\nAllies take less damage from Lunar Aligned enemies and deal bonus damage to Shadow Aligned enemies.",
+
+        WATHGRITHR_ALLEGIANCE_SHADOW_TITLE = "Shadow Chanteuse",
+        WATHGRITHR_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the ability to craft the Dark Lament.\nAllies take less damage from Shadow Aligned enemies and deal bonus damage to Lunar Aligned enemies.",
+    },
+
+    --[[WAXWELL = {
+    },]]
+
+    --[[WEBBER = {
+    },]]
+
+    WENDY = {
+        WENDY_SISTURN_1_TITLE = "Blessed Sisturn I",
+        WENDY_SISTURN_1_DESC = "The chilling aura of death preserves the petals placed in the sisturn longer.",
+        WENDY_SISTURN_2_TITLE = "Blessed Sisturn II",
+        WENDY_SISTURN_2_DESC = "Wendy's resistance to scary things is increased, and she grants some of that confidence to others nearby.",
+        WENDY_SISTURN_3_TITLE = "Blessed Sisturn III",
+        WENDY_SISTURN_3_DESC = "Lune Tree Blossoms draw Abigail's humanity closer to the Constant.\nShe becomes more resistant to the Giants like the rest of the survivors, but her ghostly healing effects are slowed while she is summoned.",        
+
+        WENDY_GHOSTCOMMAND_1_TITLE = "Team Spirit I",
+        WENDY_GHOSTCOMMAND_1_DESC = "Wendy can remind Abigail she's a ghost, able to be unseen by her enemies to escape bad situations.",
+        WENDY_GHOSTCOMMAND_2_TITLE = "Team Spirit II",
+        WENDY_GHOSTCOMMAND_2_DESC = "Abigail can dash to anywhere Wendy needs reinforcement.",
+        WENDY_GHOSTCOMMAND_3_TITLE = "Team Spirit III",
+        WENDY_GHOSTCOMMAND_3_DESC = "Abigail can use her powers as a spooky ghost to scare and haunt things.",
+        WENDY_GHOSTCOMMAND_HAUNT_TITLE = "Team Spirit IV",
+        WENDY_GHOSTCOMMAND_HAUNT_DESC = "Wendy can suggest things for Abigail to haunt.",
+
+        WENDY_SMALLGHOST_1_TITLE = "Pipspook Quest I",
+        WENDY_SMALLGHOST_1_DESC = "Pipspook lost toys aren't quite so far away.",
+        WENDY_SMALLGHOST_2_TITLE = "Pipspook Quest II",
+        WENDY_SMALLGHOST_2_DESC = "Pipspooks remember more lost toys to find.",
+        WENDY_SMALLGHOST_3_TITLE = "Pipspook Quest III",
+        WENDY_SMALLGHOST_3_DESC = "Pipspooks produce more Mourning Glories.",
+
+        WENDY_GHOSTFLOWER_BUTTERFLY_TITLE = "Mourning Glory I",
+        WENDY_GHOSTFLOWER_BUTTERFLY_DESC = "Begin the journey of revival with Butterflies and Moths.",
+        WENDY_GHOSTFLOWER_HAT_TITLE = "Mourning Glory II",
+        WENDY_GHOSTFLOWER_HAT_DESC = "Surround yourself in ghostly nature and taste the power of the elixirs even if not fully.",
+        WENDY_GHOSTFLOWER_GRAVE_TITLE = "Mourning Glory III",
+        WENDY_GHOSTFLOWER_GRAVE_DESC = "You can bring back friends, but only if they've entered the Constant it seems.",
+
+        WENDY_GRAVESTONE_1_TITLE = "Grave Beautification",
+        WENDY_GRAVESTONE_1_DESC = "Wendy can adorn graves with flowers to delight their resident spirits.\nEvil Flowers no longer hold fear for Wendy.",
+        WENDY_MAKEGRAVEMOUNDS_TITLE = "Gravestones By Wendy",
+        WENDY_MAKEGRAVEMOUNDS_DESC = "Wendy can put to rest the spirits of skeletons with a gravestone.\nShe can also craft a Spirit Vessel to invite friendly phantoms to new homes.",
+
+        WENDY_POTION_CONTAINER_TITLE = "Picnic Casket",
+        WENDY_POTION_CONTAINER_DESC = "Wendy can craft a Basket to carry all of Abigail's Elixirs and Mourning Glory.",
+        WENDY_POTION_REVIVE_TITLE = "Ghastly Experience",
+        WENDY_POTION_REVIVE_DESC = "Wendy learns to brew a new Ghostly Elixir which helps Abigail quickly remember her potential.",
+        WENDY_POTION_DURATION_TITLE = "Strong Brew",
+        WENDY_POTION_DURATION_DESC = "Elixirs with one day duration will now last two.",
+        WENDY_POTION_YIELD_TITLE = "Extra Yield",
+        WENDY_POTION_YIELD_DESC = "Sometimes, Wendy is able to squeeze extra Elixirs out of the same ingredients.",
+
+        WENDY_AVENGING_GHOST_TITLE = "Vengeful Ghost",
+        WENDY_AVENGING_GHOST_DESC = "When Wendy or her friends are killed, their spirit is vengeful and able to wreak havoc on the living world for a short time.",
+
+        WENDY_SHADOW_LOCK_1_DESC = "Defeat the Fuelweaver",
+        WENDY_SHADOW_LOCK_2_DESC = "Have no other allegiance",
+
+        WENDY_SHADOW_1_TITLE = "Shadow Sisterhood I",
+        WENDY_SHADOW_1_DESC = "Abigail attunes with the shadows and earns some Planar Defense.",
+        WENDY_SHADOW_2_TITLE = "Shadow Sisterhood II",
+        WENDY_SHADOW_2_DESC = "Wendy can craft a Super Elixir infused with shadow magic that increases Abigail's Vex damage.\nSuper Elixirs work in parallel to regular Elixirs.",
+        WENDY_SHADOW_3_TITLE = "Shadow Sisterhood III",
+        WENDY_SHADOW_3_DESC = "Dark Magic is released whenever Wendy uses the Murder action filling Abigail with more power for a short time.",
+
+        WENDY_LUNAR_LOCK_1_DESC = "Defeat the Celestial Champion",
+        WENDY_LUNAR_LOCK_2_DESC = "Have no other allegiance",
+
+        WENDY_LUNAR_1_TITLE = "Lunar Sisterhood I",
+        WENDY_LUNAR_1_DESC = "Abigail attunes with lunar energies and earns some Planar Defense.",
+        WENDY_LUNAR_2_TITLE = "Lunar Sisterhood II",
+        WENDY_LUNAR_2_DESC = "Wendy can craft a Super Elixir infused with lunar energy that gives Abigail a boost of Planar Damage for its duration.\nSuper Elixirs work in parallel to regular Elixirs.",
+        WENDY_LUNAR_3_TITLE = "Lunar Sisterhood III",
+        WENDY_LUNAR_3_DESC = "Wendy can use the Moon Dial during a waxing or full moon to fill Abigail with lunar energy, turning her into a Gestalt. The Moon Dial can restore her ghost status during a waning or new moon.",
+    },
+
+    --[[WICKERBOTTOM = {
+    },]]
+
+    WILLOW = {
+        -- LIGHTER
+        WILLOW_CONTROLLED_BURN_1_TITLE = "Controlled Burning",
+        WILLOW_CONTROLLED_BURN_1_DESC = "Controlled fires you set won't spread, and burnable loot will just smolder.\nItems like torches and Willow's lighter have a 100% chance to ignite targets.",
+        WILLOW_CONTROLLED_BURN_2_TITLE = "Burn Duration",
+        WILLOW_CONTROLLED_BURN_2_DESC = "Creatures burn for a longer time.",
+        WILLOW_CONTROLLED_BURN_3_TITLE = "Fire Fighter",
+        WILLOW_CONTROLLED_BURN_3_DESC = "Your fires deal more damage to creatures over time.",
+
+        WILLOW_ATTUNED_LIGHTER_TITLE = "Hungry Lighter",
+        WILLOW_ATTUNED_LIGHTER_DESC = "Stop things from burning by absorbing the flame (even when they're only smoldering) with your lighter.",
+        WILLOW_EMBERS_TITLE = "Ember Tender",
+        WILLOW_EMBERS_DESC = "Collect and use Embers to perform Pyrokinetic effects.\nYou can collect Embers from burned creatures with your lighter.\nUse Embers to refuel the lighter.",
+
+        WILLOW_FIRE_BURST_TITLE = "Spontaneous Combustion",
+        WILLOW_FIRE_BURST_DESC = "Use Embers to ignite creatures in an area near you.",
+        WILLOW_FIRE_BALL_TITLE = "Fire Ball",
+        WILLOW_FIRE_BALL_DESC = "Use Embers to create a ball of flame for heat and light.",
+        WILLOW_FIRE_FRENZY_TITLE = "Burning Frenzy",
+        WILLOW_FIRE_FRENZY_DESC = "For 60 seconds, add 25% weapon damage when attacking burning targets.",
+
+        WILLOW_LIGHTRADIUS_1_TITLE = "Brighter Lighter I",
+        WILLOW_LIGHTRADIUS_1_DESC = "Increase your lighter's brightness a little.",
+        WILLOW_LIGHTRADIUS_2_TITLE = "Brighter Lighter II",
+        WILLOW_LIGHTRADIUS_2_DESC = "Increase your lighter's brightness a lot.",
+
+        -- BERNIE
+        WILLOW_BERNIESPEED_1_TITLE = "Accelerant I",
+        WILLOW_BERNIESPEED_1_DESC = "Bernie's movement speed is a little faster.",
+        WILLOW_BERNIESPEED_2_TITLE = "Accelerant II",
+        WILLOW_BERNIESPEED_2_DESC = "Bernie's movement speed is much faster.",
+
+        WILLOW_BERNIESANITY_1_TITLE = "Bearly Sane I",
+        WILLOW_BERNIESANITY_1_DESC = "Bernie will become animated at a higher sanity threshold.",
+        WILLOW_BERNIESANITY_2_TITLE = "Bearly Sane II",
+        WILLOW_BERNIESANITY_2_DESC = "Bernie will become animated at an even higher sanity threshold.",
+        WILLOW_BERNIEAI_TITLE = "Hot-Headed",
+        WILLOW_BERNIEAI_DESC = "Bernie will activate to fight hostile lunar and shadow aligned creatures regardless of Willow's sanity.",
+
+
+        WILLOW_BERNIEREGEN_1_TITLE = "Patch Up I",
+        WILLOW_BERNIEREGEN_1_DESC = "Bernie's health regenerates slowly.",
+        WILLOW_BERNIEREGEN_2_TITLE = "Patch Up II",
+        WILLOW_BERNIEREGEN_2_DESC = "Bernie's health regenerates quicker.",
+
+        WILLOW_BERNIE_LOCK_DESC = "Learn at least 4 Bernie skills to unlock.",
+
+        WILLOW_BERNIEHEALTH_1_TITLE = "Tough Stuffing I",
+        WILLOW_BERNIEHEALTH_1_DESC = "Bernie's total health is a little higher.",
+        WILLOW_BERNIEHEALTH_2_TITLE = "Tough Stuffing II",
+        WILLOW_BERNIEHEALTH_2_DESC = "Bernie's total health is much higher.",
+
+        WILLOW_BERNIE_DOUBLE_LOCK_DESC = "Learn at least 8 Bernie skills to unlock.",
+
+        WILLOW_BURNINGBERNIE_TITLE = "Burning Bernie",
+        WILLOW_BURNINGBERNIE_DESC = "Igniting Bernie will give him a firey aura for a short time.\nEnemies that attack an ignited Bernie will take damage back.",
+
+
+        -- ALLIEGIANCE
+        WILLOW_ALLEGIANCE_LOCK_1_DESC = "Find and defeat the Ancient Fuelweaver.\nHave no Lunar Allegiance Skills.",
+        WILLOW_ALLEGIANCE_LOCK_2_DESC = "Learn 6 Bernie skills to unlock.",
+        WILLOW_ALLEGIANCE_LOCK_3_DESC = "Learn 7 Lighter skills to unlock.",
+
+        WILLOW_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Fire-Raiser",
+        WILLOW_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with the power of shadow fire.\nSummon multiple tendrils of black flame to seek out hostile targets.",
+        WILLOW_ALLEGIANCE_SHADOW_2_TITLE = "Shadow Bernie",
+        WILLOW_ALLEGIANCE_SHADOW_2_DESC = "Tap into the darkness to strengthen Bernie's planar attack and defense, particularly against lunar enemies.",
+
+        WILLOW_ALLEGIANCE_LOCK_4_DESC = "Find and defeat the Celestial Champion.\nHave no Shadow Allegiance Skills.",
+        WILLOW_ALLEGIANCE_LOCK_5_DESC = "Learn 7 Lighter skills to unlock.",
+        WILLOW_ALLEGIANCE_LOCK_6_DESC = "Learn 6 Bernie skills to unlock.",
+
+        WILLOW_ALLEGIANCE_LUNAR_1_TITLE = "Lunar Fire-Raiser",
+        WILLOW_ALLEGIANCE_LUNAR_1_DESC = "The Cryptic Founder will reward your curiosity with the formula for lunar flames.\nUse Embers to blast cold lunar flames.",
+        WILLOW_ALLEGIANCE_LUNAR_2_TITLE = "Lunar Bernie",
+        WILLOW_ALLEGIANCE_LUNAR_2_DESC = "Entreat the moon to strengthen Bernie's planar attack and defense, particularly against shadow enemies.",
+    },
 
     WILSON = {
 
@@ -15389,6 +16367,158 @@ STRINGS.SKILLTREE = {
 
         WILSON_ALLEGIANCE_LUNAR_TITLE = "Lunar Innovator",
         WILSON_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the secrets of Lunar Transmutation.",
+    },
+
+    WINONA = {
+        -- Low shelf.
+        WINONA_SPOTLIGHT_HEATED_TITLE = "Hotlight",
+        WINONA_SPOTLIGHT_HEATED_DESC = "Upgrade your Spotlights to give off heat when it's cold out.",
+        WINONA_SPOTLIGHT_RANGE_TITLE = "Spacious Spotlight",
+        WINONA_SPOTLIGHT_RANGE_DESC = "Upgrade your Spotlights to illuminate a larger area.",
+        WINONA_PORTABLE_STRUCTURES_TITLE = "Portability",
+        WINONA_PORTABLE_STRUCTURES_DESC = "Easily dismantle your machines, and learn how to build a Handy Remote to remotely control Catapults.",
+        WINONA_GADGET_RECHARGE_TITLE = "Quick Charge",
+        WINONA_GADGET_RECHARGE_DESC = "Gadgets placed next to a Generator or G.E.M.erator recharge 100% faster.",
+        WINONA_BATTERY_IDLEDRAIN_TITLE = "Energy-Saver",
+        WINONA_BATTERY_IDLEDRAIN_DESC = "Generators and G.E.M.erators no longer consume energy while they're not in use.\nMachines connected to Generators won't consume energy while in sleep mode.",
+
+        WINONA_LOWSHELF_LOCK_DESC = "Learn 3 skills on the shelf below to unlock the skills on the shelf above.",
+        -- Mid shelf.
+        WINONA_CATAPULT_SPEED_1_TITLE = "Rapid-Fire I",
+        WINONA_CATAPULT_SPEED_1_DESC = "Tune-up your Catapults to increase their firing rate by 5%.",
+        WINONA_CATAPULT_SPEED_2_TITLE = "Rapid-Fire II",
+        WINONA_CATAPULT_SPEED_2_DESC = "Tune-up your Catapults to increase their firing rate by 10%.",
+        WINONA_CATAPULT_SPEED_3_TITLE = "Rapid-Fire III",
+        WINONA_CATAPULT_SPEED_3_DESC = "Tune-up your Catapults to increase their firing rate by 20%.",
+        WINONA_CATAPULT_AOE_1_TITLE = "Explosive Volley I",
+        WINONA_CATAPULT_AOE_1_DESC = "Modify your Catapults to deal damage to a 25% larger area.",
+        WINONA_CATAPULT_AOE_2_TITLE = "Explosive Volley II",
+        WINONA_CATAPULT_AOE_2_DESC = "Modify your Catapults to deal damage to a 50% larger area.",
+        WINONA_CATAPULT_AOE_3_TITLE = "Explosive Volley III",
+        WINONA_CATAPULT_AOE_3_DESC = "Modify your Catapults to deal damage to a 100% larger area.",
+
+        WINONA_PORTABLE_STRUCTURES_LOCK_DESC = "Requires the Portability skill and access to this shelf to unlock.",
+        WINONA_CATAPULT_VOLLEY_TITLE = "Precise Targeting",
+        WINONA_CATAPULT_VOLLEY_DESC = "All Catapults within range of your Handy Remote fire at your selected target.",
+        WINONA_CATAPULT_BOOST_TITLE = "Barrage",
+        WINONA_CATAPULT_BOOST_DESC = "All Catapults within range of your Handy Remote have an increased firing rate for a short period of time.",
+        WINONA_BATTERY_EFFICIENCY_1_TITLE = "Greater Generator I",
+        WINONA_BATTERY_EFFICIENCY_1_DESC = "Boost the efficiency of Generators and G.E.M.erators by 25%.",
+        WINONA_BATTERY_EFFICIENCY_2_TITLE = "Greater Generator II",
+        WINONA_BATTERY_EFFICIENCY_2_DESC = "Boost the efficiency of Generators and G.E.M.erators by 50%.",
+        WINONA_BATTERY_EFFICIENCY_3_TITLE = "Greater Generator III",
+        WINONA_BATTERY_EFFICIENCY_3_DESC = "Boost the efficiency of Generators and G.E.M.erators by 100%.",
+
+        WINONA_MIDSHELF_LOCK_DESC = "Learn 6 total skills from the shelves below to unlock the skills on the shelf above.",
+        -- Shadow.
+        WINONA_SHADOW_1_TITLE = "Nightmare Generator",
+        WINONA_SHADOW_1_DESC = "Learn how to utilize Nightmare Fuel as a fuel source for Generators.",
+        WINONA_SHADOW_2_TITLE = "Pure Horror Generator",
+        WINONA_SHADOW_2_DESC = "Learn how to utilize Pure Horror as a fuel source for Generators.",
+
+        WINONA_SHADOW_3_LOCK_DESC = "Requires the Portability and Pure Horror Generator skills to unlock.",
+        WINONA_SHADOW_3_TITLE = "Shadow Strike",
+        WINONA_SHADOW_3_DESC = "Use your Handy Remote to select a target for a shadow-infused Catapult attack.",
+
+        WINONA_CHARLIE_1_TITLE = "Shadow Seeker I",
+        WINONA_CHARLIE_1_DESC = "The Queen imparts a design for enchanted glasses that reveal hidden traces of shadow magic.\nDoes she want you to find her?",
+
+        WINONA_CHARLIE_2_LOCK_DESC = "Requires the Shadow Seeker I skill, and to not have Founder's Keepers II to unlock.",
+        WINONA_CHARLIE_2_TITLE = "Shadow Seeker II",
+        WINONA_CHARLIE_2_DESC = "Become more adept at locating traces of shadow magic.\nThe Queen will watch over you.",
+        -- Lunar.
+        WINONA_LUNAR_1_TITLE = "Enlightened G.E.M.erator",
+        WINONA_LUNAR_1_DESC = "Learn how to utilize Enlightened Shards as a fuel source for G.E.M.erators.",
+        WINONA_LUNAR_2_TITLE = "Brilliance G.E.M.erator",
+        WINONA_LUNAR_2_DESC = "Learn how to utilize Pure Brilliance as a fuel source for G.E.M.erators.",
+
+        WINONA_LUNAR_3_LOCK_DESC = "Requires the Portability and Brilliance G.E.M.erator skills to unlock.",
+        WINONA_LUNAR_3_TITLE = "Enlightened Strike",
+        WINONA_LUNAR_3_DESC = "Use your Handy Remote to select a target for a lunar essence-infused Catapult attack.",
+
+        WINONA_WAGSTAFF_1_TITLE = "Founder's Keepers I",
+        WINONA_WAGSTAFF_1_DESC = "Build a device inspired by the Cryptic Founder's designs to track down hidden supply caches.\nGain mastery over all technology found in Cacheboxes.",
+
+        WINONA_WAGSTAFF_2_LOCK_DESC = "Requires the Founder's Keepers I skill, and to not have Shadow Seeker II to unlock.",
+        WINONA_WAGSTAFF_2_TITLE = "Founder's Keepers II",
+        WINONA_WAGSTAFF_2_DESC = "Broaden the scope of your Inspectacles to locate higher-grade supply caches.\nGain mastery over all technology found in Advanced Cacheboxes.",
+    },
+
+    WOLFGANG = {
+        WOLFGANG_CRITWORK_1_TITLE = "Chore Workout I",
+        WOLFGANG_CRITWORK_1_DESC = "Chance to one-shot while working improved to 5%.",
+
+        WOLFGANG_CRITWORK_2_TITLE = "Chore Workout II",
+        WOLFGANG_CRITWORK_2_DESC = "Chance to one-shot while working improved to 10%.",
+
+        WOLFGANG_CRITWORK_3_TITLE = "Chore Workout III",
+        WOLFGANG_CRITWORK_3_DESC = "Chance to one-shot while working improved to 15%.",
+        ---
+        WOLFGANG_DUMBBELL_CRAFTING_TITLE = "Dumbbell Developer",
+        WOLFGANG_DUMBBELL_CRAFTING_DESC = "Learn to craft several new dumbbells.",
+        ---
+        WOLFGANG_DUMBBELL_THROWING_1_TITLE = "Heavy Hitter I",
+        WOLFGANG_DUMBBELL_THROWING_1_DESC = "Increase the damage of thrown dumbbells by 50%.",
+
+        WOLFGANG_DUMBBELL_THROWING_2_TITLE = "Heavy Hitter II",
+        WOLFGANG_DUMBBELL_THROWING_2_DESC = "Increase the damage of thrown dumbbells by 100%.",
+        ---
+        WOLFGANG_COACH_TITLE = "Coach Wolfgang",
+        WOLFGANG_COACH_DESC = "Learn to craft a Coaching Whistle.\nWhile coaching, Normal Wolfgang will raise friends' sanity and boost followers' damage.",
+
+        WOLFGANG_NORMAL_SPEED_TITLE = "Leg Day",
+        WOLFGANG_NORMAL_SPEED_DESC = "+10% speed boost when Normal.",
+        ---
+        WOLFGANG_GYM_OVERBUFF_1_TITLE = "Push the Limits I",
+        WOLFGANG_GYM_OVERBUFF_1_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 110.",
+
+        WOLFGANG_GYM_OVERBUFF_2_TITLE = "Push the Limits II",
+        WOLFGANG_GYM_OVERBUFF_2_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 120.",
+
+        WOLFGANG_GYM_OVERBUFF_3_TITLE = "Push the Limits III",
+        WOLFGANG_GYM_OVERBUFF_3_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 130.",
+
+        WOLFGANG_GYM_OVERBUFF_4_TITLE = "Push the Limits IV",
+        WOLFGANG_GYM_OVERBUFF_4_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 140.",
+
+        WOLFGANG_GYM_OVERBUFF_5_TITLE = "Push the Limits V",
+        WOLFGANG_GYM_OVERBUFF_5_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 150.",
+
+        WOLFGANG_AUTO_GYM_TITLE = "Gym Mastery",
+        WOLFGANG_AUTO_GYM_DESC = "Perfect your gym workout.\nMini game will complete automatically.",
+
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_TITLE = "Mighty Weapons I",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_DESC = "Bring out the full strength of planar melee weapons.\nAdd +5 Planar Damage to planar melee weapons when Mighty.",
+
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_TITLE = "Mighty Weapons II",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_DESC = "Bring out the full strength of planar melee weapons.\nAdd +10 Planar Damage to planar melee weapons when Mighty.",
+
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_TITLE = "Mighty Weapons III",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_DESC = "Bring out the full strength of planar melee weapons.\nAdd +15 Planar Damage to planar melee weapons when Mighty.",
+
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_TITLE = "Mighty Weapons IV",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar melee weapons.\nAdd +20 Planar Damage to planar melee weapons when Mighty.",
+
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_TITLE = "Mighty Weapons V",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_DESC = "Bring out the full strength of planar melee weapons.\nAdd +25 Planar Damage to planar melee weapons when Mighty.",
+        ---
+        WOLFGANG_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Guard I",
+        WOLFGANG_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +10% of total damage fighting Lunar-aligned creatures when Mighty.",
+
+        WOLFGANG_ALLEGIANCE_SHADOW_2_TITLE = "Shadow Guard II",
+        WOLFGANG_ALLEGIANCE_SHADOW_2_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +20% of total damage fighting Lunar-aligned creatures when Mighty.",
+
+        WOLFGANG_ALLEGIANCE_SHADOW_3_TITLE = "Shadow Guard III",
+        WOLFGANG_ALLEGIANCE_SHADOW_3_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +30% of total damage fighting Lunar-aligned creatures when Mighty.",
+
+        WOLFGANG_ALLEGIANCE_LUNAR_1_TITLE = "Lunar Strategist I",
+        WOLFGANG_ALLEGIANCE_LUNAR_1_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +10% of total damage fighting Shadow-aligned creatures when Mighty.",
+
+        WOLFGANG_ALLEGIANCE_LUNAR_2_TITLE = "Lunar Strategist II",
+        WOLFGANG_ALLEGIANCE_LUNAR_2_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +20% of total damage fighting Shadow-aligned creatures when Mighty.",
+
+        WOLFGANG_ALLEGIANCE_LUNAR_3_TITLE = "Lunar Strategist III",
+        WOLFGANG_ALLEGIANCE_LUNAR_3_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +30% of total damage fighting Shadow-aligned creatures when Mighty.",
     },
 
     WOODIE = {
@@ -15489,85 +16619,6 @@ STRINGS.SKILLTREE = {
         WOODIE_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity by blocking the moon's ability to trigger your curse.",
     },
 
-    WOLFGANG = {
-
-        WOLFGANG_CRITWORK_1_TITLE = "Chore Workout I",
-        WOLFGANG_CRITWORK_1_DESC = "Chance to one-shot while working improved to 5%.",
-
-        WOLFGANG_CRITWORK_2_TITLE = "Chore Workout II",
-        WOLFGANG_CRITWORK_2_DESC = "Chance to one-shot while working improved to 10%.",
-
-        WOLFGANG_CRITWORK_3_TITLE = "Chore Workout III",
-        WOLFGANG_CRITWORK_3_DESC = "Chance to one-shot while working improved to 15%.",
-        ---
-        WOLFGANG_DUMBBELL_CRAFTING_TITLE = "Dumbbell Developer",
-        WOLFGANG_DUMBBELL_CRAFTING_DESC = "Learn to craft several new dumbbells.",
-        ---
-        WOLFGANG_DUMBBELL_THROWING_1_TITLE = "Heavy Hitter I",
-        WOLFGANG_DUMBBELL_THROWING_1_DESC = "Increase the damage of thrown dumbbells by 50%.",
-
-        WOLFGANG_DUMBBELL_THROWING_2_TITLE = "Heavy Hitter II",
-        WOLFGANG_DUMBBELL_THROWING_2_DESC = "Increase the damage of thrown dumbbells by 100%.",
-        ---
-        WOLFGANG_COACH_TITLE = "Coach Wolfgang",
-        WOLFGANG_COACH_DESC = "Learn to craft a Coaching Whistle.\nWhile coaching, Normal Wolfgang will raise friends' sanity and boost followers' damage.",
-
-        WOLFGANG_NORMAL_SPEED_TITLE = "Leg Day",
-        WOLFGANG_NORMAL_SPEED_DESC = "+10% speed boost when Normal.",
-        ---
-        WOLFGANG_GYM_OVERBUFF_1_TITLE = "Push the Limits I",
-        WOLFGANG_GYM_OVERBUFF_1_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 110.",
-
-        WOLFGANG_GYM_OVERBUFF_2_TITLE = "Push the Limits II",
-        WOLFGANG_GYM_OVERBUFF_2_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 120.",
-
-        WOLFGANG_GYM_OVERBUFF_3_TITLE = "Push the Limits III",
-        WOLFGANG_GYM_OVERBUFF_3_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 130.",
-
-        WOLFGANG_GYM_OVERBUFF_4_TITLE = "Push the Limits IV",
-        WOLFGANG_GYM_OVERBUFF_4_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 140.",
-
-        WOLFGANG_GYM_OVERBUFF_5_TITLE = "Push the Limits V",
-        WOLFGANG_GYM_OVERBUFF_5_DESC = "Use the gym to push your Mighty Meter past its limit.\n Mighty Meter can go up to 150.",
-
-        WOLFGANG_AUTO_GYM_TITLE = "Gym Mastery",
-        WOLFGANG_AUTO_GYM_DESC = "Perfect your gym workout.\nMini game will complete automatically.",
-
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_TITLE = "Mighty Weapons I",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_DESC = "Bring out the full strength of planar melee weapons.\nAdd +5 Planar Damage to planar melee weapons when Mighty.",
-
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_TITLE = "Mighty Weapons II",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_DESC = "Bring out the full strength of planar melee weapons.\nAdd +10 Planar Damage to planar melee weapons when Mighty.",
-
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_TITLE = "Mighty Weapons III",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_DESC = "Bring out the full strength of planar melee weapons.\nAdd +15 Planar Damage to planar melee weapons when Mighty.",
-
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_TITLE = "Mighty Weapons IV",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar melee weapons.\nAdd +20 Planar Damage to planar melee weapons when Mighty.",
-
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_TITLE = "Mighty Weapons V",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_DESC = "Bring out the full strength of planar melee weapons.\nAdd +25 Planar Damage to planar melee weapons when Mighty.",
-        ---
-        WOLFGANG_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Guard I",
-        WOLFGANG_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +10% of total damage fighting Lunar-aligned creatures when Mighty.",
-
-        WOLFGANG_ALLEGIANCE_SHADOW_2_TITLE = "Shadow Guard II",
-        WOLFGANG_ALLEGIANCE_SHADOW_2_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +20% of total damage fighting Lunar-aligned creatures when Mighty.",
-
-        WOLFGANG_ALLEGIANCE_SHADOW_3_TITLE = "Shadow Guard III",
-        WOLFGANG_ALLEGIANCE_SHADOW_3_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +30% of total damage fighting Lunar-aligned creatures when Mighty.",
-
-        WOLFGANG_ALLEGIANCE_LUNAR_1_TITLE = "Lunar Strategist I",
-        WOLFGANG_ALLEGIANCE_LUNAR_1_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +10% of total damage fighting Shadow-aligned creatures when Mighty.",
-
-        WOLFGANG_ALLEGIANCE_LUNAR_2_TITLE = "Lunar Strategist II",
-        WOLFGANG_ALLEGIANCE_LUNAR_2_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +20% of total damage fighting Shadow-aligned creatures when Mighty.",
-
-        WOLFGANG_ALLEGIANCE_LUNAR_3_TITLE = "Lunar Strategist III",
-        WOLFGANG_ALLEGIANCE_LUNAR_3_DESC = "The Cryptic Founder will reward your curiosity by revealing the enemy's weaknesses.\nAdd +30% of total damage fighting Shadow-aligned creatures when Mighty.",
-
-    },
-
     WORMWOOD = {
         BUTTERFLY_FRIEND_TITLE = "Butterfly Friend",
         BUTTERFLY_FRIEND_DESC = "Butterflies will no longer fly away from you.",
@@ -15659,253 +16710,85 @@ STRINGS.SKILLTREE = {
         LUNAR_MUTATIONS_3_DESC = "Tap into your lunar roots to transform Dragon Fruit into Saladmanders.\nSaladmanders you've created will attack things you do.\nTransforming maximum Saladmanders gives them a health boost.",
     },
 
-    WILLOW = {
-        -- LIGHTER
-        WILLOW_CONTROLLED_BURN_1_TITLE = "Controlled Burning",
-        WILLOW_CONTROLLED_BURN_1_DESC = "Fires you set won't spread, and burnable loot will just smolder.\nItems like torches and Willow's lighter have a 100% chance to ignite targets.",
-        WILLOW_CONTROLLED_BURN_2_TITLE = "Burn Duration",
-        WILLOW_CONTROLLED_BURN_2_DESC = "Creatures burn for a longer time.",
-        WILLOW_CONTROLLED_BURN_3_TITLE = "Fire Fighter",
-        WILLOW_CONTROLLED_BURN_3_DESC = "Your fires deal more damage to creatures over time.",
+    WORTOX = {
+        -- GENERIC - Not skills but information boxes the player will be able to hover over for more information.
+        WORTOX_INCLINATION_METER_TITLE = "The Scales",
+        WORTOX_INCLINATION_METER_DESC = "Based off of how many Nice or Naughty skills selected, you will find yourself leaning towards a certain inclination. Choosing an affinity skews the scales and you will find your inclination coming sooner.",
+        WORTOX_INCLINATION_NICE_TITLE = "Nice Inclination",
+        WORTOX_INCLINATION_NICE_DESC = "Your kindness has made your monster side no longer stir up trouble.\nEating or releasing Souls will change sanity at an increased amount.",
+        WORTOX_INCLINATION_NAUGHTY_TITLE = "Naughty Inclination",
+        WORTOX_INCLINATION_NAUGHTY_DESC = "Your greed stops you from overloading of Soul power, for a moment.\nEating or releasing Souls will no longer change sanity. Souls heal you for less.",
 
-        WILLOW_ATTUNED_LIGHTER_TITLE = "Hungry Lighter",
-        WILLOW_ATTUNED_LIGHTER_DESC = "Stop things from burning by absorbing the flame (even when they're only smoldering) with your lighter.",
-        WILLOW_EMBERS_TITLE = "Ember Tender",
-        WILLOW_EMBERS_DESC = "Collect and use Embers to perform Pyrokinetic effects.\nYou can collect Embers from burned creatures with your lighter.\nUse Embers to refuel the lighter.",
+        -- LOCKS
+        WORTOX_NICE_LOCK_DESC = "Requires the skill below and 5 total Nice and/or Neutral skills to unlock.",
+        WORTOX_NAUGHTY_LOCK_DESC = "Requires the skill below and 5 total Naughty and/or Neutral skills to unlock.",
 
-        WILLOW_FIRE_BURST_TITLE = "Spontaneous Combustion",
-        WILLOW_FIRE_BURST_DESC = "Use Embers to ignite creatures in an area near you.",
-        WILLOW_FIRE_BALL_TITLE = "Fire Ball",
-        WILLOW_FIRE_BALL_DESC = "Use Embers to create a ball of flame for heat and light.",
-        WILLOW_FIRE_FRENZY_TITLE = "Burning Frenzy",
-        WILLOW_FIRE_FRENZY_DESC = "For 60 seconds, add 25% weapon damage when attacking burning targets.",
+        -- NICE
+        WORTOX_LIFEBRINGER_1_TITLE = "Lifebringer I",
+        WORTOX_LIFEBRINGER_1_DESC = "Learn how to channel Souls into a Twintailed Heart, a creation used to revive ghostly friends.",
+        WORTOX_LIFEBRINGER_2_TITLE = "Lifebringer II",
+        WORTOX_LIFEBRINGER_2_DESC = "Your ghostly friends will no longer suffer health penalties when you revive them with a Twintailed Heart.",
+        WORTOX_LIFEBRINGER_3_TITLE = "Lifebringer III",
+        WORTOX_LIFEBRINGER_3_DESC = "Allow the Twintailed Heart to be used by another which will pull them to you from near or afar.\nUsing it yourself will free the Souls inside.",
 
-        WILLOW_LIGHTRADIUS_1_TITLE = "Brighter Lighter I",
-        WILLOW_LIGHTRADIUS_1_DESC = "Increase your lighter's brightness a little.",
-        WILLOW_LIGHTRADIUS_2_TITLE = "Brighter Lighter II",
-        WILLOW_LIGHTRADIUS_2_DESC = "Increase your lighter's brightness a lot.",
+        WORTOX_SOULPROTECTOR_1_TITLE = "Reaching Souls I",
+        WORTOX_SOULPROTECTOR_1_DESC = "Dropped Souls will heal at an increased range.",
+        WORTOX_SOULPROTECTOR_2_TITLE = "Reaching Souls II",
+        WORTOX_SOULPROTECTOR_2_DESC = "Dropped Souls will move towards hurt players, and heal at an increased range.",
+        WORTOX_SOULPROTECTOR_3_TITLE = "Soul Bastion I",
+        WORTOX_SOULPROTECTOR_3_DESC = "Dropped Souls will do a second healing wave for a lower amount after a delay.",
+        WORTOX_SOULPROTECTOR_4_TITLE = "Soul Bastion II",
+        WORTOX_SOULPROTECTOR_4_DESC = "Dropped Souls will move faster towards hurt players, the second healing wave will happen quicker, and Souls are more efficient at healing multiple players.",
 
-        -- BERNIE
-        WILLOW_BERNIESPEED_1_TITLE = "Accelerant I",
-        WILLOW_BERNIESPEED_1_DESC = "Bernie's movement speed is a little faster.",
-        WILLOW_BERNIESPEED_2_TITLE = "Accelerant II",
-        WILLOW_BERNIESPEED_2_DESC = "Bernie's movement speed is much faster.",
+        WORTOX_LIFTEDSPIRITS_1_TITLE = "Lifted Spirits I",
+        WORTOX_LIFTEDSPIRITS_1_DESC = "Souls waiting to be freed in a Soul Echo will enhance your movement speed.",
+        WORTOX_LIFTEDSPIRITS_2_TITLE = "Lifted Spirits II",
+        WORTOX_LIFTEDSPIRITS_2_DESC = "Soul Echo duration is increased.",
+        WORTOX_LIFTEDSPIRITS_3_TITLE = "Reverberation",
+        WORTOX_LIFTEDSPIRITS_3_DESC = "Soul Echo will happen a second time.\nThis does not decrease Soul Hop costs from the Map.",
+        WORTOX_LIFTEDSPIRITS_4_TITLE = "Capricious Movement",
+        WORTOX_LIFTEDSPIRITS_4_DESC = "Soul Hop cost from the Map will be reduced by how much of the current world's land has been explored.",
 
-        WILLOW_BERNIESANITY_1_TITLE = "Bearly Sane I",
-        WILLOW_BERNIESANITY_1_DESC = "Bernie will become animated at a higher sanity threshold.",
-        WILLOW_BERNIESANITY_2_TITLE = "Bearly Sane II",
-        WILLOW_BERNIESANITY_2_DESC = "Bernie will become animated at an even higher sanity threshold.",
-        WILLOW_BERNIEAI_TITLE = "Hot-Headed",
-        WILLOW_BERNIEAI_DESC = "Bernie will activate to fight hostile lunar and shadow aligned creatures regardless of Willow's sanity.",
+        -- NEUTRAL
+        WORTOX_PANFLUTE_PLAYING_TITLE = "Impromptu Flautist", -- Center
+        WORTOX_PANFLUTE_PLAYING_DESC = "You periodically feel a musical pull to play your flute. Pan Flutes will not lose durability one time when feeling this urge to play.",
+        WORTOX_PANFLUTE_SOULCALLER_TITLE = "Pleasant Pastorale", -- Left
+        WORTOX_PANFLUTE_SOULCALLER_DESC = "Playing your Pan Flute with such pleasing notes will bring lost Souls around for a listen.",
+        WORTOX_PANFLUTE_FORGET_TITLE = "Cloudy Carmen", -- Right
+        WORTOX_PANFLUTE_FORGET_DESC = "Things waking up after your Pan Flute playing will not be able to become hostile towards you for a moment.",
 
-        
-        WILLOW_BERNIEREGEN_1_TITLE = "Patch Up I",
-        WILLOW_BERNIEREGEN_1_DESC = "Bernie's health regenerates slowly.",
-        WILLOW_BERNIEREGEN_2_TITLE = "Patch Up II",
-        WILLOW_BERNIEREGEN_2_DESC = "Bernie's health regenerates quicker.",
+        -- NAUGHTY
+        WORTOX_THIEF_1_TITLE = "Soul Thief I",
+        WORTOX_THIEF_1_DESC = "Souls are created and attracted to you from further away.",
+        WORTOX_THIEF_2_TITLE = "Soul Thief II",
+        WORTOX_THIEF_2_DESC = "Souls will last longer while being attracted to you.",
+        WORTOX_THIEF_3_TITLE = "Soul Pierce I",
+        WORTOX_THIEF_3_DESC = "Souls attracted to you will hurt other creatures with Souls along its path.",
+        WORTOX_THIEF_4_TITLE = "Soul Pierce II",
+        WORTOX_THIEF_4_DESC = "Souls attracted to you will repel away initially before coming towards you.",
 
-        WILLOW_BERNIE_LOCK_DESC = "Learn at least 4 Bernie skills to unlock.",
-        
-        WILLOW_BERNIEHEALTH_1_TITLE = "Tough Stuffing I",
-        WILLOW_BERNIEHEALTH_1_DESC = "Bernie's total health is a little higher.",
-        WILLOW_BERNIEHEALTH_2_TITLE = "Tough Stuffing II",
-        WILLOW_BERNIEHEALTH_2_DESC = "Bernie's total health is much higher.",
+        WORTOX_NABBAG_TITLE = "Knabsacker",
+        WORTOX_NABBAG_DESC = "You've hung around Krampus enough to create a Knabsack for your own item stealing desires. Packs a punch depending on how full your inventory is.",
+        WORTOX_SOULJAR_1_TITLE = "Soul Jar",
+        WORTOX_SOULJAR_1_DESC = "Learn how to craft and use a Soul Jar to store Souls for later use.\nSoul Jars will leak Souls over time when not in your inventory.",
+        WORTOX_SOULJAR_2_TITLE = "Overflowing Greed",
+        WORTOX_SOULJAR_2_DESC = "Holding Soul Jars increases your maximum Souls allowed to be held at once by 5 each, stopping you from overloading of Soul power.",
+        WORTOX_SOULJAR_3_TITLE = "Covetous Collector",
+        WORTOX_SOULJAR_3_DESC = "Held Souls and Souls inside of Soul Jars increases both the damage of the Knabsack and the damage of Souls, up to 100 total Souls collected.",
 
-        WILLOW_BERNIE_DOUBLE_LOCK_DESC = "Learn at least 8 Bernie skills to unlock.",
+        WORTOX_SOULDECOY_1_TITLE = "Soul Decoy I",
+        WORTOX_SOULDECOY_1_DESC = "Soul Hopping creates a Soul Decoy to draw the attention of attacking creatures that possess Souls. It will not create one for a Soul Echo.",
+        WORTOX_SOULDECOY_2_TITLE = "Soul Decoy II",
+        WORTOX_SOULDECOY_2_DESC = "Soul Decoys will stay around for a bit longer if they are unharmed, and damage the thing that hit the Decoy.",
+        WORTOX_SOULDECOY_3_TITLE = "Soul Decoy III",
+        WORTOX_SOULDECOY_3_DESC = "Soul Decoys will now explode and inflict damage on things lured by it or attacking you upon expiration.",
 
-        WILLOW_BURNINGBERNIE_TITLE = "Burning Bernie",
-        WILLOW_BURNINGBERNIE_DESC = "Igniting Bernie will give him a firey aura for a short time.\nEnemies that attack an ignited Bernie will take damage back.",
+        -- AFFINITY
+        WORTOX_ALLEGIANCE_LUNAR_TITLE = "Lunar Swindler",
+        WORTOX_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity by showing you power from wearing a Brightshade Helm or Brightshade Armor. Souls waiting to be freed in a Soul Echo will absorb incoming damage, and expire the timer.",
 
-
-        -- ALLIEGIANCE
-        WILLOW_ALLEGIANCE_LOCK_1_DESC = "Find and defeat the Ancient Fuelweaver.\nHave no Lunar Allegiance Skills.",
-        WILLOW_ALLEGIANCE_LOCK_2_DESC = "Learn 6 Bernie skills to unlock.",
-        WILLOW_ALLEGIANCE_LOCK_3_DESC = "Learn 7 Lighter skills to unlock.",        
-
-        WILLOW_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Fire-Raiser",
-        WILLOW_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with the power of shadow fire.\nSummon multiple tendrils of black flame to seek out hostile targets.",
-        WILLOW_ALLEGIANCE_SHADOW_2_TITLE = "Shadow Bernie",
-        WILLOW_ALLEGIANCE_SHADOW_2_DESC = "Tap into the darkness to strengthen Bernie's planar attack and defense, particularly against lunar enemies.",
-
-        WILLOW_ALLEGIANCE_LOCK_4_DESC = "Find and defeat the Celestial Champion.\nHave no Shadow Allegiance Skills.",
-        WILLOW_ALLEGIANCE_LOCK_5_DESC = "Learn 7 Lighter skills to unlock.",
-        WILLOW_ALLEGIANCE_LOCK_6_DESC = "Learn 6 Bernie skills to unlock.",
-
-        WILLOW_ALLEGIANCE_LUNAR_1_TITLE = "Lunar Fire-Raiser",
-        WILLOW_ALLEGIANCE_LUNAR_1_DESC = "The Cryptic Founder will reward your curiosity with the formula for lunar flames.\nUse Embers to blast cold lunar flames.",
-        WILLOW_ALLEGIANCE_LUNAR_2_TITLE = "Lunar Bernie",
-        WILLOW_ALLEGIANCE_LUNAR_2_DESC = "Entreat the moon to strengthen Bernie's planar attack and defense, particularly against shadow enemies.",
-    },
-
-    WATHGRITHR =
-    {
-        WATHGRITHR_ARSENAL_SPEAR_1_TITLE = "Bragi's Blessing I",
-        WATHGRITHR_ARSENAL_SPEAR_1_DESC = "Inspiration gain rate will increase a little when attacking using Battle Spears.",
-
-        WATHGRITHR_ARSENAL_SPEAR_2_TITLE = "Bragi's Blessing II",
-        WATHGRITHR_ARSENAL_SPEAR_2_DESC = "Inspiration gain rate will increase a fair amount when attacking using Battle Spears.",
-
-        WATHGRITHR_ARSENAL_SPEAR_3_TITLE = "Elding Spear",
-        WATHGRITHR_ARSENAL_SPEAR_3_DESC = "Learn to craft the Elding Spear: an electric weapon that does more damage to wet targets.",
-
-        WATHGRITHR_ARSENAL_SPEAR_4_TITLE = "Elding Spear Enhancement I",
-        WATHGRITHR_ARSENAL_SPEAR_4_DESC = "The Elding Spear can now perform a special attack.\nThis attack repairs Charged Elding Spears if it hits a target.",
-
-        WATHGRITHR_ARSENAL_SPEAR_5_TITLE = "Elding Spear Enhancement II",
-        WATHGRITHR_ARSENAL_SPEAR_5_DESC = "Upgrade the Elding Spear using Restrained Static to deal +20 Planar Damage.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_ARSENAL_HELMET_1_TITLE = "Hard Helm I",
-        WATHGRITHR_ARSENAL_HELMET_1_DESC = "Battle Helms will be a little more durable when worn by Wigfrid.",
-
-        WATHGRITHR_ARSENAL_HELMET_2_TITLE = "Hard Helm II",
-        WATHGRITHR_ARSENAL_HELMET_2_DESC = "Battle Helms will be a fair amount more durable when worn by Wigfrid.",
-
-        WATHGRITHR_ARSENAL_HELMET_3_TITLE = "Commander's Helm",
-        WATHGRITHR_ARSENAL_HELMET_3_DESC = "Learn to craft the Commander's Helm: a helm that protects against knockback attacks.",
-
-        WATHGRITHR_ARSENAL_HELMET_4_TITLE = "Commander's Helm Enhancement I",
-        WATHGRITHR_ARSENAL_HELMET_4_DESC = "The Commander's Helm now has protection against planar damage.",
-
-        WATHGRITHR_ARSENAL_HELMET_5_TITLE = "Commander's Helm Enhancement II",
-        WATHGRITHR_ARSENAL_HELMET_5_DESC = "Wigfrid's natural healing ability will repair her Commander's Helm when she continues to fight at maximum health.",
-
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_ARSENAL_SHIELD_1_TITLE = "Battle Rönd",
-        WATHGRITHR_ARSENAL_SHIELD_1_DESC = "Learn to craft the Battle Rönd. This shield can be used to attack, block attacks, and provide extra protection while equipped.",
-
-        WATHGRITHR_ARSENAL_SHIELD_2_TITLE = "Battle Rönd Enhancement I",
-        WATHGRITHR_ARSENAL_SHIELD_2_DESC = "The duration of the Battle Rönd's ability to block attacks will be increased.",
-
-        WATHGRITHR_ARSENAL_SHIELD_3_TITLE = "Battle Rönd Enhancement II",
-        WATHGRITHR_ARSENAL_SHIELD_3_DESC = "After blocking an attack with the Battle Rönd, your next attack within 5 seconds will deal +15-30 damage based on the damage blocked.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_BEEFALO_1_TITLE = "Noble Mount I",
-        WATHGRITHR_BEEFALO_1_DESC = "Beefalos will be domesticated 15% faster.",
-
-        WATHGRITHR_BEEFALO_2_TITLE = "Noble Mount II",
-        WATHGRITHR_BEEFALO_2_DESC = "Beefalos will allow you to ride them for 30% longer.",
-
-        WATHGRITHR_BEEFALO_3_TITLE = "Noble Mount III",
-        WATHGRITHR_BEEFALO_3_DESC = "Riding a beefalo will make your inspiration slowly rise until it reaches the halfway mark.",
-
-        WATHGRITHR_BEEFALO_SADDLE_TITLE = "Battle Saddle",
-        WATHGRITHR_BEEFALO_SADDLE_DESC = "Learn to craft a new Beefalo Saddle that protects your Beefalo.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_SONGS_CONTAINER_LOCK_DESC = "Have 6 different Battle Calls in your inventory to unlock.",
-
-        WATHGRITHR_SONGS_CONTAINER_TITLE = "Battle Call Canister",
-        WATHGRITHR_SONGS_CONTAINER_DESC = "Learn to craft the Battle Call Canister, a storage solution for Battle Songs and Battle Stingers.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_SONGS_INSTANTSONG_CD_LOCK_DESC = "Perform Battle Stingers 10 times to unlock.",
-
-        WATHGRITHR_SONGS_INSTANTSONG_CD_TITLE = "Fighting Words",
-        WATHGRITHR_SONGS_INSTANTSONG_CD_DESC = "Battle Stingers will no longer consume Inspiration, and instead have a cooldown.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_SONGS_REVIVEWARRIOR_LOCK_DESC = "Play a Beefalo Horn to unlock.",
-
-        WATHGRITHR_SONGS_REVIVEWARRIOR_TITLE = "Encore",
-        WATHGRITHR_SONGS_REVIVEWARRIOR_DESC = "Learn to craft the Warrior's Reprise: Bring your allies back to life for an encore performance.",
-
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_COMBAT_DEFENSE_TITLE = "Mystic Resilience",
-        WATHGRITHR_COMBAT_DEFENSE_DESC = "Receive a divine blessing that will provide you with +5 Planar Defense.",
-        ----------------------------------------------------------------------------
-
-        WATHGRITHR_ALLEGIANCE_LOCK_1_DESC = "Learn 12 skills to unlock.",
-
-        WATHGRITHR_ALLEGIANCE_LUNAR_TITLE = "Lunar Melodist",
-        WATHGRITHR_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the ability to craft the Enlightened Lullaby.\nAllies take less damage from Lunar Aligned enemies and deal bonus damage to Shadow Aligned enemies.",
-        
-        WATHGRITHR_ALLEGIANCE_SHADOW_TITLE = "Shadow Chanteuse",
-        WATHGRITHR_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the ability to craft the Dark Lament.\nAllies take less damage from Shadow Aligned enemies and deal bonus damage to Lunar Aligned enemies.",
-    },
-
-    WINONA = {
-        -- Low shelf.
-        WINONA_SPOTLIGHT_HEATED_TITLE = "Hotlight",
-        WINONA_SPOTLIGHT_HEATED_DESC = "Upgrade your Spotlights to give off heat when it's cold out.",
-        WINONA_SPOTLIGHT_RANGE_TITLE = "Spacious Spotlight",
-        WINONA_SPOTLIGHT_RANGE_DESC = "Upgrade your Spotlights to illuminate a larger area.",
-        WINONA_PORTABLE_STRUCTURES_TITLE = "Portability",
-        WINONA_PORTABLE_STRUCTURES_DESC = "Easily dismantle your machines, and learn how to build a Handy Remote to remotely control Catapults.",
-        WINONA_GADGET_RECHARGE_TITLE = "Quick Charge",
-        WINONA_GADGET_RECHARGE_DESC = "Gadgets placed next to a Generator or G.E.M.erator recharge 100% faster.",
-        WINONA_BATTERY_IDLEDRAIN_TITLE = "Energy-Saver",
-        WINONA_BATTERY_IDLEDRAIN_DESC = "Generators and G.E.M.erators no longer consume energy while they're not in use.\nMachines connected to Generators won't consume energy while in sleep mode.",
-
-        WINONA_LOWSHELF_LOCK_DESC = "Learn 3 skills on the shelf below to unlock the skills on the shelf above.",
-        -- Mid shelf.
-        WINONA_CATAPULT_SPEED_1_TITLE = "Rapid-Fire I",
-        WINONA_CATAPULT_SPEED_1_DESC = "Tune-up your Catapults to increase their firing rate by 5%.",
-        WINONA_CATAPULT_SPEED_2_TITLE = "Rapid-Fire II",
-        WINONA_CATAPULT_SPEED_2_DESC = "Tune-up your Catapults to increase their firing rate by 10%.",
-        WINONA_CATAPULT_SPEED_3_TITLE = "Rapid-Fire III",
-        WINONA_CATAPULT_SPEED_3_DESC = "Tune-up your Catapults to increase their firing rate by 20%.",
-        WINONA_CATAPULT_AOE_1_TITLE = "Explosive Volley I",
-        WINONA_CATAPULT_AOE_1_DESC = "Modify your Catapults to deal damage to a 25% larger area.",
-        WINONA_CATAPULT_AOE_2_TITLE = "Explosive Volley II",
-        WINONA_CATAPULT_AOE_2_DESC = "Modify your Catapults to deal damage to a 50% larger area.",
-        WINONA_CATAPULT_AOE_3_TITLE = "Explosive Volley III",
-        WINONA_CATAPULT_AOE_3_DESC = "Modify your Catapults to deal damage to a 100% larger area.",
-
-        WINONA_PORTABLE_STRUCTURES_LOCK_DESC = "Requires the Portability skill and access to this shelf to unlock.",
-        WINONA_CATAPULT_VOLLEY_TITLE = "Precise Targeting",
-        WINONA_CATAPULT_VOLLEY_DESC = "All Catapults within range of your Handy Remote fire at your selected target.",
-        WINONA_CATAPULT_BOOST_TITLE = "Barrage",
-        WINONA_CATAPULT_BOOST_DESC = "All Catapults within range of your Handy Remote have an increased firing rate for a short period of time.",
-        WINONA_BATTERY_EFFICIENCY_1_TITLE = "Greater Generator I",
-        WINONA_BATTERY_EFFICIENCY_1_DESC = "Boost the efficiency of Generators and G.E.M.erators by 25%.",
-        WINONA_BATTERY_EFFICIENCY_2_TITLE = "Greater Generator II",
-        WINONA_BATTERY_EFFICIENCY_2_DESC = "Boost the efficiency of Generators and G.E.M.erators by 50%.",
-        WINONA_BATTERY_EFFICIENCY_3_TITLE = "Greater Generator III",
-        WINONA_BATTERY_EFFICIENCY_3_DESC = "Boost the efficiency of Generators and G.E.M.erators by 100%.",
-    
-        WINONA_MIDSHELF_LOCK_DESC = "Learn 6 total skills from the shelves below to unlock the skills on the shelf above.",
-        -- Shadow.
-        WINONA_SHADOW_1_TITLE = "Nightmare Generator",
-        WINONA_SHADOW_1_DESC = "Learn how to utilize Nightmare Fuel as a fuel source for Generators.",
-        WINONA_SHADOW_2_TITLE = "Pure Horror Generator",
-        WINONA_SHADOW_2_DESC = "Learn how to utilize Pure Horror as a fuel source for Generators.",
-
-        WINONA_SHADOW_3_LOCK_DESC = "Requires the Portability and Pure Horror Generator skills to unlock.",
-        WINONA_SHADOW_3_TITLE = "Shadow Strike",
-        WINONA_SHADOW_3_DESC = "Use your Handy Remote to select a target for a shadow-infused Catapult attack.",
-
-        WINONA_CHARLIE_1_TITLE = "Shadow Seeker I",
-        WINONA_CHARLIE_1_DESC = "The Queen imparts a design for enchanted glasses that reveal hidden traces of shadow magic.\nDoes she want you to find her?",
-        
-        WINONA_CHARLIE_2_LOCK_DESC = "Requires the Shadow Seeker I skill, and to not have Founder's Keepers II to unlock.",
-        WINONA_CHARLIE_2_TITLE = "Shadow Seeker II",
-        WINONA_CHARLIE_2_DESC = "Become more adept at locating traces of shadow magic.\nThe Queen will watch over you.",
-        -- Lunar.
-        WINONA_LUNAR_1_TITLE = "Enlightened G.E.M.erator",
-        WINONA_LUNAR_1_DESC = "Learn how to utilize Enlightened Shards as a fuel source for G.E.M.erators.",
-        WINONA_LUNAR_2_TITLE = "Brilliance G.E.M.erator",
-        WINONA_LUNAR_2_DESC = "Learn how to utilize Pure Brilliance as a fuel source for G.E.M.erators.",
-
-        WINONA_LUNAR_3_LOCK_DESC = "Requires the Portability and Brilliance G.E.M.erator skills to unlock.",
-        WINONA_LUNAR_3_TITLE = "Enlightened Strike",
-        WINONA_LUNAR_3_DESC = "Use your Handy Remote to select a target for a lunar essence-infused Catapult attack.",
-
-        WINONA_WAGSTAFF_1_TITLE = "Founder's Keepers I",
-        WINONA_WAGSTAFF_1_DESC = "Build a device inspired by the Cryptic Founder's designs to track down hidden supply caches.\nGain mastery over all technology found in Cacheboxes.",
-
-        WINONA_WAGSTAFF_2_LOCK_DESC = "Requires the Founder's Keepers I skill, and to not have Shadow Seeker II to unlock.",
-        WINONA_WAGSTAFF_2_TITLE = "Founder's Keepers II",
-        WINONA_WAGSTAFF_2_DESC = "Broaden the scope of your Inspectacles to locate higher-grade supply caches.\nGain mastery over all technology found in Advanced Cacheboxes.",
+        WORTOX_ALLEGIANCE_SHADOW_TITLE = "Shadow Harvester",
+        WORTOX_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty by unlocking power from wielding a Shadow Reaper. Souls waiting to be freed in a Soul Echo will cause damage dealt to spread out to close enemies or hit one target twice, and expire the timer.",
     },
 
     WURT = {
@@ -15932,7 +16815,7 @@ STRINGS.SKILLTREE = {
         WURT_MERM_KING_HUNGER_3_TITLE = "Sated Sovereign III",
         WURT_MERM_FLEE_TITLE = "Sensible Swamp Fighter",
         WURT_PATHFINDER_TITLE = "Swamp Pathfinder",
-        
+
         WURT_LUNAR_ALLEGIANCE_1_TITLE = "Lunar Mutated Merm",
         WURT_LUNAR_ALLEGIANCE_2_TITLE = "Terra Mutation",
         WURT_SHADOW_ALLEGIANCE_1_TITLE = "Shadow Resurrection Merm",
@@ -15946,12 +16829,12 @@ STRINGS.SKILLTREE = {
         WURT_AMPHIBIAN_HEALING_1_DESC = "Slowly regenerate health when wet. The more wet you are, the more health you regenerate.",
         WURT_AMPHIBIAN_HEALING_2_DESC = "Regenerate health when wet more effectively. It also make you slowly get wet as you step through the corrupted or mutated marsh turfs.",
         WURT_MOSQUITO_CRAFT_1_DESC = "Learn to craft a cuddly buddy making Mosquitoes neutral to you.",
-        WURT_MOSQUITO_CRAFT_2_DESC = "Learn to craft Mosquito based items: Skeeter Bomb, Fertilizzzer and Blood Shot",
+        WURT_MOSQUITO_CRAFT_2_DESC = "Learn to craft Mosquito based items: Skeeter Bomb, Fertilizzzer and Blood Shot.",
         WURT_MOSQUITO_CRAFT_3_DESC = "Master the use of the Mosquito based items.\n\nWith the help of Lil' Itchy, catch mosquitos right from the air.",
 
-        WURT_CIV_1_DESC = "Learn to craft the Communal Kelp Dish to entice faster Merm growth and to call in Merm for action.",
-        WURT_CIV_1_2_DESC = "Learn to craft the Superior Communal Kelp Dish, it holds more kelp for even faster Merm growth and calling in Merm for action.",
-        WURT_CIV_2_DESC = "Learn to craft the Shoddy Tool Shed to equip your Merm workers with Shoddy Tools.",
+        WURT_CIV_1_DESC = "Learn to craft the Communal Kelp Dish to entice faster merm growth and to call in merms for action.",
+        WURT_CIV_1_2_DESC = "Learn to craft the Superior Communal Kelp Dish, it holds more kelp for even faster merm growth and calling in merms for action.",
+        WURT_CIV_2_DESC = "Learn to craft the Shoddy Tool Shed to equip your merm workers with Shoddy Tools.",
         WURT_CIV_2_2_DESC = "Learn to craft the Slightly Less Shoddy Tool shed, it provides Slightly Less Shoddy Tools.",
         WURT_CIV_3_DESC = "Learn to craft the Armermry to equip your Loyal Merm Guards with Swamp Brawler Helmets.",
         WURT_CIV_3_2_DESC = "Learn to craft the Superior Armermry, it provides Swamp Warrior Helmets.",
@@ -15963,18 +16846,21 @@ STRINGS.SKILLTREE = {
 
         WURT_PATHFINDER_DESC = "Survivors near Wurt will move like her through the Marsh.",
         WURT_MERMKINGSHOULDERS_TITLE = "The King's Pauldron Quest",
-        WURT_MERMKINGSHOULDERS_DESC = "Add stony armor to the King's statuesque shoulders for greater stoutness in your Merm soldiers.",
+        WURT_MERMKINGSHOULDERS_DESC = "Add stony armor to the King's statuesque shoulders for greater stoutness in your merm soldiers.",
         WURT_MERMKINGCROWN_TITLE = "The King's Crown Quest",
         WURT_MERMKINGCROWN_DESC = "Gift him a crown worn by kings long passed, and your merms will fight smarter so their lives may last.",
         WURT_MERMKINGTRIDENT_TITLE = "The King's Trident Quest",
-        WURT_MERMKINGTRIDENT_DESC = "Offer this weapon best wielded at sea, and your Merms will attack with the deftness of three.",
+        WURT_MERMKINGTRIDENT_DESC = "Offer this weapon best wielded at sea, and your merms will attack with the deftness of three.",
 
         WURT_ALLEGIANCE_LOCK_1_DESC = "Learn 12 skills to unlock.",
-        WURT_LUNAR_ALLEGIANCE_1_DESC = "Grant your loyal Merms the wondrous gift of Lunar mutation by feeding them Moon Shards.\nEmpower your mutant merm with Planar power using Pure Brilliance.",
+        WURT_LUNAR_ALLEGIANCE_1_DESC = "Grant your loyal merms the wondrous gift of Lunar mutation by feeding them Moon Shards.\nEmpower your mutant merms with Planar power using Pure Brilliance.",
         WURT_LUNAR_ALLEGIANCE_2_DESC = "Morph any piece of land into sweet sweet Marsh.",
-        WURT_SHADOW_ALLEGIANCE_1_DESC = "Your Merm followers will have one foot in the Shadow world.\nInfuse shadow merm with Planar power using Pure Horror.",
+        WURT_SHADOW_ALLEGIANCE_1_DESC = "Your merm followers may die, but their shadows live on.\nInfuse fallen merms' shadows with Planar power using Pure Horror.",
         WURT_SHADOW_ALLEGIANCE_2_DESC = "No land shall be safe from the dark and beautiful corruption of the Marsh.",
     },
+
+    --[[WX78 = {
+    },]]
 }
 
 STRINGS.SCRAPBOOK = {
@@ -16032,6 +16918,10 @@ STRINGS.SCRAPBOOK = {
         RIDING = "Beefalo Riding",
         COSTUME = "Stage Costume",
         WINTERSFEASTFOOD = "Winter's Feast Dish",
+        SMALLEPIC = "Mini Giant",
+        SLINGSHOTAMMO = "Slingshot Round",
+        SLINGSHOTPART = "Slingshot Part",
+        GESTALT = "Gestalt",
     },
 
     SANITYDESC ={
@@ -16059,6 +16949,8 @@ STRINGS.SCRAPBOOK = {
         WOOD = "WOOD",
         GOODIES = "GOODIES",
         MONSTER = "MONSTER",
+        LUNAR_SHARDS = "LUNAR SHARDS",
+        CORPSE = "CORPSE",
     },
 
     DATA_NEEDS_INVESTIGATION = "This needs more investigation.",
@@ -16107,10 +16999,11 @@ STRINGS.SCRAPBOOK = {
     DATA_PICKABLE = "CAN BE PICKED",
     DATA_STEWER = "CAN PREPARE FOOD",
     DATA_FISHABLE = "CAN BE FISHED",
-    DATA_HARVESTABLE = "CAN BE HARVESTED", 
-    DATA_BURNABLE = "CAN BE BURNED", 
+    DATA_HARVESTABLE = "CAN BE HARVESTED",
+    DATA_BURNABLE = "CAN BE BURNED",
     DATA_NON_PLAYER_FOOD = "NON-SURVIVOR FOOD",
     DATA_INSULATION = " INSULATION",
+    DATA_SNOWMANDECO = "SNOWMAN DECOR",
 
     NOTE_SHADOW_ALIGNED = "SHADOW ALIGNED",
     NOTE_LUNAR_ALIGNED = "LUNAR ALIGNED",
@@ -16131,7 +17024,6 @@ STRINGS.SCRAPBOOK = {
         POLLYROGERS = "Gathers loot nearby.",
         MOLE = "Ever played \"Whack-A-Mole\"? What a great game.",
         POWDERMONKEY = "Best keep a bribe handy for these freebooters.",
-        SPIDER_HEALER = "Emits powerful spider-healing flatulence when threatened.",
 
         -- Items.
         ABIGAIL_FLOWER = "Used by Wendy to call her Ghostly sister Abigail.",
@@ -16162,7 +17054,7 @@ STRINGS.SCRAPBOOK = {
         BATTLESONG_INSTANT_REVIVE = "Revive up to 2 nearby allied players.\n\nThis is a Battle Stinger as it completes in an instant.",
         BATTLESONG_SHADOWALIGNED = "Wigfrid and nearby allies take 10% less damage from Shadow Aligned enemies and deal 5% bonus damage to Lunar Aligned enemies.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
         BATTLESONG_LUNARALIGNED = "Wigfrid and nearby allies take 10% less damage from Lunar Aligned enemies and deal 5% bonus damage to Shadow Aligned enemies.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
-        BEEFBELL = "Name and bond with one Beefalo at a time. Bonded Beefalo will follow the holder, even into caves and offline.",
+        BEEF_BELL = "Name and bond with one Beefalo at a time. Bonded Beefalo will follow the holder, even into caves and offline.",
         PLANTABLE_FERTILIZE = "This needs some fertilizing after planting.",
         SCANDATA = "Data is used to craft Circuits for WX-78.",
         WX78SCANNER = "Chirps when interesting biological targets are nearby.\n\nWill chase and scan interesting biological targets while WX-78 is close.\n\nDrops Bio Data when finished.",
@@ -16224,20 +17116,22 @@ STRINGS.SCRAPBOOK = {
         DUSTMERINGUE = "It's not food fit for a person.",
         BEEFALOTREAT = "Snacks for Beefalo.",
         BEEFALOFEED = "Snacks for Beefalo.",
-        GHOSTLYELIXERREGENERATION = "Raises Abigail's health regeneration from 1 to 3 health per second. Lasts 1 day.",
-        GHOSTLYELIXERHEALING = "Raises Abigail's health regeneration from 1 to 20 health per second. Lasts 30 seconds.",
-        GHOSTLYELIXERSHIELD = "Doubles Abigail's shield duration from 0.5 seconds to 1 second. Lasts 1 day.",
-        GHOSTLYELIXERATTACK = "Abigail will deal her nighttime damage during the day and dusk. Lasts 1 day.",
-        GHOSTLYELIXERSPEED = "Abigail has a 75% speed boost for 1 day.",
-        GHOSTLYELIXERRETALIATION = "Doubles Abigail's shield duration from 0.5 seconds to 1 second.\n\nAttacking creatures also take 20 damage.\n\nLasts 1 day.",
+        GHOSTLYELIXERREGENERATION = "Raises Abigail's health regeneration from 1 to 3 health per second. Lasts 1 day.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nHeals 1 health per second for 20 seconds.",
+        GHOSTLYELIXERHEALING = "Raises Abigail's health regeneration from 1 to 20 health per second. Lasts 30 seconds.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nHeals 5 health per second for 20 seconds.",
+        GHOSTLYELIXERSHIELD = "Doubles Abigail's shield duration from 0.5 seconds to 1 second. Lasts 1 day.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nGives the drinker a shield that will absorb a lot of damage from one hit and then goes on cool down for 10 seconds.",
+        GHOSTLYELIXERATTACK = "Abigail will deal her nighttime damage during the day and dusk. Lasts 1 day.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nThe drinker can see in the dark as if they were a ghost.",
+        GHOSTLYELIXERSPEED = "Abigail has a 75% speed boost for 1 day.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nHeavy objects won't slow the drinker down as much.",
+        GHOSTLYELIXERRETALIATION = "Doubles Abigail's shield duration from 0.5 seconds to 1 second.\n\nAttacking creatures also take 20 damage.\n\nLasts 1 day.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nGives the drinker a shield that will absorb a lot of damage from one hit and then goes on cool down for 10 seconds. It also inflicts 20 damage to all nearby enemies.",
+        GHOSTLYELIXERREVIVE = "Returns Abigail's level to 3.\n\nWhen drunk by a non ghost wearing the Wraith's Wreath:\n\nHeals the drinker for a little bit of sanity, fills a small amount of hunger and removes the health penalty of revival.",
+        GHOSTLYELIXERSHADOW = "Boosts the curse Abigail inflicts on targets, so that now they receive an extra 10 Planar Damage when attacked.",
+        GHOSTLYELIXERLUNAR = "Abigail inflicts an extra 10 planar damage when attacking and increases to 100 when Abigail is in Gestalt form.",
         FEATHERPENCIL = "Draws the closest item nearby onto a Mini Sign.",
         MINIFLARE = "Creates a flash in the sky that can be seen by all survivors on the minimap.",
         MEGAFLARE = "Creates a flash in the sky that can be seen by all survivors on the minimap.\n\nThis large flash will also draw the attention of some hostile creatures.",
-        FARMPLOW = "Digs up a tile and turns it into Farm Soil.",
         SADDLE_BASIC = "Can be put onto a Beefalo if it's willing.",
-        SADDLE_WAR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle, it also adds 16 damage to attacks made while riding.",
+        SADDLE_WAR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle.",
         SADDLE_RACE = "Can be put onto a Beefalo if it's willing. Increases speed over a regular saddle.",
-        SADDLE_WATHGRITHR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle, it also reduces the damage taken by 40%.",
+        SADDLE_WATHGRITHR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle.",
         PIGTOKEN = "Given to the Pig King to initiate a Wrestling Match.",
         WINTERSFEASTCOOKEDFOODS = "Captures the spirit of food when this is put on a Winter's Feast Table. The more, the merrier.",
         GUNPOWDER = "Will explode for 200 damage when lit.",
@@ -16250,7 +17144,7 @@ STRINGS.SCRAPBOOK = {
         POLLY_ROGERSHAT = "Polly Roger will fly down and follow the wearer, fetching nearby items.",
         MERMHAT = "Merm will treat the wearer like a merm.",
         DESERTHAT = "Improves vision in a storm.",
-        ALTERGUARDIANHAT = "When sanity is above 85%, Attacking will summon a minor Gestalt that also attacks the target for 42 damage, but costs 1 sanity each attack.\n\nIt is a source of light when worn. Spores stored in the hat can alter its light color.",                
+        ALTERGUARDIANHAT = "When sanity is above 85%, Attacking will summon a minor Gestalt that also attacks the target for 42 damage, but costs 1 sanity each attack.\n\nIt is a source of light when worn. Spores stored in the hat can alter its light color.",
         WATERMELONHAT = "Wearer's wetness will slowly rise up to 33%",
         FEATHERHAT = "Roughly doubles the number of birds that will land near the wearer.",
         MUSHHAT = "Reduces hunger by 25%. Periodically Spawns Mushroom Spores.",
@@ -16296,7 +17190,7 @@ STRINGS.SCRAPBOOK = {
         SHELLCLUSTER = "Can be mined for Shell Bells.",
         SPIDERREPELLENT = "When used by webber, nearby aggressive spiders become passive and releases spiders following Webber.",
         SLURTLESLIME = "Will explode for 50 damage when lit. Also fuels Lanterns and Miner Hats.",
-        WORTOX_SOUL = "Wortox can eat these to restore 25 Hunger and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half and them and lose 20 Sanity.",
+        WORTOX_SOUL = "Wortox can eat these to restore 25 Hunger and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half of them and lose 20 Sanity.",
         SUPERTACKLECONTAINER = "A 15 slots container for holding Tackle.",
         TACKLECONTAINER = "A 6 slots container for holding Tackle.",
         SPEEDYBALLOON = "When held, it increases movement speed by 30% which drops to 20% and then 10% as it decays.\n\nIf dropped on the ground before completely decaying, it will float into the air after 1.5 seconds and its location will appear on the minimap to all survivors.",
@@ -16305,8 +17199,8 @@ STRINGS.SCRAPBOOK = {
         EYEBONE = "Summons Chester when picked up. Chester will follow the holder. While Chester is alive, the eye will be open.",
         HUTCHFISHBOWL = "Summons Hutch when picked up. Hutch will follow the holder. While Hutch is alive, Star-Sky will be alive.",
         HALLOWEENPOTIONMOON = "Mutates some creatures and plants into their lunar mutated form.",
-        STRAWROLL = "Consumes 75 Hunger to gain 33 Sanity.",
-        FURROLL = "Consumes 75 Hunger to gain 50 Sanity and 30 Health. Warms the user to 40 degrees.",
+        STRAWROLL = "Sleeping in it restores 0.66 Sanity and 0.5 health per second, costing 1 Hunger per second.",
+        FURROLL = "Sleeping in it restores 1 Sanity and 1 health per second, costing 1 Hunger per second. It also warms the user overtime.",
         HALLOWEENPOTIONFIRE = "Creates pretty sparkles when added to a fire.",
         SOILAMENDER = "Adds 8-32 Growth Formula nutrient to the ground depending in its fermentation level.\n\nWill also trigger Wormwoods bloom for 1 to 4 minutes depending on fermentation level.",
         SUSPICIOUSMARBLE = "A piece of broken marble sculpture.",
@@ -16344,6 +17238,7 @@ STRINGS.SCRAPBOOK = {
         BOOMERANG = "You have to catch it once you throw it.",
         BRUSH = "Can be used on Beefalo to collect Beefalo Wool.\n\nIncreases Beefalo Obedience 40% and increases Beefalo domestication by 1.6% once per day.",
         BUGNET = "Catch small flying things and put them or their loot in your inventory.",
+        THULECITEBUGNET = "Catch small flying things and put them or their loot in your inventory.",
         COMPASS = "Will reveal users location on the map to other survivors also holding a Compass.",
         CUTLESS = "Knocks items out of targets inventory.",
         WATERINGCAN = "Adds 25 points of wetness to Garden Soil per use.\n\nCan also put out fires and stop smouldering.",
@@ -16369,7 +17264,7 @@ STRINGS.SCRAPBOOK = {
         WOODCARVEDHAT = "Protects wearer from falling debris during earthquakes.",
         MINIFAN = "Cools the holder while they run.",
         FISHINGROD = "Catch fish in ponds.",
-        OCEANFISHINGROD = "Catch fish in the ocean.\n\nUse bobbers and lures to increase your chanes.",
+        OCEANFISHINGROD = "Catch fish in the ocean.\n\nUse bobbers and lures to increase your chances.",
         OCEANFISHINGLURERED = "Used with a Sea Fishing Rod.\n\nMost effective during the day time.",
         OCEANFISHINGLUREGREEN = "Used with a Sea Fishing Rod.\n\nMost effective during dusk.",
         OCEANFISHINGLUREBLUE = "Used with a Sea Fishing Rod.\n\nMost effective during the night.",
@@ -16385,7 +17280,7 @@ STRINGS.SCRAPBOOK = {
         SPICE_CHILI = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Chili Flakes adds 20% damage to their attacks.\n\nDuration 4 minutes.\n\nAlso raises temperature 15 degrees for 15 seconds.",
         SPICE_SALT = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Seasoning Salt grants 25% more healing for healing effects.\n\nDuration 4 minutes.",
         BLUEPRINT = "It teaches you how to build a specific thing.",
-        WILLOWEMBER = "When a creature dies while on fire, they drop an etherial ember of some burnt essence of life.\n\nWhen Willow attunes with her lighter, eventually she can sense and collect Hot Embers with it.\n\nWillow can learn to use embers for a variety of Pyrokinetics.", 
+        WILLOWEMBER = "When a creature dies while on fire, they drop an etherial ember of some burnt essence of life.\n\nWhen Willow attunes with her lighter, eventually she can sense and collect Hot Embers with it.\n\nWillow can learn to use embers for a variety of Pyrokinetics.",
 
         -- things
         ATRIUMGATE = "A broken stone ring that has an empty socket at the base.",
@@ -16393,7 +17288,7 @@ STRINGS.SCRAPBOOK = {
         ANIMALTRACK = "A footprint of an animal that was walking somewhere.",
         ARCHIVERESONATOR = "A mysterious device that burns arrows into the dirt.",
         TENTACLEPILLARHOLE = "A hole leading to a tunnel that leads somewhere else.",
-        BOATCANNON = "Can be loaded with cannoballs.\n\nOnce loaded, it can be aimed to fire. The direction can be changed by standing next it from differnet sides before aiming.",
+        BOATCANNON = "Can be loaded with cannoballs.\n\nOnce loaded, it can be aimed to fire. The direction can be changed by standing next to it from different sides before aiming.",
         SACREDCHEST = "A container with 6 slots. Could be a 6 item combination lock, only Metheus knows.",
         TREASURECHEST = "A container with 9 slots.",
         MINOTAURCHEST = "A container with 12 slots.",
@@ -16405,7 +17300,7 @@ STRINGS.SCRAPBOOK = {
 		STAFFCOLDLIGHT = "Cools survivors and gives light for 2 days.",
         COLDFIRE = "Works like a campfire, but makes things colder instead of heating them.",
         MOONSTORMSTATIC = "An experiment being worked on by a mysterious hologram that requires the survivors help.",
-        FARMPLOW = "Digs a tile of ground into farm soil that can be hoed to grow seeds into plants.",       
+        FARMPLOW = "Digs a tile of ground into farm soil that can be hoed to grow seeds into plants.",
         WATERTREEPILLAR = "This tree has a great canopy of leaves that shades the ground in an area bellow it and offers 35% protection from rain and cools survivor a small amount.",
         TREE = "Standing near a tree offers 35% protection from rain and cools survivor a small amount.",
         LOSTTOY = "Ghostly apparition of a spirit's lost toy.",
@@ -16497,8 +17392,8 @@ STRINGS.SCRAPBOOK = {
         SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.\n\nWebber may upgrade these with Silk.",
         STEERINGWHEEL = "When deployed on a boat, a survivor can use it to rotate the boats direction.",
         TACKLESTATION = "Standing near this device will provide the survivor with new Lures and Floats they can craft.",
-        CARPENTRY_STATION = "Standing near this device will provide the survivor with new Furniture they can craft.\n\nIt can also be used to quickly refine logs into boards.",
-        TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",
+        CARPENTRY_STATION = "Standing near this device will provide the survivor with new Furniture they can craft.",
+        TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and increases temperature 1 degree per second up to 40 degrees.",
         TURFCRAFTINGSTATION = "Standing near this device will provide the survivor with new Turf they can craft.",
         TOWNPORTAL = "At the cost of 15 Sanity, a survivor can activate the device and then consume 40 Sanity per minute while they keep it active. A second survivor can use another Lazy Deserter or a Desert Stone to teleport to the active one. The teleport costs 50 Sanity.",
         WINTEROMETOR = "This device tells you the current temperature between 0 and 35 degrees.\n\nIt turns blue during the Winter.",
@@ -16523,10 +17418,10 @@ STRINGS.SCRAPBOOK = {
         MOONROCKSEED = "Standing near this device will provide the survivor with new items they can craft.",
         VOIDCLITHSCYTHE = "This tool will Reap harvestables in an area around it, not just a single item.",
         ANTLIONSINKHOLE = "Survivors will be slowed trying to walk across these.\n\nSomething must be making the ground weaker.",
-        BEARGERFUR_SACK = "A carriable container with 6 slots that can hold prepared food.\n\nThe food stored in it will be preserved for a long time.",
+        BEARGERFUR_SACK = "A carryable container with 6 slots that can hold prepared food.\n\nThe food stored in it will be preserved for a long time.",
         DEERCLOPSEYEBALL_SENTRYWARD = "Makes the surrounding environment cool, if holding a Deerclops Eyeball.\n\nWildfires will not occur nearby, also preventing plant withering. It affects how quickly things dry out, including soil moisture, and how quickly they perish.\n\nCreates Mini Glaciers around itself over time.",
         ARCHIVESWITCH = "How many Survivors does it take to change a lightbulb?",
-        ORCHESTRINA = "Found deep in the long-forgotten archives of an ancient civilization, this noteworthy device is as melodious as it is mysterious. Solving its riddle might just be the key to unlocking a wellspring of ancient knowledge.",        
+        ORCHESTRINA = "Found deep in the long-forgotten archives of an ancient civilization, this noteworthy device is as melodious as it is mysterious. Solving its riddle might just be the key to unlocking a wellspring of ancient knowledge.",
         MOONALTARLINK = "It feels like there's a storm coming...",
         MOONBASE = "\"'Neath full moon's light, ye place the key;\nA rod whose call the stars doth heed.\nBut be ye warned, 'fore prize be claimed,\nSurvive the horde, lest ye be maimed.\"",
         CHARLIE_STAGE_POST = "A gift graciously bestowed to you by the Queen of the Constant, to enrich your sad, futile little lives. She was even kind enough to prepare costumes and a script!",
@@ -16545,7 +17440,7 @@ STRINGS.SCRAPBOOK = {
         SPEAR_WATHGRITHR_LIGHTNING = "Does electrical damage which does more damage to wet targets.",
         SPEAR_WATHGRITHR_LIGHTNING_CHARGED = "Does electrical damage which does more damage to wet targets.\n\nIncreases movement speed by 20% when held.\n\nIt can only be equipped by Wigfrids who have the \"Elding Spear Enhancement II\" skill.",
         WATHGRITHR_SHIELD = "Can be used to block attacks. Successfully blocking an attack decreases the block cooldown.\n\nIt can only be equipped by Wigfrids who have the \"Battle Rönd\" skill.",
-        BATTLESONG_CONTAINER = "A carriable container with 8 slots that can hold Battle Songs and Battle Stingers.",
+        BATTLESONG_CONTAINER = "A carryable container with 8 slots that can hold Battle Songs and Battle Stingers.",
         EMBERLIGHT = "Works like a campfire for its duration, creating light and heat and will ignite things nearby. It can also be used to cook food.",
         BOOTLEG = "Can be thrown into the sea to create a pair of connected Whirlportals. Boats sailing close to them will be brought to the other entrance.",
         OCEANWHIRLPORTAL = "An ocean portal that allows boats to travel long distances.",
@@ -16561,7 +17456,7 @@ STRINGS.SCRAPBOOK = {
 
         JUNK_PILE_BIG = "A towering pile of junk. There might be something surprising hiding inside...",
 
-        -- Meta 4 / Ocean QoL 
+        -- Meta 4 / Ocean QoL
 
         ANCIENTFRUIT_GEM = "Even the heart of stone can be cracked by a little warmth... or perhaps a lot.",
         ANCIENTTREE_SEED = "An exotic seed that is very demanding on its growing conditions. There's a time and place for everything...",
@@ -16570,15 +17465,111 @@ STRINGS.SCRAPBOOK = {
         BOATPATCH_KELP = "A temporary solution for leaks. Sprung a leak? Use a kelp patch... then another... and another...",
         MOSQUITOMUSK = "Containing \"essence de moustique\" making any holder seem friendly to wild mosquitos.",
         MOSQUITOBOMB = "Packed so tight with wriggling friends that the explosive release of bugs inflicts damage to targets nearby.",
-        MOSQUITOMERMSALVE = "A useful healing device but only for merm, after all, the Mosquitos are mostly full of Merm blood to begin with.",
+        MOSQUITOMERMSALVE = "A useful healing device but only for Merms, after all, the Mosquitos are mostly full of Merm blood to begin with.",
 
-        MERM_ARMORY = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Brawler Helmet from it, reducing its stores.\n\nSwamp Brawler Helmets are a cheap way for a merm to get 50% protection from damage for a short while.",
-        MERM_ARMORY_UPGRADED = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Warrior Helmet from it, reducing its stores.\n\nSwamp Warrior Helmets are a better design over their Brawler cousin, providing 70% resistance from damage for a longer period of time.",
-        MERM_TOOLSHED = "While stocked with twigs and rocks, regular Merm will grab a Shoddy Tool from it, reducing its stores.\n\nShoddy tools will increase the amount of work a merm does for a short time.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
-        MERM_TOOLSHED_UPGRADED = "While stocked with twigs and rocks, regular Merm will grab a Slightly Less Shoddy Tool from it, reducing its stores.\n\nSlightly Less Shoddy tools increase the amount of work a merm does a little more than their lesser sibling, the Shoddy Tool.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
+        MERM_ARMORY = "While stocked with Cut Grass and Logs, Merm Guards will grab a Swamp Brawler Helmet from it, reducing its stores.\n\nSwamp Brawler Helmets are a cheap way for a Merm to get 50% protection from damage for a short while.",
+        MERM_ARMORY_UPGRADED = "While stocked with Cut Grass and Logs, Merm Guards will grab a Swamp Warrior Helmet from it, reducing its stores.\n\nSwamp Warrior Helmets are a better design over their Brawler cousin, providing 70% resistance from damage for a longer period of time.",
+        MERM_TOOLSHED = "While stocked with twigs and rocks, regular Merms will grab a Shoddy Tool from it, reducing its stores.\n\nShoddy Tools will increase the amount of work a Merm does for a short time.\n\nWith a Shoddy Tool, follower Merms will help chop trees, mine rocks, dig in a garden and till soil.",
+        MERM_TOOLSHED_UPGRADED = "While stocked with twigs and rocks, regular Merms will grab a Slightly Less Shoddy Tool from it, reducing its stores.\n\nSlightly Less Shoddy tools increase the amount of work a Merm does a little more than their lesser sibling, the Shoddy Tool.\n\nWith a Slightly Less Shoddy Tool, follower Merms will help chop trees, mine rocks, dig in a garden and till soil.",
 
-        OFFERING_POT = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
-        OFFERING_POT_UPGRADED = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
+        OFFERING_POT = "Speeds up the respawning of Merms in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby Merms to come eat the kelp and follow the Merm who summoned them.",
+        OFFERING_POT_UPGRADED = "Speeds up the respawning of Merms in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby Merms to come eat the kelp and follow the Merm who summoned them.",
+
+        -- Rifts 4
+
+        ARMOR_CARROTLURE = "Bunnymen are drawn to its alluring scent, powerful enough to mask the musk of meats.",
+        CARPENTRY_BLADE_MOONGLASS = "Allows a Sawhorse equipped with it to build new things.",
+        CHEST_MIMIC_REVEALED = "A heartless monster. It craves the taste of loot, and flesh.",
+        ITEMMIMIC_REVEALED = "An annoying little creep that just wants to be held by you. Stomp it out quickly, before it does more creeping.",
+        GELBLOB_STORAGE = "The Icker completely stops the spoilage of food placed in it.",
+        RABBITHAT = "Blend in with the rabbits so they no longer flee from you in terror.",
+        RABBITKING_AGGRESSIVE = "This Wrathful Rabbit King will show no mercy.",
+        RABBITKING_LUCKY = "Catch a Fortuitous Rabbit for your free reward. But be warned, the reward may turn to punishment when carrying meat.",
+        RABBITKING_PASSIVE = "This Benevolent Rabbit King will barter for your belongings.",
+        RABBITKINGHORN = "Calls forth a Portable Den.",
+        RABBITKINGHORN_CHEST = "A storage for your items and other trinkets accessible from Portable Dens.",
+        RABBITKINGMINION_BUNNYMAN = "The Rabbit King commands with a Royal decree, your presence be removed no matter your plea.",
+        RABBITKINGSPEAR = "It wards off Bunnymen, but trades your own mind for power against them in more ways than one.",
+        SADDLE_SHADOW = "Can be put onto a Beefalo if it's willing. Faster than a regular saddle.",
+        SHADOW_BATTLEAXE = "It can take down both creatures and trees. You can upgrade its stats, life steal and hunger, by defeating giants.\n\nThe weapon has 3 levels, and each level requires 3 giant kills to progress.",
+        SHADOW_BEEF_BELL = "Bind a Beefalo to the bell. A bound Beefalo will follow the holder, even into the caves and offline.\n\nYou can also use this bell to revive a bound Beefalo.",
+        SHADOWHEART_INFUSED = "A working heart that used to have a new body.",
+        SHADOWTHRALL_MOUTH = "It lurks in the shadows... You'll need to find a way to expose it before you can attack it.",
+        VOIDCLOTH_BOOMERANG = "A ranged weapon that launches three projectiles, dealing more damage the farther they travel.\n\nEquipping a Void Cowl gives an additional projectile. The Gloomerang also increases movement speed by 10% when held.",
+        WORM_BOSS = "The ancestor of the Depths Worm is dangerous to attack while it's in motion.",
+
+        -- HallowedNights2024
+
+        PUMPKINCARVER = "Can be used to carve specific shapes on Giant Pumpkins.",
+
+		-- WintersFeast2024
+
+		SNOWMAN = "Roll'em! Stack'em! Decorate them with a variety of items!",
+
+        -- Meta 5
+
+        BANDAGE_BUTTERFLYWINGS = "Heals 24 health.\n\nIf used by Walter and he has learned the Field Medic skill, it will heal an additional 12 health, also restoring 10 sanity.",
+        WOBY_TREAT = "Restores three times as much hunger when eaten by Woby.",
+        ELIXIR_CONTAINER = "A carryable container with 9 slots that can hold Elixirs.",
+        GHOSTFLOWERHAT = "When equipped, allows Wendy to drink Elixirs herself.",
+        -- GHOSTLYELIXERLUNAR = "TODO",
+        -- GHOSTLYELIXERREVIVE = "TODO",
+        -- GHOSTLYELIXERSHADOW = "TODO",
+        GRAVEGUARD_GHOST = "Where they appear, Evil Flowers tend to grow nearby.",
+        GRAVEURN = "It is used to move Headstones.",
+        PORTABLEFIREPIT_ITEM = "A portable campfire that stays lit even when packed!",
+		SLINGSHOT_BAND_MIMIC = "It greatly increases how far you can shoot and how fast your ammo travels. It sometimes saves ammo by launching a mimic version of it.",
+		SLINGSHOT_BAND_PIGSKIN = "It moderately increases how far you can shoot and how fast your ammo travels.",
+		SLINGSHOT_BAND_TENTACLE = "It greatly increases how far you can shoot and how fast your ammo travels. It can be possessed by a heartless monster...",
+		SLINGSHOT_FRAME_BONE = "Adds a backup ammo slot to your Slingshot.",
+		SLINGSHOT_FRAME_GEMS = "Adds a special ammo slot to your Slingshot that is used for a secondary, alternate Slingshot attack, that extends any magic effects of your ammo to an area of effect.",
+		SLINGSHOT_FRAME_WAGPUNK = "Expands the ammo slot to unlimited stack size, and adds a secondary, alternate Slingshot attack, that can be charged by holding down to deal up to 200% damage.",
+		SLINGSHOT_FRAME_WAGPUNK_0 = "Adds a secondary, alternate Slingshot attack, that can be charged by holding down to deal up to 200% damage.",
+		SLINGSHOT_HANDLE_JELLY = "It greatly increases your firing rate and prevents your Slingshot from slipping out of your hands.",
+		SLINGSHOT_HANDLE_SILK = "It moderately increases your firing rate, which will ramp up if you shoot continuously.",
+		SLINGSHOT_HANDLE_STICKY = "It moderately increases your firing rate, and prevents your Slingshot from slipping out of your hands.",
+		SLINGSHOT_HANDLE_VOIDCLOTH = "It greatly increases your firing rate, which will ramp up if you shoot continuously.",
+        SLINGSHOTAMMO_CONTAINER = "A carryable container with 6 slots that can hold Slingshot Rounds.",
+		SLINGSHOTAMMO_THULECITE = "It has a chance to spawn a Shadow Tentacle on impact, which deals damage to your target.",
+		SLINGSHOTAMMO_SLOW = "It slows down your target for 30 seconds, stacking up to 3 times.",
+		SLINGSHOTAMMO_POOP = "It causes some targets to lose interest in you.",
+        SLINGSHOTAMMO_DREADSTONE = "It has a 50% chance to not break on impact.",
+		SLINGSHOTAMMO_GELBLOB = "It attaches an Icker blob to your target for 60 seconds, greatly slowing it down.",
+        SLINGSHOTAMMO_GUNPOWDER = "It has an increasing chance to trigger an explosion, dealing double damage in a large area.",
+		SLINGSHOTAMMO_HONEY = "It slows down ground targets for 8 seconds.",
+		SLINGSHOTAMMO_HORRORFUEL = "It applies the Swarming Horror debuff to creatures it hits, dealing 10 planar damage periodically. Up to 4 Swarming Horrors can be stacked on each target.",
+		SLINGSHOTAMMO_LUNARPLANTHUSK = "It has a chance to spawn a Brightshade Vine on impact, which deals planar damage to your target.",
+        SLINGSHOTAMMO_MOONGLASS = "It deals damage in a medium area around its target.",
+		SLINGSHOTAMMO_PUREBRILLIANCE = "It applies a Pure Brilliance mark to creatures it hits, lasting 30 seconds. This mark can be triggered by planar attacks for an additional 5 planar damage per hit.",
+		SLINGSHOTAMMO_SCRAPFEATHER = "It deals electrical damage, which does more damage to wet targets. It can also trigger hit stun more often than other projectiles.",
+        SLINGSHOTAMMO_STINGER = "It deals damage in a small area around its target.",
+        SLINGSHOTMODKIT = "Allows you to customize your Slingshot.",
+        BALATRO_MACHINE = "Some character named Jimbo wants you to play a card game with him.\n\nTo start, you should choose one of three Jokers. Each has a different way to give you a little edge in the game.\n\nSecond, play Poker. You can choose cards to discard and replace with new cards. You can do that twice.\n\nThen your hand will be evaluated. You will get chips based on the value of your cards. You will get a multiplyer based on the quality of your hand. Your Chips times your Multiplier is your points. Get as many points as you can. Jimbo might give you something for your time.",
+        DECK_OF_CARDS = "Play a game of cards, however you like. Hit it to shuffle, but be careful!",
+        PLAYING_CARD = "A single card for playing games! Combine these together to make a deck.",
+
+        -- Rifts 5
+        WAGBOSS_ROBOT_LEG = "Although the W.A.R.B.O.T. material failed to fully contain the Celestial Scion, it may still prove useful in protecting the survivors.",
+        WAGBOSS_MISSILE = "These heat-seeking missiles lock onto the warmest thing they can find... So make sure that isn't you!",
+        HERMITCRAB_RELOCATION_KIT = "Help Pearl find a new home! It might be tricky to find the perfect spot, but remember - she loves being near the ocean.",
+        WANDERINGTRADER = "He travels between a few Points of Interest, looking for survivors to trade with. He gets new stock every couple of days, so be sure to check back in regularly!",
+        LUNAR_SEED = "They came from an enlightened crown - so return them to one, to bask in eternal enlightenment.",
+
+        -- electrocute
+        WAGSTAFF_MATERIALS_NOTE = "\n\"Day 89 - Material Study\"\n\n\"Thulecite appears sufficient to contain lunar entities. Structural integrity holds under moderate strain. Further testing advised.\"\n",
+        WAGSTAFF_ENERGY_NOTE = "\n\"Day 195 - Energy\"\n\n\"Eureka. Lunar forms radiate boundless energy. Containable. Obedient, even? Control may be possible. Endless applications... if stability holds.\"\n",
+        WAGSTAFF_CONTAINMENT_NOTE = "\n\"Day 226 - Containment Measures\"\n\n\"Area of containment necessary prior to experimentation. Consider implementing a kinetic and teleportational dampening field?\"\n",
+        WAGSTAFF_THERMAL_NOTE = "\n\"Day 354 - Heat Signature Detection\"\n\n\"Preliminary thermal tracking functional. However, response irregularities suggest vulnerability to rudimentary interference - false positives observed with minimal thermal masking.\"\n",
+        WAGSTAFF_ELECTRICITY_NOTE = "\n\"Day 418 - Electrifying!\"\n\n\"Interesting. Can redirect controlled electric discharge for practical (and offensive) applications. Truly remarkable potential. Note to self: don appropriate insulative layers next time. That last zap was... unexpectedly exhilarating.\"\n",
+
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE = "Build the W.A.R.B.O.T. using only the most authentic parts.",
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "There is only one place that this contraption can go so that the containment barrier can do its part in stabilizing the energies used.",
+        WAGBOSS_ROBOT_CREATION_PARTS = "Parts cut according to the correct specifications for W.A.R.B.O.T. construction.",
+        MOONSTORM_STATIC_CATCHER = "Now you're the catcher!\nFind the energy running loose in the storms and try to restrain it.",
+        COOLANT = "Essence of insight... Fuel of power... ...Bubbling.",
+
+        FENCE_ELECTRIC = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
+        FENCE_ELECTRIC_ITEM = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
     },
 
     -- Full name: "{name} Scrapbook Page"
@@ -16586,6 +17577,13 @@ STRINGS.SCRAPBOOK = {
     {
         UNKNOWN = "Lost",
     },
+}
+
+STRINGS.TEMP_BETA_MSG =
+{
+	RIFTS5_BASIC = "Thanks for playing the beta!\nBoss final phase and rewards coming soon...",
+	RIFTS5_BASIC_NEW = "Thanks for playing the beta!",
+	RIFTS5_KILLTIME_FMT = "You defeated {name} in {time}s.",
 }
 
 --Don't include this in pot generation as this file is already translated.

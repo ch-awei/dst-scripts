@@ -46,8 +46,12 @@ local function GemFruit_OnUpdate(inst, dt)
     local heatindex = 0
 
     for _, ent in ipairs(ents) do
-        if ent.components.heater ~= nil and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
-            heatindex = heatindex + (ent.components.heater:GetHeat(inst) or 0) -- Cold fires produce negative heat.
+		if ent.components.heater then
+			--V2C: GetHeat first. Some heaters update thermics in their heatfn.
+			local heat = ent.components.heater:GetHeat(inst)
+			if heat and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
+				heatindex = heatindex + heat -- Cold fires produce negative heat.
+			end
 
             if heatindex >= TUNING.ANCIENTFRUIT_GEM_MIN_HEAT then
                 inst._temperature = math.min(inst._temperature + dt, TUNING.ANCIENTFRUIT_GEM_TEMPERATURE_THRESHOLD.MAX)
@@ -256,6 +260,7 @@ local function gem_fruit_fn()
     inst.pickupsound = "rock"
 
     inst:AddTag("molebait")
+    -- NOTES(JBK): Do not add the gem tag to this it is not a socketable gem.
 
     MakeInventoryPhysics(inst)
 
@@ -277,9 +282,14 @@ local function gem_fruit_fn()
     inst.SpawnGem = GemFruit_SpawnGem
     inst.SpawnAndLaunchGems = GemFruit_SpawnAndLaunchGems
 
+    inst:AddComponent("bait")
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")
-    inst:AddComponent("bait")
+    inst:AddComponent("tradable")
+
+    inst:AddComponent("edible")
+    inst.components.edible.foodtype = FOODTYPE.ELEMENTAL
+    inst.components.edible.hungervalue = 3
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetSinks(true)
@@ -318,6 +328,12 @@ local ANCIENTFRUIT_NIGHTVISION_COLOURCUBES =
     nightvision_fruit = true, -- NOTES(DiogoW): Here for convinience.
 }
 
+local ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS =
+{
+	default = { colour = Vector3(255/255, 175/255, 255/255) },
+	fixedcolour = true,
+}
+
 local BEAT_SOUNDNAME = "BEAT_SOUND"
 
 local function NightVision_OnEaten(inst, eater)
@@ -336,6 +352,20 @@ local function NightVision_PlayBeatingSound(inst)
     inst.SoundEmitter:PlaySound("meta4/ancienttree/nightvision/fruit_pulse", BEAT_SOUNDNAME)
 end
 
+local function NightVision_DoBeatingBounce(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+
+    if y >= .1 then
+        return -- We are mid air!
+    end
+
+    local angle = math.random() * TWOPI
+    local spd = math.random() * .5 + .5
+
+    inst.Physics:SetVel(math.cos(angle) * spd, 5, math.sin(angle) * spd)
+    inst.components.inventoryitem:SetLanded(false, true)
+end
+
 local function NightVision_OnEntityWake(inst)
     if inst._beatsoundtask ~= nil or inst:IsInLimbo() or inst:IsAsleep() then
         return
@@ -346,12 +376,18 @@ local function NightVision_OnEntityWake(inst)
         inst._beatsoundtask = nil
     end
 
+    if inst._beatbouncetask ~= nil then
+        inst._beatbouncetask:Cancel()
+        inst._beatbouncetask = nil
+    end
+
     local fulltime    = inst.AnimState:GetCurrentAnimationLength()
     local currenttime = inst.AnimState:GetCurrentAnimationTime()
 
     inst:PlayBeatingSound() -- This one might be out of sync, but that's fine!
 
-    inst._beatsoundtask = inst:DoPeriodicTask(fulltime, inst.PlayBeatingSound, fulltime - currenttime)
+    inst._beatsoundtask  = inst:DoPeriodicTask(fulltime, inst.PlayBeatingSound, fulltime - currenttime             )
+    inst._beatbouncetask = inst:DoPeriodicTask(fulltime, inst.DoBeatingBounce, (fulltime - currenttime) + 12*FRAMES)
 end
 
 local function NightVision_OnEntitySleep(inst)
@@ -360,6 +396,11 @@ local function NightVision_OnEntitySleep(inst)
     if inst._beatsoundtask ~= nil then
         inst._beatsoundtask:Cancel()
         inst._beatsoundtask = nil
+    end
+
+    if inst._beatbouncetask ~= nil then
+        inst._beatbouncetask:Cancel()
+        inst._beatbouncetask = nil
     end
 end
 
@@ -394,11 +435,13 @@ local function nightvision_fruit_fn()
     end
 
     inst.PlayBeatingSound = NightVision_PlayBeatingSound
+    inst.DoBeatingBounce = NightVision_DoBeatingBounce
 
     inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
 
     inst:AddComponent("edible")
     inst.components.edible.hungervalue =  TUNING.CALORIES_SMALL
@@ -453,6 +496,7 @@ local function cooked_nightvision_fruit_fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
 
     inst:AddComponent("edible")
     inst.components.edible.hungervalue =  TUNING.CALORIES_MEDSMALL
@@ -486,7 +530,7 @@ local function buff_OnAttached(inst, target)
     end, target)
 
     if target.components.playervision ~= nil then
-        target.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true)
+		target.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true, ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS)
         inst._enabled:set(true)
     end
 
@@ -566,7 +610,7 @@ end
 local function buff_OnEnabledDirty(inst)
     if ThePlayer ~= nil and inst.entity:GetParent() == ThePlayer and ThePlayer.components.playervision ~= nil then
         if inst._enabled:value() then
-            ThePlayer.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true)
+			ThePlayer.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true, ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS)
         else
             ThePlayer.components.playervision:PopForcedNightVision(inst)
         end

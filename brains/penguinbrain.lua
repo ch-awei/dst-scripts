@@ -87,11 +87,13 @@ local function PrepareForNight(inst)
     return TheWorld.state.isnight or (TheWorld.state.isdusk and TheWorld.state.timeinphase > .8) or inst.components.sleeper:IsAsleep()
 end
 
+local NO_TAGS = { "outofreach" }
+
 -- Return array of items within the given radius that satisfies the check function
 local function FindItems(inst, radius, fn, tags)
     if inst and inst:IsValid() then
 		local x,y,z = inst.Transform:GetWorldPosition()
-		local ents = TheSim:FindEntities(x,y,z, radius, tags)
+		local ents = TheSim:FindEntities(x,y,z, radius, tags, NO_TAGS)
         local lst = {}
 		for k, v in ipairs(ents) do
 			if v ~= inst and v.entity:IsValid() and v.entity:IsVisible() and (not fn or fn(v)) then
@@ -351,6 +353,7 @@ function PenguinBrain:OnStart()
             ActionNode(function() return FlyAway(self.inst) end)),
 
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         -- Penguins will panic and pick up eggs if player comes too close
 		DoAction(self.inst, function() return StealAction(self.inst) end, "PickUp Egg Action", true ),

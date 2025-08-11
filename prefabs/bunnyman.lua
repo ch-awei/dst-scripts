@@ -5,6 +5,7 @@ local assets =
     Asset("ANIM", "anim/manrabbit_attacks.zip"),
     Asset("ANIM", "anim/manrabbit_build.zip"),
     Asset("ANIM", "anim/manrabbit_boat_jump.zip"),
+    Asset("ANIM", "anim/manrabbit_parasite_death.zip"),
 
     Asset("ANIM", "anim/manrabbit_beard_build.zip"),
     Asset("ANIM", "anim/manrabbit_beard_basic.zip"),
@@ -209,17 +210,25 @@ local function OnRefuseItem(inst, item)
     end
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end
+
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
-    inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+    else
+        inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    end
 end
 
 local function OnNewTarget(inst, data)
-    inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
-end
-
-local function is_meat(item)
-    return item.components.edible ~= nil and item.components.edible.foodtype == FOODTYPE.MEAT and not item:HasTag("smallcreature")
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+    else
+        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    end
 end
 
 local RETARGET_MUST_TAGS = { "_combat", "_health" }
@@ -231,12 +240,13 @@ local function NormalRetargetFn(inst)
                 TUNING.PIG_TARGET_DIST,
                 function(guy)
                     return inst.components.combat:CanTarget(guy)
+                        and (guy.components.inventory == nil or not guy.components.inventory:EquipHasTag("manrabbitscarer"))
                         and (guy:HasTag("monster")
                             or guy:HasTag("wonkey")
                             or guy:HasTag("pirate")
                             or (guy.components.inventory ~= nil and
                                 guy:IsNear(inst, TUNING.BUNNYMAN_SEE_MEAT_DIST) and
-                                guy.components.inventory:FindItem(is_meat) ~= nil))
+                                HasMeatInInventoryFor(guy)))
                 end,
                 RETARGET_MUST_TAGS, -- see entityreplica.lua
                 nil,
@@ -256,8 +266,7 @@ end
 local function battlecry(combatcmp, target)
     local strtbl =
         target ~= nil and
-        target.components.inventory ~= nil and
-        target.components.inventory:FindItem(is_meat) ~= nil and
+        HasMeatInInventoryFor(target) and
         "RABBIT_MEAT_BATTLECRY" or
         "RABBIT_BATTLECRY"
     return strtbl, math.random(#STRINGS[strtbl])
@@ -290,6 +299,48 @@ local function OnLoad(inst)
 	end
 end
 
+local function SwitchLeaderToRabbitKing(inst, rabbitking)
+    local follower = inst.components.follower
+    if follower then
+        follower:SetLeader(rabbitking)
+        follower:AddLoyaltyTime(TUNING.RABBITKING_STOLEN_MANRABBIT_LOYALTY_TIME)
+        local target = rabbitking.components.combat.target
+        if target then
+            inst.components.combat:SuggestTarget(target)
+        end
+    end
+end
+local function TryToSwitchLeader(inst, target)
+    if target.components.follower == nil then
+        return
+    end
+
+    local leader = target.components.follower:GetLeader()
+    if leader == nil then
+        return
+    end
+
+    if leader:HasTag("rabbitking") then
+        SwitchLeaderToRabbitKing(inst, leader)
+    else
+        TryToSwitchLeader(inst, leader)
+    end
+end
+local function ShouldAggro(inst, target)
+    if target:HasTag("rabbitking_manrabbit") then
+        TryToSwitchLeader(inst, target)
+        return false
+    end
+    if target:HasAnyTag("rabbitking") then
+        SwitchLeaderToRabbitKing(inst, target)
+        return false
+    end
+
+    return true
+end
+
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "HAIR_HAT" }
+
 local function fn()
     local inst = CreateEntity()
 
@@ -312,6 +363,7 @@ local function fn()
     inst:AddTag("pig")
     inst:AddTag("manrabbit")
     inst:AddTag("scarytoprey")
+    inst:AddTag("regular_bunnyman")
 
     inst.AnimState:SetBank("manrabbit")
     inst.AnimState:PlayAnimation("idle_loop", true)
@@ -333,13 +385,15 @@ local function fn()
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
-    inst.scrapbook_hide = {"hat","ARM_carry","HAIR_HAT"}
+    inst:AddComponent("spawnfader")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
 
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("_named")
@@ -369,6 +423,7 @@ local function fn()
 
     inst.components.combat.GetBattleCryString = battlecry
     inst.components.combat.GetGiveUpString = giveupstring
+    inst.components.combat:SetShouldAggroFn(ShouldAggro)
 
     MakeMediumBurnableCharacter(inst, "manrabbit_torso")
 

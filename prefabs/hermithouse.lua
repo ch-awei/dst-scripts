@@ -125,9 +125,9 @@ local function OnConstructed(inst, doer)
     end
 
 	if concluded then
-		local child = inst.components.spawner.child
         local ishome =  inst.components.spawner:IsOccupied()
         inst.components.spawner:ReleaseChild()
+        local child = inst.components.spawner.child -- NOTES(JBK): This must be after ReleaseChild for entity safety because it will create a new one if it no longer exists.
 
         local new_house = ReplacePrefab(inst, inst._construction_product)
         new_house.SoundEmitter:PlaySound("hookline_2/characters/hermit/house/stage"..new_house.level.."_place")
@@ -281,8 +281,6 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, house
 
 		inst:AddTag("antlion_sinkhole_blocker")
 
-        MakeSnowCoveredPristine(inst)
-
         inst.scrapbook_proxy = "hermithouse"
 
         if client_postinit then
@@ -340,6 +338,8 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, house
         if master_postinit then
            master_postinit(inst)
         end
+
+        TheWorld:PushEvent("ms_register_pearl_entity", inst)
 
         return inst
 	end

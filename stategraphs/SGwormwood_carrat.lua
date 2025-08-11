@@ -14,6 +14,7 @@ local events =
     CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
+    CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
 
@@ -31,6 +32,8 @@ local events =
             inst.sg:GoToState((should_run and "run_start") or "walk_start")
         end
     end),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned")
@@ -190,6 +193,7 @@ CommonStates.AddSleepExStates(states,
     },
 })
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHitState(states)
 CommonStates.AddWalkStates(states,
 {
@@ -224,5 +228,7 @@ CommonStates.AddRunStates(states,
         TimeEvent(0, PlayFootstep),
     },
 })
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("wormwood_carrat", states, events, "idle", actionhandlers)

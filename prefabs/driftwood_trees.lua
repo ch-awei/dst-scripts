@@ -57,6 +57,7 @@ end
 
 local function make_stump(inst, is_burnt)
     inst:RemoveComponent("workable")
+    inst:RemoveComponent("lunarhailbuildup")
     inst:RemoveComponent("burnable")
     inst:RemoveComponent("propagator")
     inst:RemoveComponent("hauntable")
@@ -98,6 +99,8 @@ local function on_chopped_down(inst, chopper)
         inst.AnimState:PlayAnimation("fall")
         inst.components.lootdropper:DropLoot()
         inst:ListenForEvent("animover", inst.Remove)
+
+        RemovePhysicsColliders(inst)
     end
 end
 
@@ -242,6 +245,11 @@ local function fn(type_name, is_large)
     inst.OnLoad = onload
 
     MakeSnowCovered(inst)
+    if is_large then
+        SetLunarHailBuildupAmountLarge(inst)
+    else
+        SetLunarHailBuildupAmountSmall(inst)
+    end
 
 	return inst
 end

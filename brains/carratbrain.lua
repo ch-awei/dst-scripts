@@ -4,6 +4,7 @@ require "behaviours/leash"
 require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local AVOID_PLAYER_DIST = 3
 local AVOID_PLAYER_DIST_SQ = AVOID_PLAYER_DIST * AVOID_PLAYER_DIST
@@ -87,6 +88,8 @@ local function edible(inst, item)
             item:GetCurrentPlatform() == inst:GetCurrentPlatform()
 end
 
+local NO_TAGS = { "INLIMBO", "outofreach" }
+
 local function eat_food_action(inst)
     if inst == nil or not inst:IsValid() then
         return nil
@@ -94,7 +97,7 @@ local function eat_food_action(inst)
 
     local px, py, pz = inst.Transform:GetWorldPosition()
 
-    local ents_nearby = TheSim:FindEntities(px, py, pz, SEE_BAIT_DIST + AVOID_PLAYER_DIST)
+	local ents_nearby = TheSim:FindEntities(px, py, pz, SEE_BAIT_DIST + AVOID_PLAYER_DIST, nil, NO_TAGS)
 
     local foods = {}
     local scaries = {}
@@ -209,6 +212,9 @@ function CarratBrain:OnStart()
     {
         WhileNode( function() return (self.inst.components.health ~= nil and self.inst.components.health.takingfiredamage) or (self.inst.components.burnable ~= nil and self.inst.components.burnable:IsBurning()) end, "OnFire",
 			Panic(self.inst)),
+
+        WhileNode( function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "AvoidElectricFence",
+			AvoidElectricFence(self.inst)),
 
         race_brain,
 

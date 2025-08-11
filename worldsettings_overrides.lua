@@ -687,6 +687,52 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    itemmimics = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                ITEMMIMIC_CAP = 0,
+            },
+            few = {
+                ITEMMIMIC_CAP = 5,
+            },
+            --[[
+            default = {
+                ITEMMIMIC_CAP = 10,
+            },
+            --]]
+            many = {
+                ITEMMIMIC_CAP = 20,
+            },
+            always = {
+                ITEMMIMIC_CAP = 40,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    chest_mimics = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                CHEST_MIMIC_CHANCE = 0.00,
+            },
+            few = {
+                CHEST_MIMIC_CHANCE = 0.165,
+            },
+            --[[
+            default = {
+                CHEST_MIMIC_CHANCE = 0.33,
+            },
+            --]]
+            many = {
+                CHEST_MIMIC_CHANCE = 0.66,
+            },
+            always = {
+                CHEST_MIMIC_CHANCE = 1.00,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
     mushgnome = function(difficulty)
         local tuning_vars =
         {
@@ -2994,11 +3040,25 @@ local applyoverrides_pre = {
         local tuning_vars =
         {
             none = {
-                ACIDRAIN_ENALBED = false
+                ACIDRAIN_ENABLED = false
             },
             --[[
             always = {
-                ACIDRAIN_ENALBED = true,
+                ACIDRAIN_ENABLED = true,
+            },
+            ]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    wanderingtrader_enabled = function(difficulty)
+        local tuning_vars =
+        {
+            none = {
+                WANDERINGTRADER_ENABLED = false
+            },
+            --[[
+            always = {
+                WANDERINGTRADER_ENABLED = true,
             },
             ]]
         }
@@ -3421,6 +3481,11 @@ local applyoverrides_post = {
             TheWorld:PushEvent("hounded_setdifficulty", difficulty)
         end
     end,
+    wormattacks_boss = function(difficulty)
+        if TheWorld:HasTag("cave") then
+            TheWorld:PushEvent("hounds_worm_boss_setdifficulty", difficulty)
+        end
+    end,     
 	autumn = function(difficulty)
 		if difficulty == "random" then
 			TheWorld:PushEvent("ms_setseasonlength", {season = "autumn", length = GetRandomItem(SEASON_FRIENDLY_LENGTHS), random = true})
@@ -3584,7 +3649,7 @@ local applyoverrides_post = {
     end,
     rifts_enabled_cave = function(difficulty)
         TheWorld:PushEvent("rifts_settingsenabled_cave", difficulty)
-    end,
+    end,   
 }
 
 local applyoverrides_sync = {

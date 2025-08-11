@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------
+-- *** WARNING ***
+--  This stategraph is also used by babybeefalo!!!
+--------------------------------------------------------------------------
+
 require("stategraphs/commonstates")
 
 local actionhandlers =
@@ -21,18 +26,44 @@ local events=
 {
     CommonHandlers.OnStep(),
     CommonHandlers.OnLocomote(true,true),
-    CommonHandlers.OnSleep(),
+    CommonHandlers.OnSleepEx(),
+    CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
-	CommonHandlers.OnSink(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnIpecacPoop(),
 
-    EventHandler("doattack", function(inst, data) if not inst.components.health:IsDead() then inst.sg:GoToState("attack", data.target) end end),
-    EventHandler("death", function(inst)
-        if inst.components.rideable == nil or not inst.components.rideable:IsBeingRidden() then
-            inst.sg:GoToState("death")
+    EventHandler("onsink", function(inst, data)
+        if not inst.sg:HasStateTag("drowning") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
+            if inst.components.health == nil or not inst.components.health:IsDead() then
+                inst.sg:GoToState("sink", data)
+            else
+                SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
+                inst:Remove()
+            end
         end
     end),
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
+	EventHandler("doattack", function(inst, data)
+		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+			inst.sg:GoToState("attack", data.target)
+		end
+	end),
+    EventHandler("death", function(inst, data)
+        if inst.components.rideable == nil or not inst.components.rideable:IsBeingRidden() then
+            inst.sg:GoToState("death", data.cause == "file_load")
+        end
+    end),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not (	inst.sg:HasAnyStateTag("attack", "electrocute") or
+							CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) --hit dealy only for projectiles
+						)
+			then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("heardhorn", function(inst, data)
         if not inst.components.health:IsDead()
            and not inst.sg:HasStateTag("attack")
@@ -596,17 +627,100 @@ local states=
 
     State{
         name = "death",
-        tags = {"busy"},
+        tags = {"busy", "nointerrupt"},
 
-        onenter = function(inst)
-            inst.SoundEmitter:PlaySound(inst.sounds.yell)
+        onenter = function(inst, load)
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
-            RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
 
-            -- we handle our own erode, rather than the health component ~gjans
-            inst:DoTaskInTime(2, ErodeAway)
+            if load then
+                inst.AnimState:SetPercent("death", 1)
+            else
+                inst.SoundEmitter:PlaySound(inst.sounds.yell)
+            end
+
+            if load or inst.ShouldKeepCorpse and inst:ShouldKeepCorpse() then
+                if inst.components.freezable ~= nil then
+                    inst.components.freezable:Unfreeze()
+                end
+
+                if inst.components.burnable ~= nil then
+                    inst.components.burnable:Extinguish()
+                end
+            else
+                RemovePhysicsColliders(inst)
+
+                inst.components.lootdropper:DropLoot()
+                -- We handle our own erode, rather than the health component ~gjans
+                inst:DoTaskInTime(2, ErodeAway)
+            end
+        end,
+    },
+
+    State{
+        name = "revive",
+        tags = {"busy", "noattack", "nofreeze", "nosleep", "nointerrupt"},
+
+        onenter = function(inst, load)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("revive")
+
+            inst.SoundEmitter:PlaySound("rifts4/beefalo_revive/revive_effect")
+
+            inst.AnimState:AddOverrideBuild("beefalo_revive")
+            inst.AnimState:Hide("lightning")
+
+            inst:SpawnChild("beefalo_reviving_lightning_fx")
+
+            inst.components.health:SetInvincible(true)
+
+            inst.components.sleeper:WakeUp()
+
+            if inst.brain ~= nil and inst.brain.stopped then
+                inst.brain:Start()
+            end
+        end,
+
+        timeline=
+        {
+            FrameEvent(45, function(inst)
+                inst.AnimState:SetMultColour(0, 0, 0, 1)
+            end),
+
+            FrameEvent(133, function(inst)
+                inst.AnimState:SetMultColour(1, 1, 1, 1)
+
+                inst.components.health:SetInvincible(false)
+                inst:RemoveTag("deadcreature")
+                inst:RemoveTag("give_dolongaction")
+            end),
+
+            CommonHandlers.OnNoSleepFrameEvent(160, function(inst)
+                inst.sg:RemoveStateTag("busy")
+                inst.sg:RemoveStateTag("noattack")
+                inst.sg:RemoveStateTag("nofreeze")
+                inst.sg:RemoveStateTag("nosleep")
+                inst.sg:RemoveStateTag("nointerrupt")
+            end),
+        },
+
+        events =
+        {
+            CommonHandlers.OnNoSleepAnimOver("idle"),
+        },
+
+        onexit = function(inst)
+            inst.AnimState:SetMultColour(1, 1, 1, 1)
+            inst.AnimState:ClearOverrideBuild("beefalo_revive")
+
+            inst.components.health:SetInvincible(false)
+
+            inst.components.beard:EnableGrowth(true)
+            inst.components.hunger:Resume()
+
+            inst.components.follower:EnableLeashing()
+
+            inst:RemoveTag("deadcreature")
         end,
     },
 
@@ -618,13 +732,19 @@ local states=
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("transform")
             inst.SoundEmitter:PlaySound("dontstarve/beefalo/hairgrow_pop")
-            inst.domesticationPending = false
         end,
 
         timeline=
         {
-            TimeEvent(8*FRAMES, function(inst) SpawnPrefab("beefalo_transform_fx").Transform:SetPosition(inst.Transform:GetWorldPosition()) end),
-            TimeEvent(11*FRAMES, function(inst) inst:UpdateDomestication() end),
+            TimeEvent(8*FRAMES, function(inst)
+                inst:SpawnChild("beefalo_transform_fx")
+            end),
+
+            TimeEvent(11*FRAMES, function(inst)
+                inst:UpdateDomestication()
+
+                inst.domesticationPending = false
+            end),
         },
 
         events=
@@ -632,9 +752,21 @@ local states=
             EventHandler("animover", go_to_idle),
         },
 
-		onexit = function(inst)
+        onexit = function(inst)
+            local parent = inst.entity:GetParent()
+
+            if parent ~= nil then -- If mounted during this state...
+                parent:SpawnChild("beefalo_transform_fx")
+            end
+
+            if inst.domesticationPending then
+                inst:UpdateDomestication()
+
+                inst.domesticationPending = false
+            end
+
             AwardPlayerAchievement("domesticated_beefalo", inst.components.beefalometrics.lastdomesticator)
-		end,
+        end,
     },
 
     State{
@@ -870,12 +1002,15 @@ CommonStates.AddWalkStates(
         }
     })
 
-CommonStates.AddSimpleState(states,"hit", "hit")
+CommonStates.AddSimpleState(states, "hit", "hit", nil, nil, nil, { onenter = CommonHandlers.UpdateHitRecoveryDelay })
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
+
 CommonStates.AddIpecacPoopState(states)
 
-CommonStates.AddSleepStates(states,
+CommonStates.AddSleepExStates(states,
 {
     sleeptimeline =
     {

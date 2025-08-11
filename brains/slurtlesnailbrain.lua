@@ -44,7 +44,7 @@ local function ShouldRunAway(guy)
     return guy:HasTag("character") and not guy:HasTag("notarget") and not guy:HasDebuff("healingsalve_acidbuff")
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
@@ -139,6 +139,7 @@ function SlurtleSnailBrain:OnStart()
     {
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),

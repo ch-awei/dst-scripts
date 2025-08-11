@@ -200,8 +200,15 @@ local function commonlevelup(inst, overridelevel)
             inst:AddTag("noepicmusic")
             StartMusic(inst)
             inst.sounds.levelup = "dontstarve/sanity/transform/three"
+
+            if level < 3 then
+                inst:AddTag("smallepic")
+            else
+                inst:RemoveTag("smallepic")
+            end
         else
             inst:RemoveTag("epic")
+            inst:RemoveTag("smallepic")
             inst:RemoveTag("noepicmusic")
             StopMusic(inst)
             inst.sounds.levelup = "dontstarve/sanity/transform/two"
@@ -342,7 +349,10 @@ local function commonfn(name, sixfaced)
     MakeCharacterPhysics(inst, 10, PHYS_RADIUS[name])
     RemovePhysicsColliders(inst)
     inst.Physics:SetCollisionGroup(COLLISION.SANITY)
-    --inst.Physics:CollidesWith(COLLISION.SANITY)
+	--[[inst.Physics:CollidesWith(bit.bor(
+		COLLISION.WORLD,
+		COLLISION.SANITY
+	))]]
     inst.Physics:CollidesWith(COLLISION.WORLD)
 
     if sixfaced then

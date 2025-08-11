@@ -262,6 +262,7 @@ local function fn_common(tag)
     inst:AddTag("soulless")
     inst:AddTag("mech")
     inst:AddTag("archive_centipede")
+	inst:AddTag("electricdamageimmune")
 
     inst.entity:SetPristine()
 
@@ -276,6 +277,8 @@ local function fn_common(tag)
 
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.ARCHIVE_CENTIPEDE.WALK_SPEED
+
+    inst:AddComponent("drownable")
 
     inst:SetStateGraph("SGcentipede")
 
@@ -477,6 +480,7 @@ local function huskfn()
 
     inst:AddTag("security_powerpoint")
     inst:AddTag("mech")
+	inst:AddTag("electricdamageimmune")
 
     inst.entity:SetPristine()
 

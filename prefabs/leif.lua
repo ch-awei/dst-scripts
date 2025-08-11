@@ -97,6 +97,7 @@ local function common_fn(build)
     inst.Transform:SetFourFaced()
 
     inst:AddTag("epic")
+    inst:AddTag("smallepic")
     inst:AddTag("monster")
     inst:AddTag("hostile")
     inst:AddTag("leif")
@@ -115,6 +116,9 @@ local function common_fn(build)
         return inst
     end
 
+	inst.override_combat_fx_size = "med"
+	inst.override_combat_fx_height = "high"
+
     local color = .5 + math.random() * .5
     inst.AnimState:SetMultColour(color, color, color, 1)
 
@@ -131,6 +135,7 @@ local function common_fn(build)
 
     ------------------------------------------
     inst:SetStateGraph("SGLeif")
+	inst.sg.mem.burn_on_electrocute = true
 
     ------------------------------------------
 

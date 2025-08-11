@@ -190,17 +190,6 @@ local function Sapling_CheckGrowConstraints(inst)
     end
 end
 
-local function Sapling_OnEntityWake(inst)
-    local growable = inst.components.growable
-
-    if growable ~= nil and growable.pausedremaining ~= nil and growable.pausedremaining <= 0 then
-        -- NOTES(DiogoW): It "grew" offscreen, but waited for Growable:OnEntityWake() to be called and then got paused because of the season change.
-        --                It might be worth fixing this in the component sometime.
-        growable:Resume(PAUSE_REASON.TILE)
-        growable:Resume(PAUSE_REASON.SEASON)
-    end
-end
-
 local function Sapling_DoMagicGrowthFn(inst, doer)
     inst.magic_growth_delay = nil
 
@@ -272,6 +261,7 @@ local function Full_MakeStump(inst)
     local work_left = is_mineable and 3 or 1
 
     inst:RemoveComponent("workable")
+    inst:RemoveComponent("lunarhailbuildup")
     inst:RemoveComponent("pickable")
 
     inst:AddTag("stump")
@@ -355,13 +345,17 @@ local function _MakeEmpty(inst)
     end
 end
 
-local function Full_OnRegenFn(inst)
+local function Full_CanRegenFruits(inst)
     local constraints = TREE_DEFS[inst.type].GROW_CONSTRAINT
 
     local tile = TheWorld.Map:GetTileAtPoint(inst.Transform:GetWorldPosition())
 
     -- NOTES(DiogoW): Won't grow fruit on wrong tile!
-    if tile ~= constraints.TILE then
+    return tile == constraints.TILE
+end
+
+local function Full_OnRegenFn(inst)
+    if not inst:CanRegenFruits() then
         inst:DoTaskInTime(0, _MakeEmpty) -- Needs to be delayed because Pickable:Regen would mess with things set by MakeEmpty.
 
         return
@@ -468,6 +462,7 @@ local function MakeAncientTree(name, data)
         inst:AddTag("tree")
         inst:AddTag("no_force_grow")
         inst:AddTag("ancienttree")
+        inst:AddTag("event_trigger")
 
         if data.shelter then
             inst:AddTag("shelter")
@@ -500,6 +495,7 @@ local function MakeAncientTree(name, data)
 
         inst.TransferPlantData = TransferPlantData
         inst.UpdatePickableRegenTime = Full_UpdatePickableRegenTime
+        inst.CanRegenFruits = Full_CanRegenFruits
         inst.MakeStump = Full_MakeStump
         
         inst:AddComponent("inspectable")
@@ -526,6 +522,7 @@ local function MakeAncientTree(name, data)
 
         if data.snowcovered then
             MakeSnowCovered(inst)
+            SetLunarHailBuildupAmountLarge(inst)
         end
 
         inst.OnSave = Full_OnSave
@@ -610,8 +607,6 @@ local function MakeAncientTree(name, data)
 
         inst.OnSave = PlantData_OnSave
         inst.OnLoad = PlantData_OnLoad
-
-        inst.OnEntityWake  = Sapling_OnEntityWake
 
         MakeHauntableWork(inst)
 

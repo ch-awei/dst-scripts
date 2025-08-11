@@ -108,10 +108,7 @@ local function retargetfn(inst)
 end
 
 local function shouldKeepTarget(inst, target)
-    return target ~= nil
-        and target:IsValid()
-        and target.components.health ~= nil
-        and not target.components.health:IsDead()
+	return inst.components.combat:CanTarget(target)
         and inst:IsNear(target, TUNING.EYETURRET_RANGE + 3)
 end
 
@@ -153,7 +150,7 @@ local function EquipWeapon(inst)
 end
 
 local function ondeploy(inst, pt, deployer)
-    local turret = SpawnPrefab("eyeturret")
+    local turret = SpawnPrefab("eyeturret", inst.linked_skinname, inst.skin_id)
     if turret ~= nil then
         turret.Physics:SetCollides(false)
         turret.Physics:Teleport(pt.x, 0, pt.z)
@@ -214,6 +211,15 @@ local function itemfn()
     return inst
 end
 
+local function FixupSkins(inst)
+    local parent = inst.entity:GetParent()
+    local skinbuild = parent and parent:GetSkinBuild() or nil
+    if skinbuild then
+        inst.AnimState:OverrideItemSkinSymbol("horn", skinbuild, "horn", parent.GUID, "eyeball_turret")
+    else
+        inst.AnimState:OverrideSymbol("horn", "eyeball_turret_base", "horn")
+    end
+end
 local function fn()
     local inst = CreateEntity()
 
@@ -257,12 +263,16 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_height = "low"
     inst.scrapbook_anim = "scrapbook"
     inst.scrapbook_overridedata = {"horn", "eyeball_turret_base", "horn"}
 
     inst.base = SpawnPrefab("eyeturret_base")
     inst.base.entity:SetParent(inst.entity)
     inst.highlightchildren = { inst.base }
+    inst.base.FixupSkins = FixupSkins
+    inst.base:DoTaskInTime(0, FixupSkins)
+    inst.base.reskin_tool_target_redirect = inst
 
     inst.syncanim = syncanim
     inst.syncanimpush = syncanimpush
@@ -328,10 +338,9 @@ local function basefn()
     inst.AnimState:SetBuild("eyeball_turret_base")
     inst.AnimState:PlayAnimation("idle_loop")
 
-    inst.entity:SetPristine()
-
 	inst:AddTag("DECOR")
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         inst.OnEntityReplicated = OnEntityReplicated
         return inst

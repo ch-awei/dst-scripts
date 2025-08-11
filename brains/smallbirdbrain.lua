@@ -35,8 +35,15 @@ local function ShouldStandStill(inst)
     	and (not inst.components.follower.leader or not inst.components.follower.leader:HasTag("tallbird")))
 end
 
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
+
 local function CanSeeFood(inst)
-    local target = FindEntity(inst, SEE_FOOD_DIST, function(item) return inst.components.eater:CanEat(item) and item:IsOnValidGround() end)
+	local target = FindEntity(inst, SEE_FOOD_DIST,
+		function(item)
+			return inst.components.eater:CanEat(item) and item:IsOnValidGround()
+		end,
+		nil,
+		EATFOOD_CANT_TAGS)
     --[[if target then
         print("CanSeeFood", inst.name, target.name)
     end]]
@@ -74,6 +81,7 @@ function SmallBirdBrain:OnStart()
     local root =
     PriorityNode({
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
         -- when starving prefer finding food over fighting
         SequenceNode{

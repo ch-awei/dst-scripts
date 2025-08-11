@@ -195,7 +195,18 @@ local function OnHammered(inst)
         inst.components.burnable:Extinguish()
     end
 
-    inst.components.lootdropper:DropLoot()
+    local recipe = AllRecipes[inst.prefab]
+
+    -- Drop crafting recipe loot, except the materials that are given to the container.
+    if recipe ~= nil then
+        local recipeloot = inst.components.lootdropper:GetRecipeLoot(recipe)
+
+        for _, prefab in ipairs(recipeloot) do
+            if not inst.supply_cost[prefab] then
+                inst.components.lootdropper:SpawnLootPrefab(prefab)
+            end
+        end
+    end
 
     if inst.components.container ~= nil then
         inst.components.container:DropEverything()
@@ -217,7 +228,7 @@ local function OnHit(inst, worker, workleft)
     end
 end
 
-local function OnBuilt(inst)
+local function OnBuiltFn(inst)
     inst.SoundEmitter:PlaySound(inst.sounds.place)
 
     inst.AnimState:PlayAnimation("place")
@@ -398,7 +409,9 @@ local function CreateMermSupplyStructure(data)
         inst.CacheRecipeCost = CacheRecipeCost
 
         inst:AddComponent("inspectable")
+
         inst:AddComponent("lootdropper")
+        inst.components.lootdropper.droprecipeloot = false
 
         inst:AddComponent("workable")
         inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
@@ -409,7 +422,7 @@ local function CreateMermSupplyStructure(data)
         inst:AddComponent("container")
         inst.components.container:WidgetSetup(data.prefab)
 
-        inst.OnBuilt = OnBuilt
+        inst.OnBuiltFn = OnBuiltFn
 
         inst.OnSave = OnSave
         inst.OnLoad = OnLoad

@@ -11,8 +11,9 @@ local actionhandlers =
 }
 
 local function onattackfn(inst)
-	if inst.components.health and not inst.components.health:IsDead()
-	   and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then
+	if inst.components.health and not inst.components.health:IsDead() and
+		((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy"))
+	then
 		if inst.CanDisarm then
 			inst.sg:GoToState("disarm")
 		else
@@ -40,10 +41,12 @@ local events=
 
 	CommonHandlers.OnSleep(),
 	CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 	EventHandler("doattack", onattackfn),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
 	EventHandler("flyaway", function(inst)
 		if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -57,7 +60,7 @@ local function DisarmTarget(inst, target)
 	if target and target.components.inventory and not target:HasTag("stronggrip") then
 		item = target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	end
-	if item and item.Physics then
+	if item and not item:HasTag("nosteal") and item.Physics then
 		target.components.inventory:DropItem(item)
 		local x, y, z = item:GetPosition():Get()
 		y = .1
@@ -267,7 +270,7 @@ local states =
 
 	State{
 		name = "glide",
-		tags = {"flight", "busy"},
+		tags = { "flight", "busy", "noelectrocute" },
 
 		onenter= function(inst)
 			inst.AnimState:PlayAnimation("glide", true)
@@ -309,7 +312,7 @@ local states =
 
 	State{
 		name = "flyaway",
-		tags = {"flight", "busy"},
+		tags = { "flight", "busy", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.Physics:Stop()
@@ -524,6 +527,7 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSleepStates(states,
 {
 	sleeptimeline =
@@ -534,5 +538,6 @@ CommonStates.AddSleepStates(states,
 	},
 })
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("moose", states, events, "idle", actionhandlers)

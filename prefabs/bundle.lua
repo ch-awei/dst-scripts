@@ -255,6 +255,11 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         --unwrappable (from unwrappable component) added to pristine state for optimization
         inst:AddTag("unwrappable")
 
+        if setupdata.peekcontainer then
+            --canpeek (from unwrappable component) added to pristine state for optimization
+            inst:AddTag("canpeek")
+        end
+
         if setupdata ~= nil and setupdata.common_postinit ~= nil then
             setupdata.common_postinit(inst, setupdata)
         end
@@ -286,6 +291,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         inst:AddComponent("unwrappable")
         inst.components.unwrappable:SetOnWrappedFn(OnWrapped)
         inst.components.unwrappable:SetOnUnwrappedFn(OnUnwrapped)
+        inst.components.unwrappable:SetPeekContainer(setupdata.peekcontainer)
         inst.UpdateInventoryImage = UpdateInventoryImage
 
         MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
@@ -309,6 +315,22 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
 
     return Prefab(name, fn, assets, prefabs)
 end
+
+local bundle =
+{
+	common_postinit = function(inst, setupdata)
+		inst.SCANNABLE_RECIPENAME = "bundlewrap"
+	end,
+    peekcontainer = "bundle_container",
+}
+
+local gift =
+{
+	common_postinit = function(inst, setupdata)
+		inst.SCANNABLE_RECIPENAME = "giftwrap"
+	end,
+    --peekcontainer = nonononono, -- NOTES(JBK): No peeking gifts naughty one.
+}
 
 local redpouch =
 {
@@ -560,13 +582,14 @@ local wetpouch =
 
 return MakeContainer("bundle_container", "ui_bundle_2x2"),
 	MakeContainer("construction_container", "ui_construction_4x1"),
+	MakeContainer("construction_container_1x1", "ui_construction_1x1"),
 	MakeContainer("construction_repair_container", "ui_construction_4x1", "repairconstructionsite"),
 	MakeContainer("construction_rebuild_container", "ui_construction_4x1", "rebuildconstructionsite"),
     --"bundle", "bundlewrap"
-    MakeBundle("bundle", false, nil, { "waxpaper" }),
+	MakeBundle("bundle", false, nil, { "waxpaper" }, nil, bundle),
     MakeWrap("bundle", "bundle_container", nil, false),
     --"gift", "giftwrap"
-    MakeBundle("gift", false, 2),
+	MakeBundle("gift", false, 2, nil, nil, gift),
     MakeWrap("gift", "bundle_container", nil, true),
     --"redpouch"
     MakeBundle("redpouch", true, nil, { "lucky_goldnugget" }, true, redpouch),
@@ -582,4 +605,3 @@ return MakeContainer("bundle_container", "ui_bundle_2x2"),
     MakeBundle("hermit_bundle", true, nil, nil, true, hermit_bundle),
     MakeBundle("hermit_bundle_shells", true, nil, nil, true, hermit_bundle_shells, "hermit_bundle","hermit_bundle","hermit_bundle"),
     MakeBundle("wetpouch", true, nil, JoinArrays(table.getkeys(wetpouch.loottable), GetAllWinterOrnamentPrefabs()), false, wetpouch)
-

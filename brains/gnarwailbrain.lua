@@ -3,6 +3,7 @@ require "behaviours/follow"
 require "behaviours/leash"
 require "behaviours/panicandavoid"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_BOAT_FOLLOW_DIST = TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 13
 local MIN_BOAT_FOLLOW_DIST = TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 2
@@ -138,7 +139,7 @@ local function GetTrader(inst)
     return nil
 end
 
-local FINDFOOD_CANT_TAGS = {"outofreach"}
+local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function FindFoodAction(inst)
     -- Don't go looking for random ocean food if we're busy.
@@ -225,6 +226,7 @@ function GnarwailBrain:OnStart()
             "HornBrokenPanicAndAvoid",
             PanicAndAvoid(self.inst, function(i) return i.components.combat.target end, MIN_BOAT_FOLLOW_DIST)
         ),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode( function() return HasValidWaterTarget(self.inst) end,
             "AttackMomentarily",
             PriorityNode({

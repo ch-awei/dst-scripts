@@ -15,6 +15,26 @@ function PopupManagerWidget:Close(inst, ...)
     end
 end
 
+function PopupManagerWidget:SendMessageToServer(inst, ...)
+    if TheWorld ~= nil then -- NOTES(JBK): This is here for running debug panels at the main menu.
+        if not TheWorld.ismastersim then
+            SendRPCToServer(RPC.RecievePopupMessage, self.code, self.mod_name, ...)
+        else
+            inst:PushEvent("ms_popupmessage", {popup = self, args = {...}})
+        end
+    end
+end
+
+function PopupManagerWidget:SendMessageToClient(inst, ...)
+    if TheWorld ~= nil then -- NOTES(JBK): This is here for running debug panels at the main menu.
+        if inst.userid ~= nil and (TheNet:IsDedicated() or (TheWorld.ismastersim and inst ~= ThePlayer)) then
+            SendRPCToClient(CLIENT_RPC.RecievePopupMessage, inst.userid, self.code, self.mod_name, ...)
+        else
+            inst:PushEvent("client_popupmessage", {popup = self, args = {...}})
+        end
+    end
+end
+
 function PopupManagerWidget:__tostring()
     return string.format("%s (%d)", self.id, self.code)
 end
@@ -29,6 +49,9 @@ POPUPS = {
     PLAYERINFO = PopupManagerWidget(),
     SCRAPBOOK = PopupManagerWidget(),
     INSPECTACLES = PopupManagerWidget(),
+	PUMPKINCARVING = PopupManagerWidget(),
+	SNOWMANDECORATING = PopupManagerWidget(),
+    BALATRO = PopupManagerWidget(),
 }
 
 POPUPS_BY_POPUP_CODE = {}
@@ -154,4 +177,46 @@ POPUPS.INSPECTACLES.fn = function(inst, show)
             POPUPS.INSPECTACLES:Close(inst)
         end
     end
+end
+
+POPUPS.BALATRO.validaterpcfn = function(solution)
+    return optuint(solution)
+end
+
+POPUPS.BALATRO.fn = function(inst, show, target, joker1, joker2, joker3, card1, card2, card3, card4, card5)
+    if inst.HUD then
+        if not show then
+            inst.HUD:CloseBalatroScreen()
+        elseif not inst.HUD:OpenBalatroScreen(target, { joker1, joker2, joker3 }, { card1, card2, card3, card4, card5 }) then
+            POPUPS.BALATRO:Close(inst)
+        end
+    end
+end
+
+POPUPS.PUMPKINCARVING.validaterpcfn = function(cutdata)
+    return optstring(cutdata)
+end
+
+POPUPS.PUMPKINCARVING.fn = function(inst, show, target)
+	if inst.HUD then
+		if not show then
+			inst.HUD:ClosePumpkinCarvingScreen()
+		elseif not inst.HUD:OpenPumpkinCarvingScreen(target) then
+			POPUPS.PUMPKINCARVING.Close(inst)
+		end
+	end
+end
+
+POPUPS.SNOWMANDECORATING.validaterpcfn = function(decordata, obj)
+	return optstring(decordata) and optentity(obj)
+end
+
+POPUPS.SNOWMANDECORATING.fn = function(inst, show, target, obj)
+	if inst.HUD then
+		if not show then
+			inst.HUD:CloseSnowmanDecoratingScreen()
+		elseif not inst.HUD:OpenSnowmanDecoratingScreen(target, obj) then
+			POPUPS.SNOWMANDECORATING.Close(inst)
+		end
+	end
 end

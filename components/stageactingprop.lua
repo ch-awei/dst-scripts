@@ -86,7 +86,7 @@ function StageActingProp:FindCostume(head,body)
 			return costume
 		end
 
-		if data.head == head or data.body == body  then
+		if (data.head == head or data.body == body) then
 			partial_match = true
 		end
 	end
@@ -177,7 +177,7 @@ function StageActingProp:FindScript(doer)
 	end
 end
 
-function abortplay(ent)
+local function abortplay(ent)
     local stage = ent.components.stageactor:GetStage()
     if stage ~= nil and not ent.sg:HasStateTag("acting") then
         local cast = stage.components.stageactingprop.cast
@@ -203,6 +203,22 @@ function abortplay(ent)
     end
 end
 
+local function costumecheck(ent)
+    if ent.stageactingprop_ignorecostumecheck_hack then
+        return
+    end
+
+    local stage = ent.components.stageactor:GetStage()
+    if stage then
+        local stageactingprop = stage.components.stageactingprop
+        if stageactingprop then
+            if not ent.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or not ent.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) then
+                stageactingprop:ClearPerformance(ent)
+            end
+        end
+    end
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 -- END PERFORMANCE
 ------------------------------------------------------------------------------------------------------------------------
@@ -210,7 +226,9 @@ local function do_endofperformance_talk(castmember)
     if castmember:HasTag("player") then
         castmember.components.talker:Say(GetString(castmember, "ANNOUNCE_OFF_SCRIPT"))
     else
-        castmember.components.talker:Say(STRINGS.HECKLERS_OFF_SCRIPT[math.random(1, #STRINGS.HECKLERS_OFF_SCRIPT)])
+    	if castmember.sg and not castmember.sg:HasStateTag("away")  then
+        	castmember.components.talker:Say(STRINGS.HECKLERS_OFF_SCRIPT[math.random(1, #STRINGS.HECKLERS_OFF_SCRIPT)])
+    	end
     end
 end
 
@@ -234,6 +252,7 @@ function StageActingProp:EndPerformance(doer)
 
         if data.castmember.components.stageactor then
             data.castmember.components.stageactor:SetStage(nil)
+            self.inst:RemoveEventCallback("unequip", costumecheck, data.castmember)
             self.inst:RemoveEventCallback("newstate", abortplay, data.castmember)
 			data.castmember:PushEvent("stopstageacting")
 
@@ -242,6 +261,8 @@ function StageActingProp:EndPerformance(doer)
 			end
         end
 	end
+
+	play_commonfns.disableblackout(self.inst)
 
 	play_commonfns.exitbirds(self.inst, nil, self.cast)
 
@@ -278,6 +299,7 @@ function StageActingProp:DoPerformance(doer)
             data.castmember:AddTag("acting")
             data.castmember.components.stageactor:SetStage(self.inst)
 			data.castmember:PushEvent("startstageacting")
+            self.inst:ListenForEvent("unequip", costumecheck, data.castmember)
             if data.castmember.sg ~= nil then
                 self.inst:ListenForEvent("newstate", abortplay, data.castmember)
             end
@@ -332,7 +354,7 @@ function StageActingProp:DoLines()
                         or (self.cast["MONOLOGUE"] and self.cast["MONOLOGUE"].castmember)
 
 					if line.anim or line.line then
-                        local next_line_data = { anim = line.anim, line = line.line, animtype = line.animtype }
+                        local next_line_data = { anim = line.anim, line = line.line, animtype = line.animtype,  endidleanim = line.endidleanim}
 						actor:PushEvent("perform_do_next_line", next_line_data)
 
                         if line.line then

@@ -99,8 +99,8 @@ local assets =
     Asset("FILE", "sound/wickerbottom_rework.fsb"),
     --Asset("FILE", "sound/wickerbottom_rework_music.fsb"),
 
-    --Asset("SOUNDPACKAGE", "sound/skin_sfx.fev"),
-    --Asset("FILE", "sound/skin_sfx.fsb"), 
+    Asset("SOUNDPACKAGE", "sound/skin_sfx.fev"),
+    Asset("FILE", "sound/skin_sfx.fsb"), 
 
     Asset("SOUNDPACKAGE", "sound/stageplay_set.fev"),
     Asset("FILE", "sound/stageplay_set.fsb"),
@@ -138,11 +138,29 @@ local assets =
     Asset("FILE", "sound/yotd2024.fsb"),
     --Asset("FILE", "sound/yotd2024_music.fsb"),
 
-    Asset("SOUNDPACKAGE", "sound/qol1.fev"),     
+    Asset("SOUNDPACKAGE", "sound/qol1.fev"),
     Asset("FILE", "sound/qol1.fsb"),
 
-    Asset("SOUNDPACKAGE", "sound/meta4.fev"),     
+    Asset("SOUNDPACKAGE", "sound/meta4.fev"),
     Asset("FILE", "sound/meta4.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/rifts4.fev"),
+    Asset("FILE", "sound/rifts4.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/hallowednights2024.fev"),
+    Asset("FILE", "sound/hallowednights2024.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/meta5.fev"),
+    Asset("FILE", "sound/meta5.fsb"),    
+
+    Asset("SOUNDPACKAGE", "sound/balatro.fev"),
+    Asset("FILE", "sound/balatro.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/rifts5.fev"),
+    Asset("FILE", "sound/rifts5.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/lunarhail_event.fev"),
+    Asset("FILE", "sound/lunarhail_event.fsb"),
 
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
@@ -183,6 +201,10 @@ local assets =
     Asset("PKGREF", "anim/woodie.zip"),
     Asset("PKGREF", "anim/wx78.zip"),
 
+    -- Legacy for mods this file is positively dusty.
+    Asset("PKGREF", "anim/ui_krampusbag_2x5.zip"),
+
+    -- Core game.
     Asset("ATLAS", "images/global.xml"),
     Asset("IMAGE", "images/global.tex"),
     Asset("IMAGE", "images/visited.tex"),
@@ -332,10 +354,16 @@ local assets =
 
     Asset("IMAGE", "images/colour_cubes/identity_colourcube.tex"),
 
+    Asset("MINIMAP_IMAGE", "missing_asset"), -- NOTES(JBK): You better fix this if you see it!
+
     Asset("SHADER", "shaders/anim.ksh"),
     Asset("SHADER", "shaders/anim_fade.ksh"),
     Asset("SHADER", "shaders/anim_bloom.ksh"),
     Asset("SHADER", "shaders/anim_holo.ksh"),
+
+    Asset("SHADER", "shaders/anim_skinned.ksh"),
+    Asset("SHADER", "shaders/anim_bloom_skinned.ksh"),
+
     Asset("SHADER", "shaders/creep.ksh"),
     Asset("SHADER", "shaders/debug_line.ksh"),
     Asset("SHADER", "shaders/debug_tri.ksh"),
@@ -475,6 +503,9 @@ local assets =
 
     Asset("ATLAS", "images/npcchatflairs.xml"),
     Asset("IMAGE", "images/npcchatflairs.tex"),
+
+    Asset("ATLAS", "images/balatro.xml"),
+    Asset("IMAGE", "images/balatro.tex"),
 
     -- Loading screen
     Asset("ATLAS", "images/loading_screen.xml"),

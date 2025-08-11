@@ -98,16 +98,13 @@ local function OnWerenessDelta(parent, data)
     end
 end
 
+local NON_DANGER_TAGS = {"noepicmusic", "shadow", "shadowchesspiece", "smolder", "thorny"}
 local function OnAttacked(parent, data)
     parent.player_classified.attackedpulseevent:push()
     parent.player_classified.isattackedbydanger:set(
         data ~= nil and
         data.attacker ~= nil and
-        not (data.attacker:HasTag("shadow") or
-            data.attacker:HasTag("shadowchesspiece") or
-            data.attacker:HasTag("noepicmusic") or
-            data.attacker:HasTag("thorny") or
-            data.attacker:HasTag("smolder"))
+        not data.attacker:HasAnyTag(NON_DANGER_TAGS)
     )
     parent.player_classified.isattackredirected:set(data ~= nil and data.redirected ~= nil)
 end
@@ -152,6 +149,11 @@ end
 local function OnHoundWarning(parent, houndwarningtype)
     SetDirty(parent.player_classified.houndwarningevent, houndwarningtype)
 end
+
+local function OnCraftedExtraElixir(parent, items)
+    SetDirty(parent.player_classified.craftedextraelixirevent, items)
+end
+
 
 fns.OnPlayThemeMusic = function(parent, data)
     if data ~= nil then
@@ -280,6 +282,17 @@ local function OnIsTakingFireDamageLowDirty(inst)
     if inst._parent ~= nil then
         inst._parent:PushEvent("changefiredamage", { low = inst.istakingfiredamagelow:value() })
     end
+end
+
+local function OnLunarBurnFlagsDirty(inst)
+	if inst._parent then
+		local flags = inst.lunarburnflags:value()
+		if flags ~= 0 then
+			inst._parent:PushEvent("startlunarburn", flags)
+		else
+			inst._parent:PushEvent("stoplunarburn")
+		end
+	end
 end
 
 local function OnAttackedPulseEvent(inst)
@@ -479,6 +492,13 @@ fns.OnFreeSoulhopsDirty = function(inst)
     end
 end
 
+-- wortox_panflute_buff ------------------------------------------------------
+fns.OnWortoxPanfluteBuffDirty = function(inst)
+    if inst._parent ~= nil then
+        inst._parent:PushEvent("item_buff_changed")
+    end
+end
+
 ------------------------------------------------------------------------------
 -- Winona Inspectacles game
 
@@ -550,8 +570,8 @@ end
 
 local function OnTechTreesDirty(inst)
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-        local level = inst[string.lower(v).."level"]:value()
-        local bonus = inst[string.lower(v).."tempbonus"]
+        local level = inst[TechTree.AVAILABLE_TECH_LEVEL_CLASSIFIED[v] or string.lower(v).."level"]:value()
+        local bonus = inst[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"]
         inst.techtrees[v] = level
         inst.techtrees_no_temp[v] = math.max(0, level - (bonus ~= nil and bonus:value() or 0))
     end
@@ -727,6 +747,19 @@ local function OnOpenCraftingMenuEvent(inst)
             player.HUD:OpenCrafting()
         end
     end
+end
+
+local function OnIsCraftingEnabledDirty(inst)
+	if inst._parent and inst._parent.HUD then
+		if inst.iscraftingenabled:value() then
+			inst._parent.HUD.controls:ShowCrafting()
+		else
+			inst._parent.HUD.controls:HideCrafting()
+			if inst._parent.components.playercontroller then
+				inst._parent.components.playercontroller:CancelPlacement()
+			end
+		end
+	end
 end
 
 local function OnInkedEvent(inst)
@@ -973,9 +1006,23 @@ local function OnHoundWarningDirty(inst)
             soundprefab = "wormwarning_lvl3"
         elseif inst._parent.player_classified.houndwarningevent:value() == HOUNDWARNINGTYPE.LVL4_WORM then
             soundprefab = "wormwarning_lvl4"
+        elseif inst._parent.player_classified.houndwarningevent:value() == HOUNDWARNINGTYPE.WORM_BOSS then
+            soundprefab = "wormwarning_worm_boss"            
         end
         if soundprefab then
             local sound = SpawnPrefab(soundprefab)
+        end
+    end
+end
+
+fns.OnCraftedExtraElixirDirty = function(inst)
+
+    if inst._parent ~= nil and inst._parent.HUD ~= nil then
+        local items = inst._parent.player_classified.craftedextraelixirevent:value()
+        if items > 2 then
+            TheFocalPoint.SoundEmitter:PlaySound("meta5/wendy/elixir_bonus_2")
+        elseif items > 1 then
+            TheFocalPoint.SoundEmitter:PlaySound("meta5/wendy/elixir_bonus_1")
         end
     end
 end
@@ -1031,6 +1078,11 @@ fns.ShowActions = function(inst, show)
     inst.isactionsvisible:set(show)
 end
 
+fns.ShowCrafting = function(inst, show)
+	inst.iscraftingenabled:set(show)
+	OnIsCraftingEnabledDirty(inst)
+end
+
 fns.ShowHUD = function(inst, show)
     inst.ishudvisible:set(show)
     OnPlayerHUDDirty(inst)
@@ -1064,12 +1116,14 @@ local function RegisterNetListeners_mastersim(inst)
     inst:ListenForEvent("houndwarning", OnHoundWarning, inst._parent)
     inst:ListenForEvent("idplantseed", OnIdPlantSeed, inst._parent)
     inst:ListenForEvent("play_theme_music", fns.OnPlayThemeMusic, inst._parent)
+    inst:ListenForEvent("craftedextraelixir", OnCraftedExtraElixir, inst._parent)
 end
 
 local function RegisterNetListeners_local(inst)
     inst:ListenForEvent("healthdirty", OnHealthDirty)
     inst:ListenForEvent("istakingfiredamagedirty", OnIsTakingFireDamageDirty)
     inst:ListenForEvent("istakingfiredamagelowdirty", OnIsTakingFireDamageLowDirty)
+	inst:ListenForEvent("lunarburnflagsdirty", OnLunarBurnFlagsDirty)
     inst:ListenForEvent("combat.attackedpulse", OnAttackedPulseEvent)
     inst:ListenForEvent("hungerdirty", OnHungerDirty)
     inst:ListenForEvent("sanitydirty", OnSanityDirty)
@@ -1087,6 +1141,7 @@ local function RegisterNetListeners_local(inst)
     inst:ListenForEvent("moisturedirty", OnMoistureDirty)
     inst:ListenForEvent("techtreesdirty", OnTechTreesDirty)
     inst:ListenForEvent("recipesdirty", OnRecipesDirty)
+	inst:ListenForEvent("iscraftingenableddirty", OnIsCraftingEnabledDirty)
     inst:ListenForEvent("bufferedbuildsdirty", OnBufferedBuildsDirty)
     inst:ListenForEvent("isperformactionsuccessdirty", OnIsPerformActionSuccessDirty)
     inst:ListenForEvent("pausepredictionframesdirty", OnPausePredictionFramesDirty)
@@ -1136,6 +1191,8 @@ local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("ingredientmoddirty", fns.RefreshCrafting)
     inst:ListenForEvent("inspectacles_gamedirty", fns.OnInspectaclesGameDirty)
     inst:ListenForEvent("roseglasses_cooldowndirty", fns.OnRoseGlassesCooldownDirty)
+    inst:ListenForEvent("wortoxpanflutebuffdirty", fns.OnWortoxPanfluteBuffDirty)
+    inst:ListenForEvent("craftedextraelixirdirty",fns.OnCraftedExtraElixirDirty)
 end
 
 local function RegisterNetListeners(inst)
@@ -1169,6 +1226,7 @@ end
 function fns.OnInitialDirtyStates(inst)
     if not TheWorld.ismastersim then
         OnIsTakingFireDamageDirty(inst)
+		OnLunarBurnFlagsDirty(inst)
         OnTemperatureDirty(inst)
         OnTechTreesDirty(inst)
         if inst._parent ~= nil then
@@ -1189,10 +1247,12 @@ function fns.OnInitialDirtyStates(inst)
     fns.OnIsAcidSizzlingDirty(inst)
     fns.OnInspectaclesGameDirty(inst)
     fns.OnRoseGlassesCooldownDirty(inst)
+    fns.OnWortoxPanfluteBuffDirty(inst)
     OnGiftsDirty(inst)
     fns.OnYotbSkinDirty(inst)
     OnMountHurtDirty(inst)
     OnGhostModeDirty(inst)
+	OnIsCraftingEnabledDirty(inst)
     OnPlayerHUDDirty(inst)
     OnPlayerCameraDirty(inst)
     fns.OnPlayerCameraExtraDistDirty(inst, true)
@@ -1225,6 +1285,7 @@ local function fn()
     inst.issleephealing = net_bool(inst.GUID, "health.healthsleep")
     inst.ishealthpulseup = net_bool(inst.GUID, "health.dodeltaovertime(up)", "healthdirty")
     inst.ishealthpulsedown = net_bool(inst.GUID, "health.dodeltaovertime(down)", "healthdirty")
+	inst.lunarburnflags = net_tinybyte(inst.GUID, "health.lunarburnflags", "lunarburnflagsdirty")
     inst.currenthealth:set(100)
     inst.maxhealth:set(100)
 
@@ -1301,6 +1362,9 @@ local function fn()
     -- Wortox Soulhop free counter
     inst.freesoulhops = net_tinybyte(inst.GUID, "freesoulhops", "freesoulhopsdirty")
     inst.freesoulhops:set(0)
+    -- Wortox buff
+    inst.wortox_panflute_buff = net_bool(inst.GUID, "wortox_panflute_buff", "wortoxpanflutebuffdirty")
+    inst.wortox_panflute_buff:set(false)
 
     -- Winona inspectacles
     inst.inspectacles_game = net_tinybyte(inst.GUID, "inspectacles_game", "inspectacles_gamedirty")
@@ -1380,8 +1444,9 @@ local function fn()
     inst.fadetime = net_smallbyte(inst.GUID, "frontend.fadetime", "playerfadedirty")
     inst.screenflash = net_tinybyte(inst.GUID, "frontend.screenflash", "playerscreenflashdirty")
     inst.wormholetravelevent = net_tinybyte(inst.GUID, "frontend.wormholetravel", "wormholetraveldirty")
-    inst.houndwarningevent = net_tinybyte(inst.GUID, "frontend.houndwarning", "houndwarningdirty")
+    inst.houndwarningevent = net_smallbyte(inst.GUID, "frontend.houndwarning", "houndwarningdirty")
     inst.idplantseedevent = net_event(inst.GUID, "idplantseedevent")
+    inst.craftedextraelixirevent = net_smallbyte(inst.GUID, "frontend.craftedextraelixir", "craftedextraelixirdirty")
 
     -- busy theme music
     inst.start_farming_music = net_event(inst.GUID, "startfarmingmusicevent")
@@ -1397,18 +1462,20 @@ local function fn()
     inst.ingredientmod = net_tinybyte(inst.GUID, "builder.ingredientmod", "ingredientmoddirty")
     for i, v in ipairs(TechTree.BONUS_TECH) do
         local bonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."bonus")
-        inst[string.lower(v).."bonus"] = bonus
+        inst[TechTree.AVAILABLE_TECH_BONUS_CLASSIFIED[v] or string.lower(v).."bonus"] = bonus
         local tempbonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."tempbonus", "techtreesdirty")
-        inst[string.lower(v).."tempbonus"] = tempbonus
+        inst[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"] = tempbonus
     end
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
         local level = net_tinybyte(inst.GUID, "builder.accessible_tech_trees."..v, "techtreesdirty")
         level:set(inst.techtrees[v])
-        inst[string.lower(v).."level"] = level
+        inst[TechTree.AVAILABLE_TECH_LEVEL_CLASSIFIED[v] or string.lower(v).."level"] = level
     end
     inst.isfreebuildmode = net_bool(inst.GUID, "builder.freebuildmode", "recipesdirty")
     inst.current_prototyper = net_entity(inst.GUID, "builder.current_prototyper", "current_prototyper_dirty")
     inst.opencraftingmenuevent = net_event(inst.GUID, "builder.opencraftingmenu")
+	inst.iscraftingenabled = net_bool(inst.GUID, "builder.iscraftingenabled", "iscraftingenableddirty")
+	inst.iscraftingenabled:set(true)
     inst.recipes = {}
     inst.bufferedbuilds = {}
     for k, v in pairs(AllRecipes) do
@@ -1416,6 +1483,13 @@ local function fn()
             inst.recipes[k] = net_bool(inst.GUID, "builder.recipes["..k.."]", "recipesdirty")
             inst.bufferedbuilds[k] = net_bool(inst.GUID, "builder.buffered_builds["..k.."]", "bufferedbuildsdirty")
         end
+    end
+    inst.craftinglimit_recipe = {}
+    inst.craftinglimit_amount = {}
+    local craftinglimit_net_enum = GetIdealUnsignedNetVarForCount(CRAFTINGSTATION_LIMITED_RECIPES_COUNT)
+    for i = 1, CRAFTINGSTATION_LIMITED_RECIPES_COUNT do
+        inst.craftinglimit_recipe[i] = craftinglimit_net_enum(inst.GUID, "builder.craftinglimit_recipe[" .. i .. "]", "recipesdirty")
+        inst.craftinglimit_amount[i] = net_byte(inst.GUID, "builder.craftinglimit_amount[" .. i .. "]", "recipesdirty") -- 255 max.
     end
     inst.ingredientmod:set(INGREDIENT_MOD[1])
 
@@ -1517,6 +1591,7 @@ local function fn()
     inst.SetUsedTouchStones = SetUsedTouchStones
     inst.SetGhostMode = fns.SetGhostMode
     inst.ShowActions = fns.ShowActions
+	inst.ShowCrafting = fns.ShowCrafting
     inst.ShowHUD = fns.ShowHUD
     inst.EnableMapControls = fns.EnableMapControls
     inst.SetOldagerRate = fns.SetOldagerRate

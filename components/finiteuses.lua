@@ -26,6 +26,9 @@ end
 
 function FiniteUses:SetConsumption(action, uses)
     self.consumption[action] = uses
+    if action == ACTIONS.MINE then
+        self.consumption[ACTIONS.REMOVELUNARBUILDUP] = uses
+    end
 end
 
 function FiniteUses:GetDebugString()
@@ -85,6 +88,10 @@ function FiniteUses:SetIgnoreCombatDurabilityLoss(value)
     self.ignorecombatdurabilityloss = value
 end
 
+function FiniteUses:SetModifyUseConsumption(fn)
+    self.modifyuseconsumption = fn
+end
+
 function FiniteUses:OnUsedAsItem(action, doer, target)
     local uses = self.consumption[action]
     if uses ~= nil then
@@ -93,7 +100,7 @@ function FiniteUses:OnUsedAsItem(action, doer, target)
 		end
 
         if self.modifyuseconsumption then
-            uses = self.modifyuseconsumption(uses, action, doer, target)
+            uses = self.modifyuseconsumption(uses, action, doer, target, self.inst)
         end
 
         self:Use(uses)
