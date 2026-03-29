@@ -45,6 +45,8 @@ local function AddSkinSounds(inst)
         if inst.components.blinkstaff and (sounds.preteleport or sounds.postteleport) then
             inst.components.blinkstaff:SetSoundFX(sounds.preteleport, sounds.postteleport)
         end
+        -- Generic flag for nosounds depending on the prefab context.
+        inst.skin_nosound = sounds.nosound
     end
 end
 local function RemoveSkinSounds(inst)
@@ -71,9 +73,31 @@ local function RemoveSkinSounds(inst)
     if inst.components.blinkstaff then
         inst.components.blinkstaff:ResetSoundFX()
     end
+    -- Generic flag for nosounds depending on the prefab context.
+    inst.skin_nosound = nil
 end
 
+local function LanternPostCommonInit(inst)
+    if inst.neighbour_lights then
+		for light in pairs(inst.neighbour_lights) do
+            if not TheNet:IsDedicated() then
+			    light:OnSkinDirty()
+            end
+            light.update_skin:push()
+		end
+	end
+end
 
+local function LanternPostClearInit(inst)
+    if inst.neighbour_lights then
+		for light in pairs(inst.neighbour_lights) do
+            if not TheNet:IsDedicated() then
+			    light:OnSkinDirty()
+            end
+            light.update_skin:push()
+		end
+	end
+end
 
 --------------------------------------------------------------------------
 --[[ Basic skin functions ]]
@@ -189,12 +213,34 @@ end
 armor_bramble_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_bramble") end
 armor_bramble_clear_fn = function(inst) basic_clear_fn(inst, "armor_bramble") end
 
-wood_table_round_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_round") end
-wood_table_round_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_round") end
+local function _set_round_furniture_facings(inst, facings)
+	if facings == 8 then
+		inst.Transform:SetEightFaced()
+	elseif facings == 4 then
+		inst.Transform:SetFourFaced()
+	else
+		inst.Transform:SetNoFaced()
+	end
+end
+
+wood_table_round_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "wood_table_round")
+	_set_round_furniture_facings(inst, facings)
+end
+wood_table_round_clear_fn = function(inst)
+	basic_clear_fn(inst, "wood_table_round")
+	inst.Transform:SetNoFaced()
+end
 wood_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_square") end
 wood_table_square_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_square") end
-wood_stool_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_chair_stool") end
-wood_stool_clear_fn = function(inst) basic_clear_fn(inst, "wood_chair_stool") end
+wood_stool_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "wood_stool")
+	_set_round_furniture_facings(inst, facings)
+end
+wood_stool_clear_fn = function(inst)
+	basic_clear_fn(inst, "wood_stool")
+	inst.Transform:SetNoFaced()
+end
 wood_chair_init_fn = function(inst, build_name)
     basic_init_fn(inst, build_name, "wood_chair_chair")
     if not TheWorld.ismastersim then
@@ -213,12 +259,24 @@ wood_chair_clear_fn = function(inst)
         inst.back.AnimState:ClearOverrideSymbol("chair01_parts")
     end
 end
-stone_table_round_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_table_round") end
-stone_table_round_clear_fn = function(inst) basic_clear_fn(inst, "stone_table_round") end
+stone_table_round_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "stone_table_round")
+	_set_round_furniture_facings(inst, facings)
+end
+stone_table_round_clear_fn = function(inst)
+	basic_clear_fn(inst, "stone_table_round")
+	inst.Transform:SetNoFaced()
+end
 stone_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_table_square") end
 stone_table_square_clear_fn = function(inst) basic_clear_fn(inst, "stone_table_square") end
-stone_stool_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_chair_stool") end
-stone_stool_clear_fn = function(inst) basic_clear_fn(inst, "stone_chair_stool") end
+stone_stool_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "stone_chair_stool")
+	_set_round_furniture_facings(inst, facings)
+end
+stone_stool_clear_fn = function(inst)
+	basic_clear_fn(inst, "stone_chair_stool")
+	inst.Transform:SetFourFaced() --yes! base is 4-faced
+end
 stone_chair_init_fn = function(inst, build_name)
 	basic_init_fn(inst, build_name, "stone_chair")
     if not TheWorld.ismastersim then
@@ -933,6 +991,9 @@ umbrella_clear_fn = function(inst) basic_clear_fn(inst, "umbrella" ) end
 oceanfishingrod_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "fishingrod_ocean" ) end
 oceanfishingrod_clear_fn = function(inst) basic_clear_fn(inst, "fishingrod_ocean" ) end
 
+fishingrod_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "fishingrod") end
+fishingrod_clear_fn = function(inst) basic_clear_fn(inst, "fishingrod") end
+
 local generic_amulet_init_fn = function(inst, build_name)
     basic_init_fn(inst, build_name, "amulets")
     if not TheWorld.ismastersim then
@@ -1327,6 +1388,9 @@ rainometer_clear_fn = function(inst) basic_clear_fn(inst, "rain_meter" ) end
 winterometer_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "winter_meter" ) end
 winterometer_clear_fn = function(inst) basic_clear_fn(inst, "winter_meter" ) end
 
+tacklestation_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "tackle_station" ) end
+tacklestation_clear_fn = function(inst) basic_clear_fn(inst, "tackle_station" ) end
+
 lightning_rod_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "lightning_rod" ) end
 lightning_rod_clear_fn = function(inst) basic_clear_fn(inst, "lightning_rod" ) end
 
@@ -1418,6 +1482,39 @@ meatrack_clear_fn = function(inst)
 		inst:OnMeatRackSkinChanged(nil)
 	end
 end
+meatrack_hermit_init_fn = function(inst, build_name)
+	basic_init_fn(inst, build_name, "meatrack_hermit")
+	if not TheWorld.ismastersim then
+		return
+	end
+	if inst.OnMeatRackSkinChanged then
+		inst:OnMeatRackSkinChanged(build_name)
+	end
+end
+meatrack_hermit_clear_fn = function(inst)
+	basic_clear_fn(inst, "meatrack_hermit")
+	if inst.OnMeatRackSkinChanged then
+		inst:OnMeatRackSkinChanged(nil)
+	end
+end
+meatrack_hermit_multi_init_fn = function(inst, build_name)
+	basic_init_fn(inst, build_name, "meatrack_hermit_multi")
+	if not TheWorld.ismastersim then
+		return
+	end
+	if inst.OnMeatRackSkinChanged then
+		inst:OnMeatRackSkinChanged(build_name)
+	end
+end
+meatrack_hermit_multi_clear_fn = function(inst)
+	basic_clear_fn(inst, "meatrack_hermit_multi")
+	if inst.OnMeatRackSkinChanged then
+		inst:OnMeatRackSkinChanged(nil)
+	end
+end
+
+beebox_hermit_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "bee_box_hermitcrab" ) end
+beebox_hermit_clear_fn = function(inst) basic_clear_fn(inst, "bee_box_hermitcrab" ) end
 
 beebox_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "bee_box" ) end
 beebox_clear_fn = function(inst) basic_clear_fn(inst, "bee_box" ) end
@@ -2237,6 +2334,18 @@ function critter_puppy_clear_fn(inst)
     inst.AnimState:SetBuild("pupington_build")
 end
 function critter_puppy_builder_clear_fn(inst)
+    inst.linked_skinname = nil
+end
+
+function critter_bulbin_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "bulbin_basic")
+end
+function critter_bulbin_clear_fn(inst)
+    -- No default build fallback.
+    inst.persists = false
+    inst:DoStaticTaskInTime(0, inst.Remove)
+end
+function critter_bulbin_builder_clear_fn(inst)
     inst.linked_skinname = nil
 end
 
@@ -3539,7 +3648,168 @@ function resurrectionstatue_clear_fn(inst)
     basic_clear_fn(inst, "wilsonstatue")
 end
 
+function antlionhat_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hat_antlion")
+end
+function antlionhat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_antlion")
+end
+function woodcarvedhat_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hat_woodcarved")
+end
+function woodcarvedhat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_woodcarved")
+end
+function nightstick_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "nightstick")
+end
+function nightstick_clear_fn(inst)
+    basic_clear_fn(inst, "nightstick")
+end
+function hawaiianshirt_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "torso_hawaiian")
+end
+function hawaiianshirt_clear_fn(inst)
+    basic_clear_fn(inst, "torso_hawaiian")
+end
+function icehat_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hat_ice")
+end
+function icehat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_ice")
+end
+function w_radio_init_fn(inst, build_name, skin_custom)
+    basic_init_fn(inst, build_name, "w_radio")
+    if inst.OnWRadioSkinChanged then
+    	inst:OnWRadioSkinChanged(build_name, skin_custom)
+    end
+end
+function w_radio_clear_fn(inst)
+	--basic_clear_fn(inst, "w_radio") --there isn't actually a default build
+	if inst.OnWRadioSkinChanged then
+		inst:OnWRadioSkinChanged(nil)
+	end
+end
 
+function pumpkinhat_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hat_pumpkin")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:OnPumpkinHatSkinChanged(build_name)
+end
+function pumpkinhat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_pumpkin")
+	inst:OnPumpkinHatSkinChanged(nil)
+end
+
+function hermitcrab_init_fn(inst, build_name)
+	basic_init_fn(inst, build_name, "hermitcrab_build")
+end
+
+function hermitcrab_clear_fn(inst)
+	basic_clear_fn(inst, "hermitcrab_build")
+end
+
+function hermithouse_ornament_init_fn(inst, build_name)
+    inst:AddOrRemoveTag("hermithouse_winter_ornament", SKINS_EVENTLOCK[build_name] == SPECIAL_EVENTS.WINTERS_FEAST)
+	basic_init_fn(inst, build_name, "hermithouse_ornament_shell")
+	inst.AnimState:SetBank(build_name or "hermithouse_ornament_shell")
+	if not TheWorld.ismastersim then
+		return
+	end
+    AddSkinSounds(inst)
+	if inst.OnHermitHouseOrnamentSkinChanged then
+		inst:OnHermitHouseOrnamentSkinChanged(build_name)
+	end
+end
+function hermithouse_ornament_clear_fn(inst)
+    inst:RemoveTag("hermithouse_winter_ornament")
+	basic_clear_fn(inst, "hermithouse_ornament_shell")
+	inst.AnimState:SetBank("hermithouse_ornament_shell")
+    RemoveSkinSounds(inst)
+	if inst.OnHermitHouseOrnamentSkinChanged then
+		inst:OnHermitHouseOrnamentSkinChanged(nil)
+	end
+end
+
+function hermitcrab_lightpost_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hermitcrab_lightpost")
+    LanternPostCommonInit(inst)
+    if inst.OnHermitLightPostSkinChanged then
+		inst:OnHermitLightPostSkinChanged(inst:GetSkinName())
+	end
+end
+function hermitcrab_lightpost_clear_fn(inst)
+    basic_clear_fn(inst, "hermitcrab_lightpost")
+    LanternPostClearInit(inst)
+    if inst.OnHermitLightPostSkinChanged then
+		inst:OnHermitLightPostSkinChanged(nil)
+	end
+end
+
+function hermithotspring_init_fn(inst, build_name)
+	--V2C: purposely NOT calling calling the basic fns that changes our build
+	--defined on server hotspring/constr
+	--defined on server/client placer
+	if inst.OnHermitHotSpringSkinChanged then
+		inst:OnHermitHotSpringSkinChanged(build_name)
+	end
+end
+hermithotspring_clear_fn = hermithotspring_init_fn
+hermithotspring_constr_init_fn = hermithotspring_init_fn
+hermithotspring_constr_clear_fn = hermithotspring_init_fn
+
+function hermithouse_init_fn(inst, build_name)
+	basic_init_fn(inst, build_name, "hermitcrab_home")
+	if inst.OnHermitHouseSkinChanged then
+		inst:OnHermitHouseSkinChanged(build_name)
+	end
+end
+function hermithouse_clear_fn(inst)
+	basic_clear_fn(inst, "hermitcrab_home")
+	if inst.OnHermitHouseSkinChanged then
+		inst:OnHermitHouseSkinChanged(nil)
+	end
+end
+hermithouse2_init_fn = hermithouse_init_fn
+hermithouse2_clear_fn = hermithouse_clear_fn
+hermithouse_construction1_init_fn = hermithouse_init_fn
+hermithouse_construction1_clear_fn = hermithouse_clear_fn
+hermithouse_construction2_init_fn = hermithouse_init_fn
+hermithouse_construction2_clear_fn = hermithouse_clear_fn
+hermithouse_construction3_init_fn = hermithouse_init_fn
+hermithouse_construction3_clear_fn = hermithouse_clear_fn
+
+function hermit_chair_rocking_init_fn(inst, build_name)
+	basic_init_fn(inst, build_name, "hermit_chair_rocking")
+	if not TheWorld.ismastersim then
+		return
+	end
+	if inst.back then
+		inst.back.AnimState:OverrideItemSkinSymbol("chair_parts", build_name, "chair_parts", inst.GUID, "hermit_chair_rocking")
+	end
+end
+function hermit_chair_rocking_clear_fn(inst)
+	basic_clear_fn(inst, "hermit_chair_rocking")
+	if inst.back then
+		inst.back.AnimState:ClearOverrideSymbol("chair_parts")
+	end
+end
+
+function hermitcrab_teashop_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hermitcrab_teashop")
+    if inst.front then
+        basic_init_fn(inst.front, build_name, "hermitcrab_teashop")
+    end
+end
+
+function hermitcrab_teashop_clear_fn(inst)
+    basic_clear_fn(inst, "hermitcrab_teashop")
+    if inst.front then
+        basic_clear_fn(inst.front, "hermitcrab_teashop")
+    end
+end
 
 function CreatePrefabSkin(name, info)
     local prefab_skin = Prefab(name, nil, info.assets, info.prefabs)
@@ -3549,7 +3819,6 @@ function CreatePrefabSkin(name, info)
     if info.type == nil then
         info.type = "base"
     end
-
 
     prefab_skin.base_prefab         = info.base_prefab
     prefab_skin.type                = info.type
@@ -3567,6 +3836,7 @@ function CreatePrefabSkin(name, info)
     prefab_skin.release_group       = info.release_group
     prefab_skin.linked_beard        = info.linked_beard
     prefab_skin.share_bigportrait_name = info.share_bigportrait_name
+    prefab_skin.is_npc_base         = info.is_npc_base
 
     if info.torso_tuck_builds ~= nil then
         for _,base_skin in pairs(info.torso_tuck_builds) do
@@ -3624,7 +3894,7 @@ function CreatePrefabSkin(name, info)
         SKIN_FX_PREFAB[name] = info.fx_prefab
     end
 
-    if info.type ~= "base" then
+    if info.type ~= "base" or info.is_npc_base then
         prefab_skin.clear_fn = _G[prefab_skin.base_prefab.."_clear_fn"]
     end
 

@@ -592,18 +592,22 @@ function Tune(overrides)
         KNIGHT_DAMAGE = 40,
         KNIGHT_HEALTH = 300 * 3, -- harder for multiplayer
         KNIGHT_ATTACK_PERIOD = 2,
+		KNIGHT_ATTACK_RANGE = 2.5,
+		KNIGHT_HIT_RANGE = 2.75,
         KNIGHT_WALK_SPEED = 5,
         KNIGHT_TARGET_DIST = 10,
 		KNIGHT_DODGE_HIT_RECOVERY = 2,
 
         BISHOP_DAMAGE = 40,
+		BISHOP_INSULATED_DAMAGE_MULT = 0.5,
         BISHOP_HEALTH = 300 * 3, -- harder for multiplayer
         BISHOP_ATTACK_PERIOD = 4,
-        BISHOP_ATTACK_DIST = 6,
+		BISHOP_ATTACK_DIST = 8,
         BISHOP_WALK_SPEED = 5,
         BISHOP_TARGET_DIST = 12,
 
-        ROOK_DAMAGE = 45,
+		ROOK_DAMAGE = 90,
+		ROOK_DAMAGE_PLAYER_PERCENT = 0.5,
         ROOK_HEALTH = 300 * 3, -- harder for multiplayer
         ROOK_ATTACK_PERIOD = 2,
         ROOK_WALK_SPEED = 5,
@@ -1353,6 +1357,11 @@ function Tune(overrides)
                 PERDOFFERING = 1,
             }),
 
+            KNIGHTSHRINE = TechTree.Create({
+                KNIGHTOFFERING = 3,
+                PERDOFFERING = 1,
+            }),
+
             MADSCIENCE = TechTree.Create({
                 MADSCIENCE = 1,
             }),
@@ -1392,6 +1401,13 @@ function Tune(overrides)
 			}),
             HERMITCRABSHOP_L4 = TechTree.Create({
                 HERMITCRABSHOP = 7,
+            }),
+
+            SHELLWEAVER_L1 = TechTree.Create({
+                SHELLWEAVER = 1,
+            }),
+            SHELLWEAVER_L2 = TechTree.Create({
+                SHELLWEAVER = 3,
             }),
 
             RABBITKINGSHOP = TechTree.Create({
@@ -1957,6 +1973,7 @@ function Tune(overrides)
                 1, --[36] Vampire Teeth
                 1, --[37] Wooden Stake
             },
+			HERMITHOUSE_ORNAMENT = 3,
         },
 
         RESEARCH_COST_CHEAP = 30,
@@ -1986,6 +2003,7 @@ function Tune(overrides)
         HEALING_TINY = 1,
         HEALING_SMALL = 3,
         HEALING_MEDSMALL = 8,
+        HEALING_MOREMEDSMALL = 15,
         HEALING_MED = 20,
         HEALING_MEDLARGE = 30,
         HEALING_LARGE = 40,
@@ -2265,8 +2283,12 @@ function Tune(overrides)
         TARGET_SLEEP_TEMP = 35,
         MIN_ENTITY_TEMP = -20,
         MAX_ENTITY_TEMP = 90,
+
         WARM_DEGREES_PER_SEC = 1,
         THAW_DEGREES_PER_SEC = 5,
+
+        COOL_DEGREES_PER_SEC = -1,
+        SUPER_COOL_DEGREES_PER_SEC = -5,
 
         -- Ice Flingomatic emergency mode
         EMERGENCY_BURNT_NUMBER = 2,
@@ -3574,6 +3596,10 @@ function Tune(overrides)
 
             DAYWALKER2        = {basic=1, special="winter_ornament_boss_daywalker2"},
             WORM_BOSS         = {basic=1, special="winter_ornament_boss_wormboss"},
+
+            ALTERGUARDIAN_PHASE1_LUNARRIFT  = {basic=1, special="winter_ornament_boss_celestialrevenant"},
+            WAGBOSS_ROBOT                   = {basic=2, special="winter_ornament_boss_warbot"},
+            ALTERGUARDIAN_PHASE4_LUNARRIFT  = {basic=2, special="winter_ornament_boss_celestialscion"},
         },
 
         WINTERS_FEAST_LOOT_EXCLUSION =
@@ -3587,6 +3613,9 @@ function Tune(overrides)
         },
 
 		WINTERS_FEAST_OVEN_BASE_COOK_TIME = night_time*.3333,
+
+        WINTERS_FEAST_BASIC_ORNAMENT_DROP_CHANCE = 0.005,
+        WINTERS_FEAST_WINTER_FOOD_DROP_CHANCE = 0.20,
 
         FIRECRACKERS_STARTLE_RANGE = 10,
         REDLANTERN_LIGHTTIME = total_day_time * 12,
@@ -3823,7 +3852,7 @@ function Tune(overrides)
         MOONSPIDERDEN_CREEPRADIUS = { 8, 12, 14 },
         MOONSPIDERDEN_WORK_REGENTIME = 4*seg_time,
         MOONSPIDERDEN_SPIDERS = {2, 3, 4},
-        MOONSPIDERDEN_SPIDER_REGENTIME = 4*seg_time,
+        MOONSPIDERDEN_SPIDER_REGENTIME = 2*seg_time,
         MOONSPIDERDEN_RELEASE_TIME = 3*seg_time,
         MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 0, 0},
         MOONSPIDERDEN_EMERGENCY_RADIUS = {10, 15, 20},
@@ -4317,8 +4346,11 @@ function Tune(overrides)
 		},
 
         DEFAULT_LOCOMOTOR_HOP_DISTANCE = 6.0,
-		FLOATING_HOP_DISTANCE_PLATFORM = 2, --for players only
+
+		--these are for players only; see WILSON_HOP_DISTANCE etc. for other player hop tuning values
+		FLOATING_HOP_DISTANCE_PLATFORM = 2,
 		FLOATING_HOP_DISTANCE_LAND = 3,
+		PILLAR_HOP_DISTANCE = 4,
 
         CARRAT =
         {
@@ -4468,6 +4500,8 @@ function Tune(overrides)
             garlic_seeds = "seeds_cooked",
             pepper_seeds = "seeds_cooked",
             pondfish = "fishmeat_small_cooked",
+            --
+            tree_rock_seed = "ash", --Because rock tree loot is protected from burning.
         },
 
         --wortox
@@ -4598,6 +4632,7 @@ function Tune(overrides)
         WEREMOOSE_FIGHTING_DRAIN_TIME_MULTIPLIER1 = 10,
         WEREMOOSE_FIGHTING_DRAIN_TIME_DURATION = 6, --time for fighting mults to wear off
         WEREMOOSE_RUN_SPEED = 5.4, --x0.9 speed
+        WEREMOOSE_TACKLE_SPEED = 12,
         WEREMOOSE_ABSORPTION = .9,
         WEREMOOSE_DAMAGE = wilson_attack * 1.75,
 
@@ -5967,9 +6002,6 @@ function Tune(overrides)
 
         QUAKE_FREQUENCY_MULTIPLIER = 1,
 
-        SPAWN_MOON_PENGULLS = true,
-        SPAWN_MUTATED_HOUNDS = true,
-
         RABBITHOLE_REGROWTH_TIME_MULT = 0,
         RABBITHOLE_REGROWTH_TIME_SUMMER_MULT = 1,
 
@@ -6016,13 +6048,13 @@ function Tune(overrides)
         MUSHGNOME_MAX_CHILDREN = 1,
         MUSHGNOME_ENABLED = true,
 
-        NIGHTMARELIGHT_RELEASE_TIME = 5,
-        NIGHTMARELIGHT_REGEN_TIME = seg_time,
+        NIGHTMARELIGHT_RELEASE_TIME = seg_time,
+        NIGHTMARELIGHT_REGEN_TIME = 5,
         NIGHTMARELIGHT_MINCHILDREN = 1,
         NIGHTMARELIGHT_MAXCHILDREN = 2,
         NIGHTMARELIGHT_ENABLED = true,
-        NIGHTMAREFISSURE_RELEASE_TIME = 5,
-        NIGHTMAREFISSURE_REGEN_TIME = seg_time,
+        NIGHTMAREFISSURE_RELEASE_TIME = seg_time,
+        NIGHTMAREFISSURE_REGEN_TIME = 5,
         NIGHTMAREFISSURE_MAXCHILDREN = 1,
         NIGHTMAREFISSURE_ENABLED = true,
 
@@ -7526,11 +7558,12 @@ function Tune(overrides)
         MIASMA_SPACING = 1, -- In tiles.
         MIASMA_SPREAD_INTERVAL_SECONDS = 5,
         MIASMA_DIMINISH_INTERVAL_SECONDS = 1,
-        MIASMA_MAX_CLOUDS = 50,
+        MIASMA_MAX_CLOUDS = 500,
         MIASMA_ODDS_CREATE = 0.8,
         MIASMA_ODDS_SPREAD = 0.5,
         MIASMA_MIN_DISTSQ_FROM_RIFT = 1 * 1 * 4, -- 4 is TILE_SCALE.
         MIASMA_MAX_DISTSQ_FROM_RIFT = 12 * 12 * 4, -- 4 is TILE_SCALE.
+        MIASMA_MAX_DIST_FROM_VENTER = 3 * 4, -- 4 is TILE_SCALE.
 
         MIASMA_DEBUFF_TICK_RATE = 2,
         MIASMA_DEBUFF_TICK_VALUE = -2,
@@ -8135,6 +8168,7 @@ function Tune(overrides)
         MERM_LUNAR_GUARD_EXTRA_HEALTH = 40,
         MERM_LUNAR_EXTRA_HEALTH = 40,
         MERM_LUNAR_THORN_DAMAGE = 40,
+        MERM_LUNAR_THORN_PLAYERDAMAGEPERCENT = 0.5,
 
         -- Rifts 4
         WORM_BOSS_HEALTH = 5000,
@@ -8537,24 +8571,56 @@ function Tune(overrides)
         WANDERINGTRADER_WANDERING_PERIOD_VARIANCE = 4,
         WANDERINGTRADER_VIRTUALWALKING_SPEEDMULT = 4,
 
+        GESTALT_TIMEOUT = 30,
+        WAGBOSS_DEFEATED_GESTALT_SPAWN_FACTOR = 2,
+
+        -- Deprecated tuning variables for GESTALT_EVOLVED kept for mods but should be removed once mods have time to catch up.
+        GESTALT_EVOLVED_EXPLODE_CHANCE = 0.33, -- Deprecated.
+		GESTALT_EVOLVED_MAX_DISTSQ_RELOCATE = 30*30, -- Deprecated.
+        GESTALT_EVOLVED_RELOCATE_TIME_RAND = 0.5, -- Deprecated.
+        GESTALT_EVOLVED_RELOCATE_TIME_BASE = 0.5, -- Deprecated.
+        GESTALT_POPULATION_CHECK_TIME = 5, -- Deprecated.
+		GESTALT_EVOLVED_SPAWN_COOLDOWN = 2 * seg_time, -- Deprecated.
+        GESTALT_EVOLVED_MAXSPAWN = 1, -- Deprecated.
+        GESTALT_EVOLVED_MAXSPAWN_INDUCED = 3, -- Deprecated.
+        GESTALT_EVOLVED_MAXPOOL = 15, -- Deprecated.
+        GESTALT_EVOLVED_ADDTOPOOLTIME = total_day_time, -- Deprecated.
+        GESTALT_EVOLVED_REAL_DAMAGE = 165, -- Deprecated.
+        GESTALT_EVOLVED_PLANAR_DAMAGE = 15, -- Deprecated.
+        -- End deprecation.
+
         GESTALT_EVOLVED_ATTACK_DAMAGE_GROGGINESS = 0.5,
         GESTALT_EVOLVED_ATTACK_DAMAGE_KO_TIME = 1,
-        GESTALT_EVOLVED_REAL_DAMAGE = 165,
-        GESTALT_EVOLVED_RELOCATE_TIME_RAND = 0.5,
-        GESTALT_EVOLVED_RELOCATE_TIME_BASE = 0.5,
-		GESTALT_EVOLVED_HEALTH = 850,
-        GESTALT_EVOLVED_EXPLODE_CHANCE = 0.33,
-		GESTALT_EVOLVED_MAX_DISTSQ_RELOCATE = 30*30,
-        GESTALT_EVOLVED_PLANAR_DAMAGE = 15,
-		GESTALT_EVOLVED_SPAWN_COOLDOWN = 2 * seg_time,
-        GESTALT_EVOLVED_MAXSPAWN = 1,
-        GESTALT_EVOLVED_MAXSPAWN_INDUCED = 3,
-        GESTALT_EVOLVED_MAXPOOL = 15,
-        GESTALT_EVOLVED_ADDTOPOOLTIME = total_day_time,
-        GESTALT_TIMEOUT = 30,
-        GESTALT_POPULATION_CHECK_TIME = 5,
+		GESTALT_EVOLVED_HEALTH = 600,
 
-        WAGBOSS_DEFEATED_GESTALT_SPAWN_FACTOR = 2,
+        GESTALT_EVOLVED_TELEPORT_COOLDOWN = 10,
+        GESTALT_EVOLVED_TELEPORT_HITS_NEEDED = 3,
+        GESTALT_EVOLVED_TELEPORT_TIME_INVISIBLE = 0.5,
+
+        GESTALT_EVOLVED_CLOSE_RANGE = 4,
+        GESTALT_EVOLVED_CLOSE_DAMAGE = 100,
+        GESTALT_EVOLVED_CLOSE_PLANAR_DAMAGE = 10,
+        GESTALT_EVOLVED_CLOSE_COOLDOWN = 3,
+
+        GESTALT_EVOLVED_MID_RANGE = 12,
+        GESTALT_EVOLVED_MID_DAMAGE = 40,
+        GESTALT_EVOLVED_MID_PLANAR_DAMAGE = 15,
+        GESTALT_EVOLVED_MID_COOLDOWN = 3.75,
+
+        GESTALT_EVOLVED_FAR_RANGE = 20,
+        GESTALT_EVOLVED_FAR_DAMAGE = 50,
+        GESTALT_EVOLVED_FAR_PLANAR_DAMAGE = 5,
+        GESTALT_EVOLVED_FAR_COOLDOWN = 4.5,
+        GESTALT_EVOLVED_FAR_SPEED = 12,
+        GESTALT_EVOLVED_FAR_SPLIT_ANGLE = 15, -- Degrees.
+
+        GESTALT_EVOLVED_PLANTING_MAX_SPAWNS_PER_PLAYER = 3,
+        GESTALT_EVOLVED_PLANTING_TICK_TIME = 1,
+        GESTALT_EVOLVED_PLANTING_RADIUS_FROM_HAT = 8,
+        GESTALT_EVOLVED_PLANTING_RADIUS_FROM_MOONGLASS = 4,
+        GESTALT_EVOLVED_PLANTING_MOONGLASS_REQUIREMENT = 3,
+
+        GESTALT_EVOLVED_LOSE_AGGRO_TIME = 10, -- Time since last hit from the non-summoner to lose the aggro.
 
         ARMOR_LUNACYHAT = wilson_health * 9 * multiplayer_armor_durability_modifier,
         ARMOR_LUNACYHAT_ABSORPTION = .7 * multiplayer_armor_absorption_modifier,
@@ -8582,20 +8648,8 @@ function Tune(overrides)
 
         RUMMAGE_COUNT_FOR_FENCE_BLUEPRINT = 10,
 
-        --[[
-        MUTANT_BIRD_AGGRO_DIST = 15,
-        MUTANT_BIRD_RETURN_DIST = 30,
-        MUTANT_BIRD_DAMAGE = 20,
-        MUTANT_BIRD_HEALTH = 10,
-        MUTANT_BIRD_SPLASH_DAMAGE = 20,
-        MUTANT_BIRD_TARGET_DIST = 16,
-        MUTANT_BIRD_ATTACK_RANGE = 2,
-        MUTANT_BIRD_WALK_SPEED = 4,
-        MUTANT_BIRD_ATTACK_COOLDOWN = 6,
-        MUTANT_BIRD_SPIT_RANGE = 10,
-        ]]
-
         RIFT_BIRD_WALKSPEED = 4,
+        RIFT_BIRD_RUNSPEED = 12,
         RIFT_BIRD_DAMAGE = 10,
         RIFT_BIRD_PLANAR_DAMAGE = 10,
         RIFT_BIRD_HEALTH = 25,
@@ -8626,13 +8680,548 @@ function Tune(overrides)
 
         MUTATEDBUZZARD_DAMAGE = 25,
         MUTATEDBUZZARD_PLANAR_DAMAGE = 25,
-        MUTATEDBUZZARD_ATTACK_RANGE = 2,
-        MUTATEDBUZZARD_ATTACK_PERIOD = 2,
+        MUTATEDBUZZARD_ATTACK_RANGE = 10,
+        MUTATEDBUZZARD_HIT_RANGE = 2,
+        MUTATEDBUZZARD_ATTACK_PERIOD = 1.5,
         MUTATEDBUZZARD_WALK_SPEED = 4,
         MUTATEDBUZZARD_RUN_SPEED = 8,
-        MUTATEDBUZZARD_HEALTH = 125 * 2, -- harder for multiplayer
+        MUTATEDBUZZARD_HEALTH = 150 * 2, -- harder for multiplayer
+        MUTATEDBUZZARD_FLAMETHROWER_CD = 7,
+        MUTATEDBUZZARD_FLAMETHROWER_CD_VARIANCE = 2,
+        MUTATEDBUZZARD_FIND_TARGET_DIST = 10,
 
         BIRD_SPAWNER_POST_HAIL_TIME = 6 * total_day_time,
+
+        SHADOWTHRALL_CENTIPEDE = {
+            HEALTH = 2000,
+
+            DAMAGE = 150,
+            PLANAR_DAMAGE = 50,
+            PLAYERDAMAGEPERCENT = 0.5, --Does not apply to planar!
+
+            MOVESPEED = 5,
+            RUNSPEED = 10,
+            TURNSPEED = 1.5,
+            MAX_SEGMENTS = 20,
+
+            -- Brain stuff
+
+            FIND_MIASMA_DIST = 10,
+            WANDER_DIST = 6,
+
+            EAT_MIASMA_MAX = 5, -- 5 at a time before going on delay.
+            EAT_DELAY = seg_time * 2,
+
+            ANGLE_INTERACT_WIDTH = 180 / RADIANS, -- must be in radians
+        },
+
+        TREE_ROCK = {
+            MINE = 6,
+            MINE_MED = 4,
+            MINE_LOW = 2,
+
+            AOE_DAMAGE = 150,
+
+            ROCK1_AOE_RADIUS = 2,
+            ROCK2_AOE_RADIUS = 3.25,
+
+            ROCK1_AOE_DAMAGE = 200,
+            ROCK2_AOE_DAMAGE = 100,
+
+            BURN_TIME = 3,
+
+            PLAYERDAMAGEPERCENT = 1/4,
+
+            BOULDER_GEN_CHANCE = 1/3,
+
+            CHOP = 5,
+
+            GROW_TIME =
+            {
+                {base=1.5*day_time, random=0.5*day_time},   --short
+                {base=5*day_time, random=2*day_time},       --normal
+                {base=5*day_time, random=2*day_time},       --tall
+                {base=1*day_time, random=0.5*day_time}      --old
+            },
+
+            SAPLING_GROW_TIME = {base=4*day_time, random=1*day_time},
+        },
+
+        -- Rock trees only have desolation regrowth
+        TREE_ROCK_REGROWTH = {
+            OFFSPRING_TIME = total_day_time * 8,
+            DESOLATION_RESPAWN_TIME = total_day_time * 50,
+            DEAD_DECAY_TIME = total_day_time * 30, --NOTE: no decay.
+        },
+
+        TREE_ROCK_REGROWTH_TIME_MULT = 1,
+
+        CAVE_VENTS = {
+            MINE = 6,
+            MINE_MED = 4,
+            MINE_LOW = 2,
+
+            SPEW_TIME = {
+                HOT = {
+                    BASE = seg_time * 3,
+                    VARIANCE = seg_time * 2,
+                },
+                MIASMA = {
+                    BASE = seg_time * 6,
+                    VARIANCE = seg_time * 3,
+                },
+                GAS = {
+                    BASE = seg_time * 5,
+                    VARIANCE = seg_time * 1,
+                },
+            },
+
+            HEAT =
+            {
+                HOT_ACTIVE = 120,
+                MIASMA_ACTIVE = 90,
+                INACTIVE = 10,
+                COLD_ACTIVE = -120,
+            },
+        },
+
+        OCEANWHIRLBIGPORTAL_FOCALRADIUS = 4,
+        OCEANWHIRLBIGPORTAL_RADIUS = 14,
+        OCEANWHIRLBIGPORTAL_PULLSTRENGTH = 10,
+        OCEANWHIRLBIGPORTAL_RADIALSTRENGTH = 20,
+        OCEANWHIRLBIGPORTAL_BOAT_PERCENT_DAMAGE_PER_TICK = 0.1,
+
+        OCEANWHILRBIGPORTALEXIT_LOOT_PER_PICK = 3,
+        OCEANWHILRBIGPORTALEXIT_ITEMS_TO_MAKE_BIG = 30,
+
+        FLOWER_CAVE_WITHERED_LIGHT_TIME = 20,
+        FLOWER_CAVE_WITHERED_RECHARGE_TIME = 200,
+
+        CAVE_MITE_HEALTH = 200 * 2, -- harder for multiplayer
+        CAVE_MITE_WALK_SPEED = 2,
+        CAVE_MITE_RUN_SPEED = 3,
+        CAVE_MITE_DAMAGE = 25,
+        CAVE_MITE_PLANAR_DAMAGE = 10,
+        CAVE_MITE_ATTACK_PERIOD = 4,
+        CAVE_MITE_ATTACK_RANGE = 3,
+        CAVE_MITE_HIT_RANGE = 4,
+        CAVE_MITE_TARGET_DIST = 8,
+        CAVE_MITE_SHELL_ABSORB = 0.05, --95%
+        CAVE_MITE_HEAT_ACTIVE = 120,
+        CAVE_MITE_BLOW_COOLDOWN = 8,
+        CAVE_MITE_BLOW_DISTANCE = 4,
+        CAVE_MITE_BLOW_DISTANCE_SQ = 4*4,
+        CAVE_MITE_BLOW_DISTANCE_SQ_MIN = 2*2,
+
+        CAVE_MITE_BLOW_HEAT_RATE = {
+            COLD = 5,
+            NORMAL = 25,
+            HOT = 40, --This is essentially the default.
+        },
+
+        CAVE_MITE_SHIELD_COOLDOWN = 30,
+        CAVE_MITE_SHIELD_COOLDOWN_VARIANCE = 20,
+
+        CAVE_MITE_SHIELD_TIME = 10,
+        CAVE_MITE_SHIELD_TIME_VARIANCE = 140,
+
+        CAVE_MITE_MAX_CHASE_TIME = 16,
+        CAVE_MITE_SEE_FOOD_DIST = 10,
+        CAVE_MITE_MAX_WANDER_DIST = 32,
+        CAVE_MITE_DAMAGE_UNTIL_SHIELD = 25,
+        CAVE_MITE_SHIELD_ATTACK_TIME = 5,
+
+        CAVE_MITE_RELEASE_TIME = 20,
+        CAVE_MITE_REGEN_TIME = total_day_time,
+        CAVE_MITE_MAX_CHILDREN = 3,
+        CAVE_MITE_ENABLED = true,
+
+        CAVE_MITE_SPAWN_RADIUSSQ = 16 * 16,
+
+        PRERIFT_MUTATION_SPAWN_CHANCE = 0.5,
+        PRERIFT_MUTATION_SPAWN_DELAY_BASE = 4,
+        PRERIFT_MUTATION_SPAWN_DELAY_VARIANCE = 1,
+
+        SPIDER_PRERIFT_MUTATION_SPAWN_CHANCE = 1 / 3, -- 33.333%~
+        SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE = 0.5,
+
+        BIRD_PRERIFT_MUTATION_SPAWN_CHANCE = 1,
+
+        CORPSE_REMOVE_ON_SLEEP_TIME = 10,
+
+        -- Halloween 2025
+
+		--V2C: O.G. spooked was tuned for each individual CHOP
+		--     mining/digging only triggers TryCustomSpook on state changes
+		MINE_SPOOKED_MULT_HIGH = 0.315,
+		MINE_SPOOKED_MULT_LOW = 0.1,
+		DIG_SPOOKED_MULT = 0.456,
+
+        -- Migrations are per node
+        RIFT_BIRD_MIGRATE_TIME_BASE = seg_time,
+        RIFT_BIRD_MIGRATE_TIME_VAR = seg_time * 0.5,
+
+        RIFT_BIRD_MIGRATE_TIME_RAIN_FACTOR = 1 / 4, -- Rain lengthens migration by 4x
+
+        RIFT_BIRD_MIGRATE_TIME_MOONPHASE_FACTOR =
+        {
+            ["new"] = 0.6,
+            ["quarter"] = 0.75,
+            ["half"] = 1,
+            ["threequarter"] = 1.25,
+            ["full"] = 1.5,
+        },
+
+        RIFT_BIRD_MIGRATE_TIME_NON_NIGHT_FACTOR = 1 / 1.5,
+
+        MUTATEDBUZZARD_MIGRATE_TIME_BASE = seg_time*4,
+        MUTATEDBUZZARD_MIGRATE_TIME_VAR = seg_time*2,
+        MUTATEDBUZZARD_FIND_CORPSE_DELAY = 10,
+        MUTATEDBUZZARD_CORPSE_RANGE = 25, -- mobs die within this range of a buzzard to be corpsed
+        MUTATEDBUZZARD_ENTER_MIGRATION_ON_SLEEP_TIME = 20,
+        MUTATEDBUZZARD_MAX_TARGET_COUNT = 3, -- 3 buzzards can share a target, the rest should EAT!
+
+        MUTATEDBUZZARD_FLAMETHROWER_DAMAGE = 15,
+        MUTATEDBUZZARD_FLAMETHROWER_PLANAR_DAMAGE = 10,
+
+        MUTATEDBUZZARD_MEGAFLARE_NODE_WEIGHT = 10,
+        MUTATEDBUZZARD_MEGAFLARE_TIME = total_day_time,
+
+        MUTATEDBUZZARD_DEATHATTRACTION_TIME = total_day_time * 0.5,
+        MUTATEDBUZZARD_DEATHATTRACTION_WEIGHT = 0.25,
+
+        -- Kill buzzards in the hail level between 20 and 35
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = 20,
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = 15,
+
+        BUZZARDSPAWNER_FLARE_HIT_DIST_SQ = 25 * 25,
+
+        TALL_FLAMEWALL_BASE_TIME = 2.5,
+        TALL_FLAMEWALL_VAR_TIME = 0.5,
+
+        ICED_EMBER_BASE_TIME = 11,
+        ICED_EMBER_VAR_TIME = 1,
+        ICED_EMBER_SLIPPERY_RATE = 20,
+
+        SPAWN_MOON_PENGULLS = true,
+        SPAWN_MUTATED_HOUNDS = true,
+        SPAWN_MUTATED_MERMS = true,
+        SPAWN_MUTATED_SPIDERQUEEN = true,
+        SPAWN_MUTATED_BIRDS = true,
+        SPAWN_MUTATED_BIRDS_GESTALT = true,
+        SPAWN_MUTATED_BUZZARDS_GESTALT = true,
+        SPAWN_MUTATED_DEERCLOPS = true,
+        SPAWN_MUTATED_BEARGER = true,
+        SPAWN_MUTATED_WARG = true,
+
+        CREATURE_CARCASS_MEAT_PER_LEVEL = -- 3 levels
+        {
+            ["tiny"] = 2,
+            ["small"] = 6,
+            ["med"] = 14,
+            ["large"] = 33, -- pretend this goes up nicely to 100 with the 3 levels :)
+        },
+
+        BIRD_RIFT_POSSESSION_SPAWN_CHANCE = 1 / 20,
+
+        -- Winter 2025
+
+        HERMITCRABTEA_USES = 10,
+
+        HERMITCRABTEA_HOT_BONUS_TEMP = 40,
+        HERMITCRABTEA_COLD_BONUS_TEMP = -40,
+
+        HERMITCRABTEA_TEMP_TIME = seg_time * 4,
+
+        SHELLWEAVER_COOK_TIME = 6,
+
+        NONSLIPGRIT_TOTAL_USE_TIME = seg_time * 6,
+        NONSLIPGRITBOOSTED_NUMBER_OF_POOLS = 25,
+        NONSLIPGRITBOOSTED_POOL_TIME = seg_time * 2,
+
+        DESICCANT_DRY_RATE = 0.5,
+        DESICCANTBOOSTED_DRY_RATE = 0.75,
+        MOISTUREABSORBER_RAINED_ON_EFFICIENCY_MULT = 0.07,
+
+        SALTY_DOG_TIME_TO_SALT = seg_time * 2,
+        SALTY_DOG_MAX_SALT_COUNT = 2,
+
+        HERMTICRAB_SHELL_RANGE = 12,
+        HERMITCRAB_SHELL_USES = 10,
+        HERMITCRAB_SHELL_ADD_WETNESS = 15,
+
+        HERMITCRAB_PETALTEA_SANITY_DELTA = 1,
+		HERMITCRAB_PETALTEA_TICK_RATE = 1,
+		HERMITCRAB_PETALTEA_DURATION = seg_time * 1.5,
+
+        HERMITCRAB_EVILPETALTEA_SANITY_DELTA = -2,
+		HERMITCRAB_EVILPETALTEA_TICK_RATE = 1,
+		HERMITCRAB_EVILPETALTEA_DURATION = seg_time * 2,
+
+        HERMITCRAB_TILLWEEDTEA_HEALTH_DELTA = 1,
+		HERMITCRAB_TILLWEEDTEA_TICK_RATE = .5,
+		HERMITCRAB_TILLWEEDTEA_DURATION = seg_time * .5,
+
+		HERMITCRAB_FORGETMELOTTEA_SANITY_DELTA = 2,
+		HERMITCRAB_FORGETMELOTTEA_TICK_RATE = 1,
+		HERMITCRAB_FORGETMELOTTEA_DURATION = seg_time * 1.5,
+
+        HERMITCRAB_FOLIAGETEA_DURATION = seg_time * 6,
+        HERMITCRAB_FOLIAGETEA_SANITY_MOD = 0.1,
+
+        HERMITCRAB_MOONTREEBLOSSOMTEA_DURATION = seg_time * 6,
+        HERMITCRAB_MOONTREEBLOSSOMTEA_PANIC_SHADOWCREATURE_TIME = seg_time,
+
+        HERMITCRAB_DECOR_UPDATE_TIME = 10, -- recount score every 10 seconds.
+        HERMITCRAB_DECOR_MAX_SCORE = 100,
+        HERMITCRAB_DECOR_RADIUS = 32,
+
+        HERMITCRAB_DECOR_MAX_TILE_SPACE = 100,
+        HERMITCRAB_DECOR_TILE_SCORE = .15,
+        HERMITCRAB_DECOR_TILE_SCORE_LOW = .10,
+        HERMITCRAB_DECOR_TILE_SCORE_MAX = 100 * .15, -- max tile space * highest tile score
+
+        -- Get a big boost for having ONE of these structures at least
+        HERMITCRAB_DECOR_UNIQUE_BOOSTS =
+        {
+            ["hermitcrab_teashop"] = 10,
+            ["hermithotspring"] = 10,
+            ["tacklestation"] = 3,
+            ["shellweaver"] = 3,
+        },
+
+        HERMITCRAB_DECOR_SPAWNER_SCORE_GRAVE = -3, -- Scary and morbid! :(
+        HERMITCRAB_DECOR_SPAWNER_SCORE = -1,
+        HERMITCRAB_DECOR_SPAWNER_SCORE_MIN = -33,
+
+        HERMITCRAB_DECOR_TABLE_SCORE = 2,
+        HERMITCRAB_DECOR_TABLE_ITEM_SCORE = 5,
+        HERMITCRAB_DECOR_TABLE_SCORE_MAX = 15,
+
+        HERMITCRAB_DECOR_JUNK_SCORE = -.5,
+        HERMITCRAB_DECOR_JUNK_SCORE_MIN = -50, -- Junk can only subtract 50,
+
+        HERMITCRAB_DECOR_DOCKPOST_SCORE = .5,
+        HERMITCRAB_DECOR_DOCKPOST_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_POTTEDPLANT_SCORE = 1,
+        HERMITCRAB_DECOR_POTTEDPLANT_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_TROPHY_SCALE_FISH_SCORE = 0.012, -- per weight value,
+        HERMITCRAB_DECOR_ALL_FISH_SCORE = 20, -- Congrats! you got all the fish!
+
+        HERMITCRAB_DECOR_CHAIR_SCORE = 2,
+        HERMITCRAB_DECOR_CHAIR_SCORE_MAX = 8,
+
+        HERMITCRAB_DECOR_MEAT_RACK_SCORE = 1, -- this is per slot
+        HERMITCRAB_DECOR_MEAT_RACK_SCORE_MAX = 9,
+
+        HERMITCRAB_DECOR_PICKABLE_SCORE = .5,
+        HERMITCRAB_DECOR_PICKABLE_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_LIGHTPOST_SCORE = 1/3,
+        HERMITCRAB_DECOR_LIGHTPOST_ON_SCORE = 1,
+        HERMITCRAB_DECOR_LIGHTPOST_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_BEEBOX_SCORE = 1,
+        HERMITCRAB_DECOR_BEEBOX_SCORE_MAX = 5,
+
+        HERMITCRAB_DECOR_FLOWER_SCORE = .5,
+        HERMITCRAB_DECOR_FLOWER_SCORE_MAX = 5,
+
+        HERMITCRAB_DECOR_CRITTER_PET_SCORE = 5,
+
+        HERMITCRAB_DECOR_WATER_TREE_SCORE = 15,
+        HERMITCRAB_DECOR_WATER_TREE_SCORE_MAX = 15,
+        HERMITCRAB_DECOR_WATER_TREE_TILE_COVERAGE_MIN = 10,
+
+		HERMITCRAB_DECOR_LVL5_HOUSE = 5,
+		HERMITCRAB_DECOR_ORNAMENT_SCORE = 2,
+		HERMITCRAB_DECOR_WINTER_ORNAMENT_SCORE = 4,
+		HERMITCRAB_DECOR_WAGSTAFF_ORNAMENT_SCORE = 8,
+
+		HERMITCRAB_DECOR_WINTER_BONUS_SCORE = 2,
+
+        HERMITCRAB_DECOR_HAPPY_SCORE = 90,
+
+        HERMITCRAB_DECOR_FISHING_BLOCKED_SCORE = -4, -- -4 points for each fishing marker covered. 16 markers x -4 = -64 decor points lost.
+        HERMITCRAB_DECOR_FISHING_BLOCKED_SCORE_MIN = -64, -- -4 * 16
+
+		HERMITHOTSPRING_BATHBOMB_DURATION = total_day_time,
+        HERMITHOTSPRING_TICK_PERIOD = 1,
+        HERMITHOTSPRING_SANITY_PER_SECOND = 2,
+        HERMITHOTSPRING_HEALTH_PER_SECOND = 2,
+
+        HOTSPRING_TICK_PERIOD = 1,
+        HOTSPRING_SANITY_PER_SECOND = 1,
+        HOTSPRING_HEALTH_PER_SECOND = 1,
+		HERMITCRAB_HOTSPRING_SOAK_TIME = 30,
+		HERMITCRAB_HOTSPRING_HAPPY_SOAK_TIME = 60,
+
+        MOONSTORM_SPARKCHARGE_DEFAULT = 0.1,
+        NIGHTSTICK_SPARKCHARGE = 0.25,
+        NIGHTSTICK_BATTERYCHARGE = 1.0,
+
+        WINTERSURPRISE_SPAWN_DELAY = total_day_time * 2,
+        WINTERSURPRISE_SPAWN_DELAY_VARIANCE = total_day_time * 1,
+        WINTERSURPRISE_MAX_SPAWNS = 3,
+        SPAWN_WINTERSURPRISE = true,
+
+		RETURN_ITEM_TO_FEEDER_RANGE = 4,
+
+        -- Year of the Clockwork Knight
+
+        YOTH_CHARLIE_STAGE_RESET_TIME = total_day_time*2,
+        YOTH_CHARLIE_STAGE_RESET_TIME_VARIABLE = total_day_time*1,
+
+        YOTH_KNIGHT_ATTACK_PERIOD = 2,
+        YOTH_KNIGHT_DAMAGE = 40,
+        YOTH_KNIGHT_HEALTH = 300 * 3, -- harder for multiplayer
+		YOTH_KNIGHT_JOUST_RANGE = { min = 6, max = 14 },
+        YOTH_KNIGHT_WALK_SPEED = 5,
+		YOTH_KNIGHT_JOUST_SPEED = 8,
+        YOTH_KNIGHT_TARGET_DIST = 20,
+        YOTH_KNIGHT_TIME_TO_FLEE = 2,
+        YOTH_KNIGHT_FLEE_RADIUS = ENTITY_POPOUT_RADIUS / 2,
+        YOTH_KNIGHT_MAX_CHASE_TIME = 5,
+        -- the knights armor
+        YOTH_KNIGHT_DAMAGE_TAKEN_MULT_PLAYER = 0.8,
+        YOTH_KNIGHT_DAMAGE_TAKEN_MULT = 0.15,
+
+        YOTH_PRINCESS_SUMMON_COOLDOWN = total_day_time * 3,
+
+        YOTH_LANCE_ATTACK_DAMAGE = wilson_attack * 1.5,
+        YOTH_LANCE_CHARGE_DAMAGE = wilson_attack * 2,
+        YOTH_LANCE_USES = 200,
+        YOTH_LANCE_JOUST_SPEED = 10,
+        YOTH_LANCE_LENGTH = 2,-- Matched up to art.
+        YOTH_LANCE_RUNANIM_LOOP_COUNT = 2, -- Number of run cycles to go through.
+
+        ARMOR_YOTH_KNIGHTHAT = wilson_health*6*multiplayer_armor_durability_modifier,
+        ARMOR_YOTH_KNIGHTHAT_ABSORPTION = .9*multiplayer_armor_absorption_modifier,
+
+        ARMOR_YOTH_KNIGHT = wilson_health*8*multiplayer_armor_durability_modifier,
+        ARMOR_YOTH_KNIGHT_ABSORPTION = .9*multiplayer_armor_absorption_modifier,
+
+        MASK_PRINCESSHAT = wilson_health*1*multiplayer_armor_durability_modifier,
+        MASK_PRINCESSHAT_ABSORPTION = .6*multiplayer_armor_absorption_modifier,
+
+        COSTUME_PRINCESS_BODY = wilson_health*1*multiplayer_armor_durability_modifier,
+        COSTUME_PRINCESS_BODY_ABSORPTION = .6*multiplayer_armor_absorption_modifier,
+
+        YOTH_HECKLER_SHRINE_LEAVE_BASE = 15,
+        YOTH_HECKLER_SHRINE_LEAVE_VARIANCE = 10,
+
+        YOTH_HECKLER_SHRINE_RETURN_BASE = total_day_time,
+        YOTH_HECKLER_SHRINE_RETURN_VARIANCE = seg_time * 2,
+
+        WES_LUCK = -1,
+        YOTH_PRINCESS_SETBONUS_LUCK = -1,
+        YOTH_KNIGHT_SETBONUS_LUCK = 0.2,
+        YOTH_KNIGHT_SETBONUS_EVENT_LUCK = 1, -- 1 luck value when the event is active
+        HORSESHOE_LUCK = 0.05,
+        HORSESHOE_SETBONUS_LUCK = 0.10, -- The amount of luck from horseshoe when we have the yoth knight setbonus
+        HORSESHOE_EVENT_LUCK_MULTIPLIER = 3, -- Extra luck when the event is active.
+        BLACKCATFISH_LUCK = -0.25,
+
+        FLOATINGLANTERN_LEVELS = { 12, 9, 6, 2 }, -- These are the target heights.
+        FLOATINGLANTERN_DURATION = total_day_time * 2,
+
+        YOTH_KNIGHTSTICK_PERISHTIME = 6 * total_day_time,
+        YOTH_KNIGHTSTICK_PERISHTIME_ON_SLIP = -(6 * total_day_time * 0.01), -- 1%
+        YOTH_KNIGHTSTICK_PERISHTIME_ON_COLLIDE = -(6 * total_day_time * 0.02), -- 2%
+        YOTH_KNIGHTSTICK_MAX_GALLOPS = 30,
+        YOTH_KNIGHTSTICK_TIME_TO_GALLOP = 0.6,
+        YOTH_KNIGHTSTICK_GALLOP_HUNGER_RATE_MULT = 1.33,
+        YOTH_KNIGHTSTICK_MAX_STRESS_ROTATION = 60,
+        YOTH_KNIGHTSTICK_TRACK_ROTATION_TIME = 15 * FRAMES,
+        YOTH_KNIGHTSTICK_TRACK_ROTATION_MIN = 2,
+		YOTH_KNIGHTSTICK_SPEED_MULT = { min = 1.15, max = 1.6 },
+        YOTH_KNIGHTSTICK_WORK_COLLIDE = 0.05,
+
+        FLOATINGLANTERN_RAIN_RATE = 1.5,
+        FLOATINGLANTERN_LUNARHAIL_RATE = 35, -- Shred that paper!
+        FLOATINGLANTERN_OUT_OF_BOUNDS_RATE = 100, -- Shoo! be destroyed quick if we're out of bounds!
+
+		CLOCKWORK_HEALTH_REGEN_DELAY = 6, --seconds
+		CLOCKWORK_HEALTH_REGEN_PERIOD = 3,
+		CLOCKWORK_HEALTH_REGEN = 15,
+
+        -- Lots of old content's values pulled to tuning for luck.
+        SHADOW_TENTACLE_RUINS_BAT_CHANCE = 0.2,
+        SHADOW_TENTACLE_SLINGSHOTAMMO_CHANCE = 0.5,
+        SHADOW_TENTACLE_SLINGSHOTAMMO_EXTRA_TENTACLE_CHANCE = 0.25,
+
+        PLAYER_DROP_WET_TOOL_CHANCE_MAX = 0.15,
+
+        GHOSTLYELIXIR_EXTRA1_CHANCE = 0.4,
+        GHOSTLYELIXIR_EXTRA2_CHANCE = 0.1,
+
+        CARNIVAL_CROWKID_TOSS_REWARD_CHANCE = 0.25,
+
+        CRITTER_NUZZLE_CHANCE = 0.05,
+
+        LUNARHAIL_MUTATE_BIRD_CHANCE = 0.25, -- regular mutation
+
+        DEERCLOPS_MEGAFLARE_SPAWN_CHANCE = 0.6,
+        PIRATERAID_MEGAFLARE_SPAWN_CHANCE = 0.6,
+
+        BEARGER_MULTISHED_CHANCE = 0.2,
+
+        FEED_BIRD_POOP_CHANCE = 0.33,
+
+        BIRD_DROP_SEEDS_CHANCE_ONEYEAR = 0.8,
+        BIRD_DROP_SEEDS_CHANCE_PASTONEYEAR = 0.6,
+        BIRD_DROP_ITEM_BASE_CHANCE = 0.35,
+
+        BULLKELP_ROOT_SNAP_CHANCES =
+        {
+            HIGH = 1.0,
+            MED = 0.3,
+            LOW = 0.1,
+        },
+
+        CARNIVAL_SEEDPACKET_EXTRA_SEED_CHANCE = 0.1,
+
+        CHESSJUNK_SPAWNSCION_CHANCE = 0.1,
+
+        FARMPLANT_SPAWN_FRUITFLY_ON_WEED_CHANCE = 0.05,
+
+        SPAWN_GINGERDEADPIG_CHANCE = 0.3, -- Also comes with an extra winter feast fuel
+
+        DROP_SHADOWTHRALL_MASKHAT_CHANCE = 0.3,
+
+        MAGIC_PROTOTYPER_MAXWELL_SPAWN_RABBIT_CHANCE = 0.25,
+        MAGIC_PROTOTYPER_SPAWN_RABBIT_CHANCE = 0.1,
+
+        MALBATROSS_SPAWNFEATHER_ONATTACKED_CHANCE = 0.05,
+
+        MARBLESHRUB_MED_MARBLEBEAN_CHANCE = 0.75,
+        MARBLESHRUB_TALL_MARBLEBEAN_CHANCE = 0.5,
+
+        OASISLAKE_WETPOUCH_CHANCE = 0.6,
+
+        SHARKBOI_GIVE_WINTERLIGHTORNAMENT_CHANCE = 0.4,
+
+        SPIDERQUEEN_SPAWN_BETTER_SPIDER_CHANCE = 0.45, -- spider warrior or spider healer
+        SPIDERQUEEN_SPAWN_SPIDER_WARRIOR_CHANCE = 0.5,
+
+        STATUERUINS_SPAWN_NIGHTMARE_CHANCE = 0.3,
+
+        WALRUS_INVESTIGATE_MEGAFLARE_CHANCE = 0.6,
+
+        ALTERGUARDIAN_SPAWN_LARGE_GESTALT_PROJECTILE_CHANCE = 0.4,
+
+        BRIGHTMARE_SPAWN_INC_CHANCES =
+        {
+            HIGH = 0.4,
+            MED = 0.3,
+            LOW = 0.2,
+        },
+
+        MONKEY_FOLLOW_PLAYER_CHANCE = 0.15,
+        MONKEY_FOLLOW_PLAYER_WITH_BANANA_CHANCE = 0.6,
+        --
     }
 
     TUNING_MODIFIERS = {}

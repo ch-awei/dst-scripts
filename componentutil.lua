@@ -557,7 +557,7 @@ local function OnFuelPresentation1(inst, x, z, upgraded)
 end
 local function OnResidueActivated_Fuel_Internal(inst, doer, odds)
     local skilltreeupdater = doer.components.skilltreeupdater
-    local upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") and math.random() < odds or nil
+    local upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") and TryLuckRoll(doer, odds, LuckFormulas.ResidueUpgradeFuel) or nil
     local fuel = SpawnPrefab(upgraded and "horrorfuel" or "nightmarefuel")
     fuel:RemoveFromScene()
     local x, y, z = inst.Transform:GetWorldPosition()
@@ -886,19 +886,31 @@ end
 --For visual fx
 --e.g. used by electrocute_fx
 
+local function IsSmallCreature(inst)
+    return inst:HasAnyTag("smallcreature", "smallcreaturecorpse", "small")
+end
+
+local function IsEpicCreature(inst)
+    return inst:HasAnyTag("epic", "epiccorpse")
+end
+
+local function IsLargeCreature(inst)
+    return inst:HasAnyTag("largecreature", "largecreaturecorpse", "large")
+end
+
 function GetCombatFxSize(ent)
 	local r = ent.override_combat_fx_radius
 	local sz = ent.override_combat_fx_size
 	local ht = ent.override_combat_fx_height
 
 	local r1 = r or ent:GetPhysicsRadius(0)
-	if ent:HasTag("smallcreature") then
+	if IsSmallCreature(ent) then
 		r = r or math.min(0.5, r1)
 		sz = sz or "tiny"
-	elseif r1 >= 1.5 or ent:HasTag("epic") then
+	elseif r1 >= 1.5 or IsEpicCreature(ent) then
 		r = r or math.max(1.5, r1)
 		sz = sz or "large"
-	elseif r1 >= 0.9 or ent:HasTag("largecreature") then
+	elseif r1 >= 0.9 or IsLargeCreature(ent) then
 		r = r or math.max(1, r1)
 		sz = sz or "med"
 	else
@@ -910,6 +922,7 @@ function GetCombatFxSize(ent)
 		ht = (ent.components.amphibiouscreature and ent.components.amphibiouscreature.in_water and "low") or
 			(ent:HasTag("flying") and "high") or
 			(not (ent.sg and ent.sg:HasState("electrocute")) and "low") or --ground plants with no electrocute state
+            (ent:HasTag("creaturecorpse") and "low") or
 			nil
 	elseif string.len(ht) == 0 then
 		ht = nil
@@ -1006,7 +1019,7 @@ function StrikeLightningAtPoint(strike_prefab, hit_player, x, y, z)
                     if not hit_player then
                         LightningStrikeAttack(ent)
                     end
-                elseif ent.components.burnable and ent:HasAnyTag(LIGHTNING_BURNING_ONEOF_TAGS) then
+                elseif ent.components.burnable and ent.components.burnable.canlight and ent:HasAnyTag(LIGHTNING_BURNING_ONEOF_TAGS) then
                     ent.components.burnable:Ignite()
                 end
 
@@ -1016,4 +1029,879 @@ function StrikeLightningAtPoint(strike_prefab, hit_player, x, y, z)
             end
         end
     end
+end
+
+--------------------------------------------------------------------------
+-- worldmigrator
+local function NoHoles(pt)
+    return not TheWorld.Map:IsPointNearHole(pt)
+end
+function GetMigrationPortalFromMigrationData(migrationdata)
+    if migrationdata.worldid ~= nil and migrationdata.portalid ~= nil then
+        for i, v in ipairs(ShardPortals) do
+            local worldmigrator = v.components.worldmigrator
+            if worldmigrator ~= nil and worldmigrator:IsDestinationForPortal(migrationdata.worldid, migrationdata.portalid) then
+                return v
+            end
+        end
+    end
+
+    return nil
+end
+function GetMigrationPortalLocation(ent, migrationdata, portaloverride)
+    local isplayer = ent:HasTag("player")
+    local portal = portaloverride or GetMigrationPortalFromMigrationData(migrationdata)
+
+    if portal ~= nil then
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn close to portal ID: " .. tostring(portal.components.worldmigrator.id))
+        end
+        local x, y, z = portal.Transform:GetWorldPosition()
+        local offset = FindWalkableOffset(Vector3(x, 0, z), math.random() * TWOPI, portal:GetPhysicsRadius(0) + .5, 8, false, true, NoHoles)
+
+        --V2C: Do this after caching physical values, since it might remove itself
+        --     and spawn in a new "opened" version, making "portal" invalid.
+        portal.components.worldmigrator:ActivatedByOther()
+
+        if offset ~= nil then
+            return x + offset.x, 0, z + offset.z
+        end
+        return x, 0, z
+    elseif migrationdata.dest_x ~= nil and migrationdata.dest_y ~= nil and migrationdata.dest_z ~= nil then
+        local pt = Vector3(migrationdata.dest_x, migrationdata.dest_y, migrationdata.dest_z)
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn near " .. tostring(pt))
+        end
+        pt = pt + (FindWalkableOffset(pt, math.random() * TWOPI, 2, 8, false, true, NoHoles) or Vector3(0,0,0))
+        return pt:Get()
+    else
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn at default location")
+        end
+        return TheWorld.components.playerspawner:GetAnySpawnPoint()
+    end
+end
+
+--------------------------------------------------------------------------
+--Custom passable ground tests useful for stategraph actions like dashing etc.
+
+local function _ispassable(x, y, z, allow_water, exclude_boats)
+	return TheWorld.Map:IsPassableAtPoint(x, y, z, allow_water, exclude_boats)
+end
+
+local function _ispassable_inarena(x, y, z)--, allow_water, exclude_boats)
+	return TheWorld.Map:IsPointInWagPunkArena(x, y, z)
+end
+
+local function _ispassable_vault(x, y, z)--, allow_water, exclude_boats)
+	local map = TheWorld.Map
+	return map:IsPointInAnyVault(x, y, z)
+		and map:IsPassableAtPoint(x, y, z, false, true)
+end
+
+function GetActionPassableTestFnAt(x, y, z)
+	local map = TheWorld.Map
+	local platform = map:GetPlatformAtPoint(x, y, z)
+	if platform and platform:HasTag("teeteringplatform") then
+		return function(x1, y1, z1)--, allow_water, exclude_boats)
+			return map:GetPlatformAtPoint(x1, y1, z1) == platform
+		end, true
+	elseif map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) then
+		return _ispassable_inarena, true
+	elseif map:IsPointInAnyVault(x, y, z) then
+		return _ispassable_vault, true
+	end
+	return _ispassable--, false --false because it's the default passable check
+end
+
+function GetActionPassableTestFn(inst)
+	return GetActionPassableTestFnAt(inst.Transform:GetWorldPosition())
+end
+
+--------------------------------------------------------------------------
+
+--Mutation stuff
+
+function EntityHasCorpse(inst)
+    return inst.sg and inst.sg:HasState("corpse")
+        and not inst.sg.mem.nocorpse
+end
+
+function CanEntityBeGestaltMutated(inst)
+    return inst.sg and inst.sg:HasState("corpse_lunarrift_mutate")
+        and not inst.sg.mem.nolunarmutate
+        and (inst.spawn_gestalt_mutated_tuning == nil or TUNING[inst.spawn_gestalt_mutated_tuning])
+end
+
+function CanEntityBeNonGestaltMutated(inst)
+    return inst.sg and inst.sg:HasState("corpse_prerift_mutate")
+        and not inst.sg.mem.nolunarmutate
+        and (inst.spawn_lunar_mutated_tuning == nil or TUNING[inst.spawn_lunar_mutated_tuning])
+end
+
+function GetLunarPreRiftMutationChance(inst)
+    return (
+        FunctionOrValue(inst.lunar_mutation_chance, inst) or TUNING.PRERIFT_MUTATION_SPAWN_CHANCE
+    ) * TheWorld.Map:GetLunacyAreaModifier(inst.Transform:GetWorldPosition())
+end
+
+function GetLunarRiftMutationChance(inst)
+    return inst.gestalt_possession_chance or 1
+end
+
+local function GetCauseOfDeath(inst)
+    local health = inst.components.health
+    return (health and health.causeofdeath and health.causeofdeath:IsValid() and health.causeofdeath)
+        or nil
+end
+
+function CanLunarPreRiftMutateFromCorpse(inst)
+    if not CanEntityBeNonGestaltMutated(inst) then
+        return false
+    elseif inst.spawn_lunar_mutated_tuning and not TUNING[inst.spawn_lunar_mutated_tuning] then
+        return false
+    elseif inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
+        return false
+    elseif inst.forcemutate then
+        return true
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
+    elseif inst._cached_prerift_mutation_result ~= nil then -- We might run this function multiple times.
+        return inst._cached_prerift_mutation_result
+    end
+
+    local killer = GetCauseOfDeath(inst)
+    inst._cached_prerift_mutation_result = TryLuckRoll(killer, GetLunarPreRiftMutationChance(inst), LuckFormulas.PreRiftMutation)
+    return inst._cached_prerift_mutation_result
+end
+
+function CanLunarRiftMutateFromCorpse(inst)
+    local riftspawner = TheWorld.components.riftspawner
+    if not CanEntityBeGestaltMutated(inst) then
+        return false
+    elseif inst.spawn_gestalt_mutated_tuning and not TUNING[inst.spawn_gestalt_mutated_tuning] then
+        return false
+    elseif riftspawner and not riftspawner:IsLunarPortalActive() then
+        return false
+    elseif inst:IsOnOcean() then --TODO Support ocean lunar mutations?
+        return false
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
+    elseif inst._cached_rift_mutation_result ~= nil then -- We might run this function multiple times.
+        return inst._cached_rift_mutation_result
+    end
+
+    local killer = GetCauseOfDeath(inst)
+    inst._cached_rift_mutation_result = TryLuckRoll(killer, GetLunarRiftMutationChance(inst), LuckFormulas.RiftPossession)
+    return inst._cached_rift_mutation_result
+end
+
+function CanEntityBecomeCorpse(inst)
+    local corpsepersistmanager = TheWorld.components.corpsepersistmanager
+    if not EntityHasCorpse(inst) then
+        return false
+    elseif inst.forcecorpse then
+        return true
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
+    elseif corpsepersistmanager ~= nil and corpsepersistmanager:ShouldRetainCreatureAsCorpse(inst) then
+        return true
+    elseif CanLunarPreRiftMutateFromCorpse(inst) then
+        return true
+    elseif CanLunarRiftMutateFromCorpse(inst) then
+        return true
+    end
+end
+
+function TryEntityToCorpse(inst, corpseprefab)
+    local can_corpse = CanEntityBecomeCorpse(inst)
+
+    if can_corpse then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local rot = inst.Transform:GetRotation()
+        local sx, sy, sz = inst.Transform:GetScale()
+
+        local corpse = SpawnPrefab(corpseprefab)
+        corpse.Transform:SetPosition(x, y, z)
+        corpse.Transform:SetRotation(rot)
+        corpse.Transform:SetScale(sx, sy, sz) -- Corpses will copy scale from the original mob. Mutated will NOT.
+        corpse.AnimState:MakeFacingDirty()
+        corpse.AnimState:SetBuild(inst.AnimState:GetBuild())
+        corpse.AnimState:SetBank(inst.AnimState:GetBankHash())
+
+        corpse.corpse_loot = inst:GetDeathLoot()
+
+        local corpsedata = inst.SaveCorpseData ~= nil and inst:SaveCorpseData(corpse) or nil
+
+        if corpsedata then
+            corpse:SetCorpseData(corpsedata)
+        end
+
+        corpse.sg.mem.nolunarmutate = inst.sg.mem.nolunarmutate -- This is saved.
+        if not inst.components.burnable and corpse.components.burnable then
+            corpse:RemoveComponent("burnable")
+            corpse.noburn = true
+        end
+
+        if CanLunarRiftMutateFromCorpse(inst) then
+            corpse:SetGestaltCorpse()
+        elseif CanLunarPreRiftMutateFromCorpse(inst) then
+            corpse:SetNonGestaltCorpse()
+        end
+
+        inst:Remove()
+
+        return corpse
+    end
+end
+
+--------------------------------------------------------------------------
+
+function CanApplyPlayerDamageMod(target)
+    return target ~= nil and (target.isplayer or target:HasTag("player_damagescale"))
+end
+
+function PlayerDamageMod(target, damage, mod)
+    return CanApplyPlayerDamageMod(target) and damage * mod
+        or damage
+end
+
+--------------------------------------------------------------------------
+
+local BASE_HIT_SOUND = "dontstarve/impacts/impact_"
+
+--V2C: Considered creating a mapping for tags to strings, but we cannot really
+--     rely on these tags being properly mutually exclusive, so it's better to
+--     leave it like this as if explicitly ordered by priority.
+
+function GetArmorImpactSound(inventory, weaponmod) -- This can return nil.
+    weaponmod = weaponmod or "dull"
+    --Order by priority
+	local armormod =
+		(inventory:ArmorHasTag("forcefield") and "forcefield_armour_") or
+		(inventory:ArmorHasTag("sanity") and "sanity_armour_") or
+		(inventory:ArmorHasTag("lunarplant") and "lunarplant_armour_") or
+		(inventory:ArmorHasTag("dreadstone") and "dreadstone_armour_") or
+		(inventory:ArmorHasTag("metal") and "metal_armour_") or
+		(inventory:ArmorHasTag("marble") and "marble_armour_") or
+		(inventory:ArmorHasTag("shell") and "shell_armour_") or
+		(inventory:ArmorHasTag("wood") and "wood_armour_") or
+		(inventory:ArmorHasTag("grass") and "straw_armour_") or
+		(inventory:ArmorHasTag("fur") and "fur_armour_") or
+		(inventory:ArmorHasTag("cloth") and "shadowcloth_armour_") or
+		nil
+
+	if armormod ~= nil then
+		return BASE_HIT_SOUND..armormod..weaponmod
+	end
+end
+
+function GetWallImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    return
+        BASE_HIT_SOUND..(
+            (inst:HasTag("grass") and "straw_wall_") or
+            (inst:HasTag("stone") and "stone_wall_") or
+            (inst:HasTag("marble") and "marble_wall_") or
+            (inst:HasTag("fence_electric") and "metal_armour_") or
+            "wood_wall_"
+        )..weaponmod
+end
+
+function GetObjectImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    return
+        BASE_HIT_SOUND..(
+            (inst:HasTag("clay") and "clay_object_") or
+            (inst:HasTag("stone") and "stone_object_") or
+            "object_"
+        )..weaponmod
+end
+
+function GetCreatureImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    local tgttype =
+		(inst:HasAnyTag("hive", "eyeturret", "houndmound") and "hive_") or
+        (inst:HasTag("ghost") and "ghost_") or
+		(inst:HasAnyTag("insect", "spider") and "insect_") or
+		(inst:HasAnyTag("chess", "mech") and "mech_") or
+		--V2C: "mech" higher priority over "brightmare(boss)"
+		(inst:HasAnyTag("brightmare", "brightmareboss") and "ghost_") or
+        (inst:HasTag("mound") and "mound_") or
+		(inst:HasAnyTag("shadow", "shadowminion", "shadowchesspiece") and "shadow_") or
+		(inst:HasAnyTag("tree", "wooden") and "tree_") or
+        (inst:HasAnyTag("veggie", "hedge") and "vegetable_") or
+        (inst:HasTag("shell") and "shell_") or
+		(inst:HasAnyTag("rocky", "fossil") and "stone_") or
+        inst.override_combat_impact_sound or
+        nil
+
+    return
+        BASE_HIT_SOUND..(
+            tgttype or "flesh_"
+        )..(
+			(IsSmallCreature(inst) and "sml_") or
+			((IsLargeCreature(inst) or IsEpicCreature(inst)) and not inst:HasAnyTag("shadowchesspiece", "fossil", "brightmareboss") and "lrg_") or
+            (tgttype == nil and inst:GetIsWet() and "wet_") or
+            "med_"
+        )..weaponmod
+end
+
+--------------------------------------------------------------------------
+
+local function SplitTopologyId(s)
+	local a = {}
+    --
+	for word in string.gmatch(s, '[^/:]+') do
+		a[#a + 1] = word
+	end
+    --
+	return a
+end
+
+-- Useful for splitting a topology id into task, layout, index, and room id's for us to look at.
+function ConvertTopologyIdToData(idname)
+    if idname == nil then
+        return {}
+    elseif idname == "START" then -- Special case for the id that the portal spawns in.
+        return { task_id = "START" } -- Consider START as a task, for now?
+    else
+        local split_ids = SplitTopologyId(idname)
+        if split_ids[1] == "StaticLayoutIsland" then
+            return { layout_id = split_ids[2] }
+        else
+            return { task_id = split_ids[1], index_id = split_ids[2], room_id = split_ids[3] }
+        end
+    end
+end
+
+--------------------------------------------------------------------------
+
+-- For corpses, graves and skeletons.
+-- Set as inspectable.getspecialdescription
+function GetPlayerDeathDescription(inst, viewer)
+    if inst.char ~= nil and not viewer:HasTag("playerghost") then
+        local mod = GetGenderStrings(inst.char)
+        local desc = GetDescription(viewer, inst, mod)
+        local name = inst.playername or STRINGS.NAMES[string.upper(inst.char)]
+
+        -- No translations for player killer's name.
+        if inst.pkname ~= nil then
+            return string.format(desc, name, inst.pkname)
+        end
+
+        -- Permanent translations for death cause.
+        if inst.cause == "unknown" then
+            inst.cause = "shenanigans"
+
+        elseif inst.cause == "moose" then
+            inst.cause = math.random() < .5 and "moose1" or "moose2"
+        end
+
+        -- Viewer based temp translations for death cause.
+        local cause =
+            inst.cause == "nil"
+            and (
+                (viewer == "waxwell" or viewer == "winona") and "charlie" or "darkness"
+            )
+            or inst.cause
+
+        return string.format(desc, name, STRINGS.NAMES[string.upper(cause)] or STRINGS.NAMES.SHENANIGANS)
+    end
+end
+
+--------------------------------------------------------------------------
+
+function GetTopologyDataAtPoint(x, y, z)
+    if y == nil and z == nil then -- Support Vector3
+        x, y, z = x:Get()
+    elseif z == nil then -- Support (x, z)
+        y, z = 0, y
+    end
+
+    local id, _ = TheWorld.Map:GetTopologyIDAtPoint(x, y, z)
+    return ConvertTopologyIdToData(id)
+end
+
+function GetTopologyDataAtInst(inst)
+    return GetTopologyDataAtPoint(inst.Transform:GetWorldPosition())
+end
+
+--------------------------------------------------------------------------
+function MakeComponentAnInventoryItemSource(cmp, owner)
+    local self = cmp
+    local owner = owner or self.inst
+
+    local function removeowner()
+        if self.itemsource_owner then
+            if self.OnItemSourceRemoved then
+                self:OnItemSourceRemoved(self.itemsource_owner)
+            end
+            self.itemsource_owner = nil
+        end
+    end
+    local function storeincontainer(inst, container)
+        if container ~= nil and container.components.container ~= nil then
+            self.itemsource_container = container
+            inst:ListenForEvent("onputininventory", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:ListenForEvent("ondropped", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:ListenForEvent("onremove", self.itemsource_oncontainerremoved, self.itemsource_container)
+        end
+    end
+    local function unstore(inst)
+        if self.itemsource_container ~= nil then
+            inst:RemoveEventCallback("onputininventory", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:RemoveEventCallback("ondropped", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:RemoveEventCallback("onremove", self.itemsource_oncontainerremoved, self.itemsource_container)
+            self.itemsource_container = nil
+        end
+    end
+    self.itemsource_topocket = function(inst, owner)
+        if self.itemsource_container ~= owner then
+            unstore(inst)
+            storeincontainer(inst, owner)
+        end
+        local newowner = owner.components.inventoryitem ~= nil and owner.components.inventoryitem:GetGrandOwner() or owner
+        if self.itemsource_owner ~= newowner then
+            removeowner()
+            self.itemsource_owner = newowner
+            if self.itemsource_owner and self.OnItemSourceNewOwner then
+                self:OnItemSourceNewOwner(self.itemsource_owner)
+            end
+        end
+    end
+    self.itemsource_toground = function(inst)
+        unstore(inst)
+        removeowner()
+    end
+
+    self.itemsource_oncontainerownerchanged = function(container)
+        self.itemsource_topocket(self.inst, container)
+    end
+    self.itemsource_oncontainerremoved = function()
+        unstore(self.inst)
+    end
+    self.itemsource_onremove = function()
+        removeowner()
+    end
+    local currentowner = owner.components.inventoryitem.owner
+    if currentowner then
+        self.itemsource_topocket(owner, currentowner)
+    end
+    self.inst:ListenForEvent("onputininventory", self.itemsource_topocket, owner)
+    self.inst:ListenForEvent("ondropped", self.itemsource_toground, owner)
+    self.inst:ListenForEvent("onremove", self.itemsource_onremove, owner)
+end
+
+function RemoveComponentInventoryItemSource(cmp, owner)
+    local self = cmp
+    local owner = owner or self.inst
+
+    self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket, owner)
+    self.inst:RemoveEventCallback("ondropped", self.itemsource_toground, owner)
+    self.inst:RemoveEventCallback("onremove", self.itemsource_onremove, owner)
+    self.itemsource_toground(owner)
+    self.itemsource_topocket = nil
+    self.itemsource_toground = nil
+    self.itemsource_onremove = nil
+    self.itemsource_oncontainerownerchanged = nil
+    self.itemsource_oncontainerremoved = nil
+end
+
+--------------------------------------------------------------------------
+
+-- The occupation space pearl takes up to take into account decoration score post-eviction
+-- This is an expensive function, consider caching or saving the return value.
+-- This is a client and server function. Careful about the logic you implement here.
+
+local function GetAngleTowardsLand(x, y)
+    local xs, zs = 0, 0
+    --
+    for off_x = -1, 1  do
+        for off_y = -1, 1 do
+            local tx, ty = x + off_x, y + off_y
+            if TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(tx, ty)) then
+                local angle = math.atan2(ty - y, x - tx)
+                xs, zs = xs - math.cos(angle), zs - math.sin(angle)
+            end
+        end
+    end
+    --
+    return math.atan2(zs, xs)
+end
+local MAX_TILES = TUNING.HERMITCRAB_DECOR_MAX_TILE_SPACE
+local MAX_SHORELINE_TILES = 12
+function GetHermitCrabOccupiedGrid(x, z)
+    local w, h = TheWorld.Map:GetSize()
+    local occupied_grid = DataGrid(w, h)
+    --
+    local searched_shoreline_tiles = DataGrid(w, h)
+    local shoreline_tiles = { { x = x, z = z }}
+    local i = 1
+    while i <= #shoreline_tiles do
+        if i > MAX_SHORELINE_TILES then -- enough shoreline tiles
+            break
+        end
+
+        local data = shoreline_tiles[i]
+        local tx, tz = data.x, data.z
+
+        searched_shoreline_tiles:SetDataAtPoint(tx, tz, true)
+
+        local function AddShorelineToQueue(offx, offz)
+            local px, pz = tx + offx, tz + offz
+            local x, y, z = TheWorld.Map:GetTileCenterPoint(px, pz)
+            if TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(px, pz))
+                and not searched_shoreline_tiles:GetDataAtPoint(px, pz)
+                and not TheWorld.Map:IsSurroundedByLandNoDocks(x, y, z, 2)
+            then
+                table.insert(shoreline_tiles, { x = px, z = pz, angle = GetAngleTowardsLand(px, pz) })
+            end
+        end
+
+        for offx = -1, 1 do
+            if offx ~= 0 then
+                AddShorelineToQueue(offx, 0)
+            end
+        end
+
+        for offz = -1, 1 do
+            if offz ~= 0 then
+                AddShorelineToQueue(0, offz)
+            end
+        end
+
+        i = i + 1
+    end
+    --
+    local tiles = { }
+    for k, v in pairs(shoreline_tiles) do
+        table.insert(tiles, { x = v.x, z = v.z, preferred_angle = v.angle })
+    end
+
+    -- If setting any data grid points to nil/false, adjust count logic accordingly.
+    i = 1
+    local grid_count = 0
+    while i <= #tiles do
+        if grid_count >= MAX_TILES then
+            break
+        end
+
+        local data = tiles[i]
+        local tx, tz = data.x, data.z
+        local index = occupied_grid:GetIndex(tx, tz)
+        if not occupied_grid:GetDataAtIndex(index) then
+            occupied_grid:SetDataAtIndex(index, true)
+            grid_count = grid_count + 1
+
+            local function AddTileToQueue(offx, offz)
+                local px, pz = tx + offx, tz + offz
+                if not occupied_grid:GetDataAtPoint(px, pz) and TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(px, pz)) then
+                    table.insert(tiles, { x = px, z = pz })
+                end
+            end
+
+            for offx = -1, 1 do
+                if offx ~= 0 then
+                    AddTileToQueue(offx, 0)
+                end
+            end
+
+            for offz = -1, 1 do
+                if offz ~= 0 then
+                    AddTileToQueue(0, offz)
+                end
+            end
+        end
+
+        i = i + 1
+    end
+    --
+    return occupied_grid
+end
+
+local HERMIT_ISLAND_LAYOUT_ID = "HermitcrabIsland"
+local MONKEY_ISLAND_LAYOUT_ID = "MonkeyIsland"
+local MOON_ISLAND_TASK_ID = "MoonIsland"
+
+function IsInValidHermitCrabDecorArea(inst)
+    local topology_data = GetTopologyDataAtInst(inst)
+
+    -- We haven't moved yet.
+    if topology_data.layout_id == HERMIT_ISLAND_LAYOUT_ID then
+        return false
+    end
+
+    -- Monkey island bad
+    if topology_data.layout_id == MONKEY_ISLAND_LAYOUT_ID then
+        return false
+    end
+
+    -- Moon Island bad, reeks of lunar energy.
+    if topology_data.task_id and topology_data.task_id:find(MOON_ISLAND_TASK_ID) then
+        return false
+    end
+
+    return true
+end
+
+--------------------------------------------------------------------------
+
+function IsEntityGestaltProtected(inst)
+    local inventory = inst.components.inventory
+    return (inventory and inventory:EquipHasTag("gestaltprotection"))
+        or inst:HasDebuff("hermitcrabtea_moon_tree_blossom_buff")
+end
+
+--------------------------------------------------------------------------
+
+local BLOCKER_TAGS = { "blocker" }
+
+function IsPointCoveredByBlocker(x, y, z, extra_radius)
+    extra_radius = extra_radius or 0
+
+    for _, ent in ipairs(TheSim:FindEntities(x, 0, z, extra_radius + MAX_PHYSICS_RADIUS, nil, nil, BLOCKER_TAGS)) do
+		local range = extra_radius + ent:GetPhysicsRadius(0)
+		if ent:GetDistanceSqToPoint(x, 0, z) < range * range then
+			return true
+		end
+	end
+
+    return nil
+end
+
+--------------------------------------------------------------------------
+
+function EntityHasSetBonus(inst, setname)
+    local inventory = inst.components.inventory
+    if inventory then
+        local head, body = inventory.equipslots[EQUIPSLOTS.HEAD], inventory.equipslots[EQUIPSLOTS.BODY]
+
+        if head == nil or body == nil then
+            return false
+        end
+
+        if head.components.setbonus == nil or body.components.setbonus == nil then
+            return false
+        end
+
+        if head.components.setbonus.setname ~= setname or body.components.setbonus.setname ~= setname then
+            return false
+        end
+
+        return true
+    end
+end
+
+--------------------------------------------------------------------------
+-- Jousting.
+
+function CreatingJoustingData(inst)
+    local joustdata = {}
+
+    local target, source
+    local buffaction = inst:GetBufferedAction()
+    if buffaction then
+        target, source = buffaction.target, buffaction.invobject
+    end
+
+    local dir
+    if target and target:IsValid() then
+        --true dir (for movement)
+        dir = inst:GetAngleToPoint(target.Transform:GetWorldPosition())
+    else
+        --true dir (for movement)
+        dir = inst.Transform:GetRotation()
+    end
+    joustdata.dir = dir
+
+    if source and source:IsValid() then
+        if source.components.joustsource then
+            joustdata.source = source
+        end
+    end
+
+    return joustdata
+end
+
+--------------------------------------------------------------------------
+
+local TWOTHIRDS = 2 / 3
+
+local function CommonChanceLuckAdditive(mult)
+    return function(inst, chance, luck)
+        return luck > 0 and chance + ( luck * mult )
+    end
+end
+
+local function CommonChanceUnluckMultAndLuckHyperbolic(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (1 + math.abs(luck) * mult)
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+local function CommonChanceLuckHyperbolic(mult_max, reciprocal, subtract)
+    subtract = subtract or 0
+    return function(inst, chance, luck)
+        return luck > 0 and chance * (mult_max - reciprocal / ( reciprocal + (luck - subtract) ))
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckMult(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (reciprocal / (reciprocal - luck) + .5) * TWOTHIRDS
+            or luck > 0 and chance * (1 + math.abs(luck) * mult)
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckAdditive(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (reciprocal / (reciprocal - luck) + .5) * TWOTHIRDS
+            or luck > 0 and chance + ( luck * mult )
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckHyperbolic(mult_max, asymptote, subtract, reciprocal)
+    subtract = subtract or 0
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (mult_max - asymptote / ( asymptote + (luck - subtract) ))
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+local function CommonChanceLuckHyperbolicLower(reciprocal)
+    return function(inst, chance, luck)
+        return luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+LuckFormulas =
+{
+    AcidBatWave = CommonChanceUnluckMultAndLuckHyperbolic(5),
+    AncientTreeSeedTreasure = CommonChanceLuckAdditive(0.1),
+    BatGraveSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    BirdDropItem = CommonChanceUnluckHyperbolicAndLuckAdditive(2, .25),
+    BrightmareSpawn = CommonChanceUnluckMultAndLuckHyperbolic(4),
+    ChessJunkSpawnClockwork = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
+    ChildSpawnerOtherChild = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    ChildSpawnerRareChild = CommonChanceUnluckMultAndLuckHyperbolic(4),
+    CriticalStrike = CommonChanceLuckAdditive(.15),
+    CritterNuzzle = CommonChanceUnluckHyperbolicAndLuckMult(0.5),
+    DeciduousMonsterSpawn = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    DecreaseSanityMonsterPopulation = CommonChanceUnluckHyperbolicAndLuckMult(-2, 1),
+    DropWetTool = CommonChanceUnluckMultAndLuckHyperbolic(.5, 1),
+    FruitFlyOnPickedWeed = CommonChanceUnluckMultAndLuckHyperbolic(2, 1),
+    GrassGekkoMorph = CommonChanceUnluckMultAndLuckHyperbolic(4, .5),
+    HuntAlternateBeast = CommonChanceUnluckMultAndLuckHyperbolic(3, 0.5),
+    IncreaseSanityMonsterPopulation = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    InspectablesUpgradedBox = CommonChanceLuckAdditive(0.5),
+    LeifChill = CommonChanceUnluckHyperbolicAndLuckMult(1),
+    LighterIgniteOnAttack = CommonChanceUnluckMultAndLuckHyperbolic(.5),
+    LootDropperChance = CommonChanceLuckHyperbolic(3, 6, 3),
+    LoseFollowerOnPanic = CommonChanceUnluckMultAndLuckHyperbolic(1),
+    LuckyRabbitSpawn = CommonChanceUnluckHyperbolicAndLuckAdditive(1), -- This will REALLY go high with luck, which makes sense, it's the lucky rabbit! So, special 'syngery'
+    LureplantChanceSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    MalbatrossSpawn = CommonChanceUnluckMultAndLuckHyperbolic(4, 1),
+    MegaFlareEvent = CommonChanceLuckHyperbolic(1.5, 1, -2), -- This takes into account every player.
+    MermTripleAttack = CommonChanceLuckAdditive(0.5),
+    MessageBottleContainsNote = CommonChanceLuckAdditive(-.2),
+    MonkeyFollowPlayer = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    ParasiteOverrideBlob = CommonChanceUnluckMultAndLuckHyperbolic(8),
+    PirateRaidsSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
+    PreRiftMutation = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    ResidueUpgradeFuel = CommonChanceLuckHyperbolic(2, 4),
+    RuinsHatProc = CommonChanceLuckAdditive(.1),
+    RuinsNightmare = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    RiftPossession = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    SchoolSpawn = CommonChanceLuckAdditive(0.25),
+    ShadowRiftQuaker = CommonChanceUnluckMultAndLuckHyperbolic(8),
+    ShadowTentacleSpawn = CommonChanceLuckAdditive(0.2),
+    SharkBoiSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    StatueSpawnNightmare = CommonChanceUnluckMultAndLuckHyperbolic(1, 1),
+    SpawnLeif = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    SpecialSchoolSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    SpiderQueenBetterSpider = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    SpookedChance = CommonChanceUnluckHyperbolicAndLuckHyperbolic(2, -1, 0, 2),
+    SquidHerdSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5),
+    TerrorbeakSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2, .5),
+    WildFireIgnition = CommonChanceLuckHyperbolicLower(2), -- Don't have unluckiness affect this, it affects other players really badly
+
+    LightningStrike = function(inst, chance, luck)
+        if inst:HasTag("electricdamageimmune") then -- Lightning is good for Wx.
+            local reciprocal = -1
+            return luck < 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+                or luck > 0 and chance * (1 + math.abs(luck))
+        end
+
+        return CommonChanceUnluckMultAndLuckHyperbolic(4)(inst, chance, luck)
+    end,
+
+    SpawnPerd = function(inst, chance, luck)
+        -- Make gobblers spawn more often with luck during their year
+        if IsSpecialEventActive(SPECIAL_EVENTS.YOTG) then
+            return luck > 0 and chance + ( luck * .5 )
+        end
+
+        -- Otherwise, they're not helpful, so being unlucky will spawn them more, being lucky will spawn them less
+        local reciprocal = 3
+        return luck < 0 and chance * (1 + math.abs(luck))
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck))
+    end,
+}
+
+function GetEntityLuck(inst)
+    return inst.components.luckuser and inst.components.luckuser:GetLuck() or 0
+end
+
+function GetLuckChance(luck, chance, formula)
+    return formula(nil, chance, luck) or chance
+end
+
+function GetEntityLuckChance(inst, chance, formula)
+    local luck = GetEntityLuck(inst)
+    return formula(inst, chance, luck) or chance
+end
+
+function GetEntitiesLuckChance(instances, chance, formula)
+    local luck = 0
+    for k, v in pairs(instances) do
+        luck = luck + GetEntityLuck(v)
+    end
+    return formula(instances, chance, luck) or chance
+end
+
+function GetEntityLuckWeightedTable(inst, weighted_table)
+    local luck = GetEntityLuck(inst)
+    -- return a new weighted table, giving away value from the heaviest weighted items to the lower weighted
+end
+
+local function DoLuckyEffect(inst, is_lucky)
+    if inst.player_classified ~= nil then
+        --Forces a netvar to be dirty regardless of value
+        inst.player_classified.playluckeffect:set_local(false)
+        inst.player_classified.playluckeffect:set(is_lucky or false)
+    end
+end
+
+function TryLuckRoll(inst, chance, formula) -- inst can be optional.
+    local roll = math.random()
+    --
+    if inst then
+        local new_chance = GetEntityLuckChance(inst, chance, formula)
+        local success = roll <= new_chance
+        -- Effect CUT to keep it ambigious
+        -- if (roll > chance and success) or (roll <= chance and not success) then
+        --     DoLuckyEffect(inst, GetEntityLuck(inst) > 0)
+        -- end
+        return success
+    end
+    --
+    return roll <= chance
 end

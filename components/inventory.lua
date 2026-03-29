@@ -249,9 +249,11 @@ local function CheckMigrationPets(inst, item)
         end
 
         if item.components.migrationpetowner ~= nil then
-            local pet = item.components.migrationpetowner:GetPet()
-            if pet ~= nil then
-                table.insert(inst.migrationpets, pet)
+            local pets = item.components.migrationpetowner:GetAllPets()
+            if pets ~= nil then
+                for _, pet in ipairs(pets) do
+                    table.insert(inst.migrationpets, pet)
+                end
             end
         end
 
@@ -1073,12 +1075,12 @@ function Inventory:GiveItem(inst, slot, src_pos)
     return returnvalue
 end
 
-function Inventory:Unequip(equipslot, slip)
+function Inventory:Unequip(equipslot, slip, force)
     local item = self.equipslots[equipslot]
     --print("Inventory:Unequip", item)
     if item ~= nil then
         if item.components.equippable ~= nil then
-            if item.components.equippable:ShouldPreventUnequipping() then
+			if not force and item.components.equippable:ShouldPreventUnequipping() then
                 return nil
             end
             item.components.equippable:Unequip(self.inst)
@@ -1097,7 +1099,7 @@ function Inventory:Unequip(equipslot, slip)
     self.equipslots[equipslot] = nil
     self.inst:PushEvent("unequip", {item=item, eslot=equipslot, slip=slip})
 
-    if self.inst:HasTag("player") and item ~= nil and item.components.setbonus ~= nil then
+    if item ~= nil and item.components.setbonus ~= nil then
         item.components.setbonus:UpdateSetBonus(self, false)
     end
 
@@ -1233,7 +1235,7 @@ function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
             ProfileStatsAdd("equip_"..item.prefab)
         end
 
-        if self.inst:HasTag("player") and item.components.setbonus ~= nil then
+        if item.components.setbonus ~= nil then
             item.components.setbonus:UpdateSetBonus(self, true)
         end
 
@@ -1271,14 +1273,13 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers, keepoverstac
         self:SetActiveItem()
         self.inst:PushEvent("itemlose", { activeitem = true, prev_item = item })
         item.components.inventoryitem:OnRemoved()
-        item.prevslot = prevslot
-        item.prevcontainer = nil
+		--keep current prevcontainer, prevslot
         return item
     end
 
     for k, v in pairs(self.equipslots) do
         if v == item then
-            self:Unequip(k)
+			self:Unequip(k, nil, true) --force unequip even if prevents unequipping, since we're going ahead with dropping it already
             item.components.inventoryitem:OnRemoved()
             item.prevslot = prevslot
             item.prevcontainer = nil
@@ -1425,7 +1426,7 @@ function Inventory:GetItemsWithTag(tag)
     end
 
     if self.activeitem and self.activeitem:HasTag(tag) then
-        table.insert(items, self.active_item)
+        table.insert(items, self.activeitem)
     end
 
     local overflow = self:GetOverflowContainer()
@@ -1649,6 +1650,42 @@ function Inventory:DropEverythingWithTag(tag)
 
     for i, v in ipairs(containers) do
         v.components.container:DropEverythingWithTag(tag)
+    end
+end
+
+function Inventory:DropEverythingByFilter(filterfn)
+    local containers = {}
+
+    if self.activeitem ~= nil then
+        if filterfn(self.inst, self.activeitem) then
+            self:DropItem(self.activeitem, true, true)
+            self:SetActiveItem(nil)
+        elseif self.activeitem.components.container ~= nil then
+            table.insert(containers, self.activeitem)
+        end
+    end
+
+    for k = 1, self.maxslots do
+        local v = self.itemslots[k]
+        if v ~= nil then
+            if filterfn(self.inst, v) then
+                self:DropItem(v, true, true)
+            elseif v.components.container ~= nil then
+                table.insert(containers, v)
+            end
+        end
+    end
+
+    for k, v in pairs(self.equipslots) do
+        if filterfn(self.inst, v) then
+            self:DropItem(v, true, true)
+        elseif v.components.container ~= nil then
+            table.insert(containers, v)
+        end
+    end
+
+    for i, v in ipairs(containers) do
+        v.components.container:DropEverythingByFilter(filterfn)
     end
 end
 
@@ -2176,7 +2213,7 @@ function Inventory:CastSpellBookFromInv(item, spell_id)
 	if self.inst.components.playercontroller and
 		not self.inst.components.playercontroller:IsBusy() and
 		(item == self.inst or self:CanAccessItem(item)) and
-		item.components.spellbook
+		item.components.spellbook and (item == self.inst or item.components.spellbook:CanBeUsedBy(self.inst))
 	then
 		if spell_id ~= nil then
 			item.components.spellbook:SelectSpell(spell_id)

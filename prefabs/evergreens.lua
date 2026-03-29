@@ -450,7 +450,7 @@ local function make_stump(inst)
     inst:RemoveComponent("propagator")
     MakeSmallPropagator(inst)
     inst:RemoveComponent("workable")
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
     inst:RemoveTag("shelter")
     inst:RemoveComponent("hauntable")
     MakeHauntableIgnite(inst)
@@ -524,7 +524,7 @@ local function chop_down_tree(inst, chopper)
             elseif chopper:HasTag("woodcutter") then
                 chance = chance * TUNING.WOODCUTTER_LEIF_CHANCE_MOD
             end
-            if math.random() < chance then
+            if TryLuckRoll(chopper, chance, LuckFormulas.SpawnLeif) then
                 for k = 1, (days_survived <= 30 and 1) or math.random(days_survived <= 80 and 2 or 3) do
                     local target = FindEntity(inst, TUNING.LEIF_MAXSPAWNDIST, find_leif_spawn_target, LEIFTARGET_MUST_TAGS, LEIFTARGET_CANT_TAGS)
                     if target ~= nil then
@@ -592,9 +592,11 @@ local function onload(inst, data)
             inst.AnimState:PlayAnimation(inst.anims.stump)
             if data.burnt or inst:HasTag("burnt") then
                 DefaultBurntFn(inst)
+                RemoveLunarHailBuildup(inst)
             end
         elseif data.burnt and not inst:HasTag("burnt") then
             OnBurnt(inst, true)
+            RemoveLunarHailBuildup(inst)
         end
 
         if not inst:IsValid() then
@@ -944,7 +946,7 @@ local function tree(name, build, stage, data)
             inst:RemoveComponent("burnable")
             MakeSmallBurnable(inst)
             inst:RemoveComponent("workable")
-            inst:RemoveComponent("lunarhailbuildup")
+            RemoveLunarHailBuildup(inst)
             inst:RemoveComponent("propagator")
             MakeSmallPropagator(inst)
             inst:RemoveComponent("growable")

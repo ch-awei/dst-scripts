@@ -48,6 +48,14 @@ STRINGS =
 {
 	PSN = "PlayStation™Network",
 
+    SYSTEM_NAMES = 
+    {
+        PS5 = "PlayStation®5",
+        PS4 = "PlayStation®4",
+        XB1 = "Xbox One",
+        SWITCH = "Nintendo Switch",
+    },
+
     CHARACTER_NAMES =
     {
         wilson = "Wilson P. Higgsbury",
@@ -408,6 +416,7 @@ STRINGS =
             SOCKET   = "Socket",
             CELESTIAL = "Offer",
             SHOW = "Show",
+			REPAIR = "Repair",
 			APPLY    = "Apply {item}",
             DRINK    = "Drink {item}",
             QUAGMIRE_POT_HANGER = "Hang {item}",
@@ -457,7 +466,11 @@ STRINGS =
         SMOTHER = "Extinguish",
         STOKEFIRE = "Stoke Fire",
         MANUALEXTINGUISH = "Extinguish",
-        EAT = "Eat",
+        EAT =
+        {
+            GENERIC = "Eat",
+            DRINK = "Drink",
+        },
         BAIT = "Bait",
         COOK = "Cook",
         SPICE = "Season", --this is for COOK action, but trying to avoid breaking mods due
@@ -473,6 +486,7 @@ STRINGS =
 		{
 			GENERIC = "Examine",
 			CLOSEINSPECT = "Closely Examine",
+			READ = "Read",
 		},
         TALKTO = "Talk to",
 		INTERACT_WITH =
@@ -613,6 +627,7 @@ STRINGS =
             GATHER_MERM = "Gather Merm",
             FAKE_PICKUP = "Pick up",
             PLAY_WITH = "Play with",
+			PULL = "Pull",
         },
 
 		OPEN_CRAFTING =
@@ -684,6 +699,7 @@ STRINGS =
             SHADOW_BEEF_BELL = "Bind",
 			SLINGSHOTMODKIT = "Mod",
 			WAGDRONE_PARTS = "Repair",
+			GEARS = "Repair",
         },
         STOPUSINGITEM =
         {
@@ -1006,7 +1022,10 @@ STRINGS =
 
         APPLYMODULE = "Plug In",
         REMOVEMODULES = "Unplug",
-        CHARGE_FROM = "Charge At",
+        CHARGE_FROM = {
+            SELF = "Charge At",
+            ITEM = "Charge Item",
+        },
 
 		-- Waxwell
 		USEMAGICTOOL = "Use",
@@ -1110,11 +1129,18 @@ STRINGS =
 		-- Rifts 5
 		POUNCECAPTURE = "Encapsulate",
         
-        -- electrocute
+        -- rifts5.1
         DIVEGRAB = "Restrain",
         STARTELECTRICLINK = "Toggle Linking",
         ENDELECTRICLINK = "Disconnect Links",
         REMOVELUNARBUILDUP = "Clear",
+
+		-- Winter 2025
+		SOAKIN = "Soak In",
+        TRANSFER_CRITTER = "Transfer Ownership",
+
+        -- Year of the Clockwork Knight
+        JOUST = "Charge",
     },
 
 	WOBY_COMMANDS =
@@ -1160,6 +1186,8 @@ STRINGS =
         FOOD = "Soggy",
         POUCH = "Soggy",
         WETGOOP = "Very",
+        DESICCANT = "Damp",
+        DESICCANT_FULL = "Saturated",
     },
 
     NAMES =
@@ -1429,6 +1457,9 @@ STRINGS =
 		TURF_FUNGUS_MOON = "Mutated Fungal Turf",
 
 		TURF_ARCHIVE = "Ancient Stonework",
+        TURF_VAULT = "Ancient Sanctum Stonework",
+        TURF_VENT = "Cave Fumarole Turf",
+
 
 		BLUEPRINT_CRAFTINGSET_RUINS_BUILDER = "Ruins Turf Blueprints",
 		BLUEPRINT_CRAFTINGSET_RUINSGLOW_BUILDER = "Imitation Ruins Turf Blueprints",
@@ -1496,8 +1527,8 @@ STRINGS =
         TORCH = "Torch",
         SEEDS = "Seeds",
         HOUND = "Hound",
-		HOUNDCORPSE = "Hound",
-        FIREHOUND = "Red Hound",
+		--HOUNDCORPSE = "Hound", -- NOTE: Deprecated.
+        FIREHOUND = "Fire Hound",
         SEEDS_COOKED = "Toasted Seeds",
         SILK = "Silk",
         SPIDERGLAND = "Spider Gland",
@@ -1961,7 +1992,7 @@ STRINGS =
         YELLOWSTAFF = "Star Caller's Staff",
         OPALSTAFF = "Moon Caller's Staff",
 
-        ICEHOUND = "Blue Hound",
+        ICEHOUND = "Ice Hound",
         PENGUIN = "Pengull",
         DEERCLOPS_EYEBALL = "Deerclops Eyeball",
         GEARS = "Gears",
@@ -2071,6 +2102,11 @@ STRINGS =
         RUINSRELIC_CHIPBOWL = "Replica Relic Dish",
         RUINSRELIC_VASE = "Replica Relic Vase",
         RUINSRELIC_TABLE = "Replica Relic Table",
+		VAULTRELIC = "Sanctum Relic",
+		VAULTRELIC_BROKEN = "Broken Sanctum Relic",
+		VAULTRELIC_BOWL = "Replica Sanctum Bowl",
+		VAULTRELIC_VASE = "Replica Sanctum Vase",
+		VAULTRELIC_PLANTER = "Replica Sanctum Planter",
         MULTITOOL_AXE_PICKAXE = "Pick/Axe",
         SLURPER_PELT = "Slurper Pelt",
         THULECITE = "Thulecite",
@@ -2252,6 +2288,7 @@ STRINGS =
         CRITTER_DRAGONLING = "Broodling",
         CRITTER_GLOMLING = "Glomglom",
 		CRITTER_LUNARMOTHLING = "Mothling",
+        CRITTER_BULBIN = "Bulbin",
 
         CRITTER_LAMB_BUILDER = "Ewelet",
         CRITTER_PUPPY_BUILDER = "Vargling",
@@ -2260,6 +2297,7 @@ STRINGS =
         CRITTER_DRAGONLING_BUILDER = "Broodling",
         CRITTER_GLOMLING_BUILDER = "Glomglom",
 		CRITTER_LUNARMOTHLING_BUILDER = "Mothling",
+        CRITTER_BULBIN_BUILDER = "Bulbin",
 
         BEARGERVEST = "Hibearnation Vest",
         ARMORDRAGONFLY = "Scalemail",
@@ -2405,6 +2443,7 @@ STRINGS =
         CHESSPIECE_YOTS = "Gilded Depths Worm Figure",
         CHESSPIECE_WAGBOSS_ROBOT = "W.A.R.B.O.T. Figure",
         CHESSPIECE_WAGBOSS_LUNAR = "Celestial Scion Figure",
+        CHESSPIECE_YOTH = "Gilded Knight Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2450,6 +2489,7 @@ STRINGS =
         CHESSPIECE_YOTS_BUILDER = "Gilded Depths Worm Figure",
         CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "W.A.R.B.O.T. Figure",
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "Celestial Scion Figure",
+        CHESSPIECE_YOTH_BUILDER = "Gilded Knight's Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2472,6 +2512,7 @@ STRINGS =
         CHESSPIECE_YOTS_SKETCH = "Gilded Depths Worm Figure Sketch",
         CHESSPIECE_WAGBOSS_ROBOT_SKETCH = "W.A.R.B.O.T. Figure Sketch",
         CHESSPIECE_WAGBOSS_LUNAR_SKETCH = "Celestial Scion Figure Sketch",
+        CHESSPIECE_YOTH_SKETCH = "Gilded Knight Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -3542,6 +3583,8 @@ STRINGS =
 
         ARCHIVE_MOON_STATUE = "Ancient Moon Statue",
         ARCHIVE_RUNE_STATUE = "Ancient Lunarune Stone",
+		VAULT_RUNE = "Sanctum Lunarune Stone",
+		VAULT_STATUE = "Sanctum Statue",
 
         ARCHIVE_RESONATOR = "Astral Detector",
         ARCHIVE_RESONATOR_ITEM = "Astral Detector",
@@ -3901,6 +3944,7 @@ STRINGS =
 
         PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
         PLAYBILL_THE_VEIL = "The Pall\nA Stage Play",
+        PLAYBILL_THE_VAULT = "A Task Complete\nA Confession",
         STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
 
         -- Year of the Rabbit
@@ -3935,7 +3979,7 @@ STRINGS =
 
 		LUNAR_GRAZER = "Grazer",
         LUNARTHRALL_PLANT = "Deadly Brightshade",
-        LUNARTHRALL_PLANT_GESTALT = "Brightshade Gestalt",
+        LUNARTHRALL_PLANT_GESTALT = "Incursive Gestalt",
         LUNARTHRALL_PLANT_VINE_END = "Tunneling Vine",
 
         PUREBRILLIANCE = "Pure Brilliance",
@@ -4336,7 +4380,7 @@ STRINGS =
         LUNAR_SEED = "Celestial Jewel",
 		TEMP_BETA_MSG = "Beta Report",
 
-        -- electrocute
+        -- rifts5.1
         WAGBOSS_ROBOT_CONSTRUCTIONSITE = "W.A.R.B.O.T. Base",
         WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "W.A.R.B.O.T. Base Kit",
         WAGBOSS_ROBOT_CREATION_PARTS = "W.A.R.B.O.T. Parts",
@@ -4348,11 +4392,134 @@ STRINGS =
         FENCE_ELECTRIC_ITEM = "T.I.N.G.L.E. Node",
 
         MUTATEDBIRD = "Bright-Beaked Bird",
-        MUTATEDBUZZARD = "Crystal-Crested Buzzard",
+        MUTATEDBUZZARD_GESTALT = "Crystal-Crested Buzzard",
 
         -- Names for missed scrapbook entries
         WAVEYJONES = "Wavey Jones",
         SHADOWHAND = "Shadow Hand",
+
+        -- Rifts 6
+
+        SHADOWTHRALL_CENTIPEDE = "Mega Blight",
+        SHADOWTHRALL_CENTIPEDE_ALLEGIANCE = "Ripple",
+
+        TREE_ROCK = "Boulderbough",
+        CAVE_VENT_ROCK = "Fumarole",
+
+		ABYSSPILLAR_MINION = "Sequitor",
+		ABYSSPILLAR_TRIAL = "Lever", --Pillar puzzle lever
+
+        VAULT_TELEPORTER = "Sanctum Waymark", -- Channel device to teleport players around the vault.
+		VAULT_TELEPORTER_BROKEN = "Broken Sanctum Waymark",
+		VAULT_ORB = "Portation Orb",
+		VAULT_LOBBY_EXIT = "Chasm",
+		VAULT_CHANDELIER_BROKEN = "Sanctum Lustre",
+
+		ANCIENT_HUSK = "Ancient Remains",
+		MASK_ANCIENT_HANDMAIDHAT = "Elytra's Mask",
+		MASK_ANCIENT_ARCHITECTHAT = "Visionist's Mask",
+		MASK_ANCIENT_MASONHAT = "Artificer's Mask",
+
+        TREE_ROCK_SEED = "Boulderbough Seed",
+        TREE_ROCK_SAPLING = "Boulderbough Sapling",
+
+        CAVE_FERN_WITHERED = "Withered Fern",
+        FLOWER_CAVE_WITHERED = "Withered Light Flower",
+
+        -- Rifts 6.1
+
+        OCEANWHIRLBIGPORTAL = "Giant Whirlpool",
+        OCEANWHIRLBIGPORTALEXIT = "Ocean Detritus", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH = "Flummoxing Flame",
+
+        CAVE_VENT_MITE = "Geothermite",
+
+		-- Hallowed Nights 2025
+
+		PUMPKINHAT = "Faceless Pumpkin",
+		PUMPKINHAT_CARVED = "Pumpkin Head",
+
+		-- Winter's Feast 2025
+
+		W_RADIO = "B.U.D.D.Y.", --(Broadcasting Uninterrupted Dimensional Dialogue Yet?)
+		GIFTSURPRISE = "???",
+
+		HERMITHOTSPRING = "Pearl's Hot Spring",
+		HERMITHOTSPRING_ABANDONED = "Dry Hot Spring",
+		HERMITHOTSPRING_CONSTR = "Hot Spring",
+		MEATRACK_HERMIT_MULTI = "Large Drying Rack",
+		MEATRACK_HERMIT_ABANDONED = "Seaside Debris",
+		HERMITHOUSE_ORNAMENT = "Wind Charm",
+		HERMITHOUSE_LAUNDRY_SOCKS = "Stockings",
+		HERMITHOUSE_LAUNDRY_SHORTS = "Bloomers",
+		HERMIT_CHAIR_ROCKING = "Driftwood Rocker",
+
+        SHELLWEAVER = "Combriner",
+        ICESTAFF2 = "Flash Freeze Staff",
+        ICESTAFF3 = "Deep Freeze Staff",
+        NONSLIPGRIT = "Grit Duster",
+        NONSLIPGRITBOOSTED = "Grit Grinder",
+        DESICCANT = "Desiccant Pouch",
+        DESICCANTBOOSTED = "Desiccant Sack",
+        HERMITCRAB_SHELL = "Portage Conch",
+        SALTY_DOGHAT = "Salty Dog's Hat",
+        SALTY_DOG = "Salty Dog",
+
+        HERMITCRAB_TEASHOP = "Pearl's Tea Shop",--boat looking shop - trade pearl for teas. give her bottle
+        HERMITCRAB_TEASHOP_ABANDONED = "Abandoned Tea Shop",
+
+        HERMITCRABTEA_PETALS = "Petal Tea",--tea with petals, sanity buff
+        HERMITCRABTEA_PETALS_EVIL = "Dark Petal Tea",--tea with evil petals, make you insane?
+        HERMITCRABTEA_FOLIAGE = "Foliage Tea",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Succulent Tea",--cool you down
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Lune Tree Blossom Tea",--warm you up
+        HERMITCRABTEA_FIRENETTLES = "Fire Nettle Tea",
+        HERMITCRABTEA_TILLWEED = "Tillweed Tea",
+        HERMITCRABTEA_FORGETMELOTS = "Forget-Me-Lots Tea",
+
+        PETALS_DRIED = "Dried Petals",
+        PETALS_EVIL_DRIED = "Dried Dark Petals",
+        FOLIAGE_DRIED = "Dried Foliage",
+        SUCCULENT_PICKED_DRIED = "Dried Succulent",
+        MOON_TREE_BLOSSOM_DRIED = "Dried Lune Tree Blossom",
+        FIRENETTLES_DRIED = "Dried Fire Nettle Frond",
+        TILLWEED_DRIED = "Dried Tillweed",
+        FORGETMELOTS_DRIED = "Dried Forget-Me-Lots",
+
+        FISHMEAT_DRIED = "Fishy Jerky",
+        FISHMEAT_SMALL_DRIED = "Small Fishy Jerky",
+
+        HERMITCRAB_LIGHTPOST = "Pearl's Light Post",
+        HERMITCRAB_LIGHTPOST_ABANDONED = "Seaside Spoils",
+        HERMITCRAB_LIGHTPOST_ITEM = "Pearl's Light Post Kit",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE = "Clockwork Knight Shrine",
+        FLOATINGLANTERN = "Sky Lantern",
+        YOTH_KNIGHTSTICK = "Shtick Horse",
+
+        YOTH_CHAIR_ROCKING = "Rocking Mare",
+        YOTH_CHAIR_ROCKING_ITEM = "Rocking Mare Kit",
+
+        KNIGHT_YOTH = "Gilded Knight", -- Used for death announce
+
+        KNIGHT_YOTH_CONQUEST = "Pascal",
+        KNIGHT_YOTH_WAR = "Warren",
+        KNIGHT_YOTH_FAMINE = "Fermin",
+        KNIGHT_YOTH_DEATH = "Desdemona",
+
+        YOTH_KNIGHTHAT = "Gilded Knight's Helmet",
+        ARMOR_YOTH_KNIGHT = "Gilded Knight's Chest Plate",
+
+        MASK_PRINCESSHAT = "Princess Mask",
+        COSTUME_PRINCESS_BODY = "Princess Costume",
+
+        HORSESHOE = "Lucky Horseshoe",
+        YOTH_LANCE = "Joust-a-Dash", 
+
+        PLAYBILL_THE_PRINCESS_YOTH = "My Knights Four and I\nA Stage Play",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4576,6 +4743,8 @@ STRINGS =
         TURF_METEOR = "The cratered surface of the moon.",
         TURF_FUNGUS_MOON = "The mutated fungal floor of a cave.",
 		TURF_ARCHIVE = "Ancient stonework from an unsealed archive.",
+        TURF_VAULT = "Ancient stonework from the Sanctum.",
+        TURF_VENT = "The craggy stone floor of a fumey cave.",
 		BLUEPRINT_CRAFTINGSET_RUINS_BUILDER = "Build a floor in the style of a long-gone civilization.",
 		BLUEPRINT_CRAFTINGSET_RUINSGLOW_BUILDER = "As faithful a recreation as could be mustered.",
 		TURF_RUINSBRICK = "Ancient stone flooring, decorated with a magical technique lost to time.",
@@ -4647,6 +4816,10 @@ STRINGS =
         RUINSRELIC_CHIPBOWL = "Don't double dip.",
         RUINSRELIC_VASE = "A faux-vintage vase.",
         RUINSRELIC_TABLE = "Don't put your elbows on it.",
+
+		VAULTRELIC_BOWL = "It's not dirty, it's \"developing a patina\".",
+		VAULTRELIC_VASE = "Decor from a bygone age.",
+		VAULTRELIC_PLANTER = "Too brittle to plant anything in, but a great conversation piece.",
 
         RAINCOAT = "A waterproof coat to keep you dry.",
         RAINHAT = "Soft to the touch, slick to the rain.",
@@ -4792,6 +4965,7 @@ STRINGS =
         CHESSPIECE_YOTS_BUILDER = "A reminder of a lucky worm encounter.",
         CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "The automation.",
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "The abomination.",
+        CHESSPIECE_YOTH_BUILDER = "Shining armor included.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4805,6 +4979,7 @@ STRINGS =
         CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
         CHESSPIECE_YOTD_SKETCH = "A sculpture sketch of a Dragonfly boat race Start Tower.",
         CHESSPIECE_YOTS_SKETCH = "A sculpture sketch of a Gilded Depths Worm.",
+        CHESSPIECE_YOTH_SKETCH = "A sculpture sketch of a Gilded Knight",
 
         CRITTER_GLOMLING_BUILDER = "Befriend a bouncy Glomglom.",
         CRITTER_DRAGONLING_BUILDER = "Befriend a noble Broodling.",
@@ -4813,6 +4988,7 @@ STRINGS =
         CRITTER_PUPPY_BUILDER = "Befriend a loyal Vargling.",
         CRITTER_LAMB_BUILDER = "Befriend a fluffy Ewelet.",
 		CRITTER_LUNARMOTHLING_BUILDER = "Befriend a delicate Mothling.",
+		CRITTER_BULBIN_BUILDER = "Befriend a rolling Bulbin.",
 
         CANDYBAG = "Only carries Hallowed Nights goodies.",
 
@@ -5505,6 +5681,47 @@ STRINGS =
 
         FENCE_ELECTRIC = "A shockingly effective way to contain yourself... or others.",
         FENCE_ELECTRIC_ITEM = "A shockingly effective way to contain yourself... or others.",
+
+		-- Halloween 2025
+		PUMPKINHAT = "It's only natural to wear a pumpkin on your head after you've carved a face into it.",
+
+        -- Winter's Feast 2025
+        SHELLWEAVER = "Make something with a pinch of salt.",
+        MESSAGEBOTTLEEMPTY = "Not just made by hermits!",
+        ICESTAFF2 = "Knock'em out cold!",
+        ICESTAFF3 = "Put'em on ice!",
+        NONSLIPGRIT = "For when you can't afford to slip up.",
+        NONSLIPGRITBOOSTED = "Re-tread your trail for extra traction.",
+        DESICCANT = "It's important to keep drying!",
+        DESICCANTBOOSTED = "It absorbs moisture so you don't have to!",
+        HERMITCRAB_SHELL = "Last one to Pearl's is a rotten fish egg!",
+        SALTY_DOGHAT = "A hat for an old salt that comes with a salty companion.",
+
+        HERMITCRAB_TEASHOP = "There's nothing a cup of Pearl's tea can't fix.",
+        HERMITCRABTEA_PETALS = "A brew to bring a mind back from the brink.",
+        HERMITCRABTEA_PETALS_EVIL = "Sip for a gentle slip into madness.",
+        HERMITCRABTEA_FOLIAGE = "Fortify your faculties against mind-cracking creatures.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Drink this if you wanna be cool.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Blend in with the lunar locals.",
+        HERMITCRABTEA_FIRENETTLES = "It'll put some fire in your belly, or at least warm you up.",
+        HERMITCRABTEA_TILLWEED = "It even tastes healthy! Yum!",
+        HERMITCRABTEA_FORGETMELOTS = "A strong brew to refresh your fractured mind.",
+
+		HERMITHOTSPRING_CONSTR = "Drop in for a soak at Pearl's coastal retreat.",
+		MEATRACK_HERMIT_MULTI = "Pearl's personal drying rack has room to spare!",
+		HERMITHOUSE_ORNAMENT = "Give Pearl's Place a splash of whimsy with some oceanside adornments.",
+		HERMIT_CHAIR_ROCKING = "Have a seat, you'll be drifting away in no time.",
+
+        HERMITCRAB_LIGHTPOST = "Set the mood for a seaside sanctuary!",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE = "Make offerings to the whirring Clockwork Knight",
+        FLOATINGLANTERN = "Cast a comforting warm glow from above.",
+        YOTH_KNIGHTSTICK = "Horse around.",
+        YOTH_CHAIR_ROCKING_ITEM = "Take a ride and enjoy going nowhere.",
+
+		W_RADIO = "Where is that signal coming from?",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -5698,6 +5915,11 @@ STRINGS =
     MERM_KING_TALK_HUNGER_HUNGRISH = "King feeling a bit peckish...",
     MERM_KING_TALK_HUNGER_FULL =  "Have done well. Now go.",
 
+    HERMITCRAB_TALK_ONSKINREQUEST = {
+        LOW = {"What now?"},
+        MED = {"These should better than the last ones."},
+        HIGH = {"Oh! More things to try?"},
+    },
 	HERMITCRAB_TALK_ONPURCHASE = {
             LOW = {"Great. Now leave me alone."},
             MED = {"Pleasure doing business."},
@@ -5917,6 +6139,7 @@ STRINGS =
                 MED = {"...Thank you. It's been a long time."},
                 HIGH = {"Thank you dearie...","Have you seen any other crabs on your travels?"},
             },
+            GIVE_FLOWER_SALAD_POST_RELOCATION = { "Thank you dearie, I used to love this flower salad."},
             GIVE_FISH_WINTER = {
                 LOW = {"Hmph. You could've caught it faster if you used this."},
                 MED = {"Oh... thanks. Here, take this for your trouble."},
@@ -6010,9 +6233,9 @@ STRINGS =
     },
 
     HERMITCRAB_ANNOUNCE_ADDED_RELOCATION_KIT = {
-        LOW = {"Hmph! You tricked me! This island is the worst!", "You'd better fix this...", "...or you're no better than that junk collector!", "I’ve got something you can use - if you actually plan on helping me."},
+        LOW = {"Hmph! You tricked me! This island is the worst!", "You'd better fix this...", "...or you're no better than that junk collector!", "I've got something you can use - if you actually plan on helping me."},
         MED = {"Ack! That map was no good.", "Maybe that junk collector tricked you too.", "I need a better place to live.", "I have something you can use to help me."},
-        HIGH = {"Oh dear, that junk collector tricked us with a bad map.", "Please help me find a better home?", "I’ve got a little something that might help you help me!"},
+        HIGH = {"Oh dear, that junk collector tricked us with a bad map.", "Please help me find a better home?", "I've got a little something that might help you help me!"},
     },
 
     HERMITCRAB_LEVEL10_PLAYERGOOD = {
@@ -6033,6 +6256,7 @@ STRINGS =
         MED = {"I suppose I'm glad they reached anyone, really."},
         HIGH = {"Maybe this will be the one to reach him..."},
     },
+    HERMITCRAB_THROWBOTTLE_POST_RELOCATION = { "I hope you find this on your travels and come back for a visit, dearie!"},
     HERMITCRAB_HARVESTMEAT = {
         LOW = {"Hmph... looks pretty stringy."},
         MED = {"Hm... doesn't look too bad."},
@@ -6043,7 +6267,7 @@ STRINGS =
         MED = {"Not the best lawn ornaments, but they keep the head clear.",},
         HIGH = {"I didn't notice those weird spooks until I'd settled in.","They were awful, made my shell crawl...","One of us had to go, and it wasn't going to be me!"},
     },
-    HERMITCRAB_GOT_PEARL = {"Oh...","...I think I understand now.","Thank you for bringing this back to me.","I'm so glad you kept coming back.","My friend."},
+    HERMITCRAB_GOT_PEARL = {"Oh...","...I think I understand now.","Thank you for bringing this back to me.","I'm so glad you kept coming back.","My friend.","As a small token of my appreciation, I'd like to share my special creation with you."},
     HERMITCRAB_WANT_HOUSE = {"I could really use some help fixing up my house..."},
     HERMITCRAB_GIVE_PEARL = {"If you find my sweetie on your travels...","Could you... give him that pearl?","He'll recognize it."},
     HERMITCRAB_GOT_MAPSCROLL_BAD = {"This map is no good to me.", "It doesn't take me anywhere special."},
@@ -6051,6 +6275,235 @@ STRINGS =
 
     HERMITCRAB_ANNOUNCE_SPOOKED = "Did you see that?!",
     HERMITCRAB_ANNOUNCE_TOOL_SLIP = "Wow, that tool is slippery!",
+
+    -- Winter 2025 HermitCrab
+
+    -- Pearl strrings when she's going to the tea shop as a player is waiting by it.
+    HERMITCRAB_ANNOUNCE_GOING_TEASHOP = {
+        "Hold your seahorses, dearie!",
+        "I'll be there in just a minute.",
+        "Patience, dearie. On my way.",
+    },
+
+    -- Pearl strings as she idly waits at the tea shop and the player is nearby.
+    HERMITCRAB_TEASHOP_IDLE = {
+        "Nothing beats my brew.",
+        "You look thirsty, dearie!",
+        "Welcome to Pearl's Tea Shop.",
+        "Hello, dearie. What would you like?",
+        "What's your favorite tea?",
+        "Would you like some of my tea?",
+    },
+
+    -- String for pearl to say when player purchases something
+    HERMITCRAB_TEASHOP_TRADE = {
+        "Have a lovely day!",
+        "Here you go.",
+        "Enjoy, dearie!",
+        "I hope you like it!",
+        "Tea brewed special for you, dearie!",
+    },
+
+    -- String when player goes away and Pearl leaves teashop
+    HERMITCRAB_ANNOUNCE_LEFT_TEASHOP = {
+        "Tell your friends to come by, dearie!",
+        "Thank you for visiting!",
+        "Come back soon, dearie!",
+    },
+
+    -- String when player is hammering down tea shop
+    HERMITCRAB_TEASHOP_HIT = {
+        "Why are you doing that, dearie?",
+        "Are you helping me move my shop?",
+        "Careful, dearie!",
+    },
+
+    -- String when tea shop starts to burn.
+    HERMITCRAB_TEASHOP_BURN = {
+        "My shop is on fire!",
+        "Oh it's a disaster!",
+        "Why?!",
+    },
+
+    -- String when tea shop starts to burn. (AS A RESULT OF PLAYER ACTION)
+    HERMITCRAB_TEASHOP_PLAYER_BURN = {
+        "Oh, dearie! What have you done?",
+        "Why would you do that, dearie?",
+        "Oh no! You've burned my shop!",
+    },
+
+    -- When we're above or near max points for Pearl's area and her home, she'll be very happy! and will stop complaining about decor.
+    HERMITCRAB_DECOR_PRAISES =
+    {
+        "My dearie! I love what you've done with my place!",
+        "Thank you, dearie! It truly feels like home now!",
+        "Oh my, you have such an eye for decorating!",
+        "Dearie, you've done it! My place looks wonderful!",
+        "I love it, my dearie! Thank you for your help!",
+        "Oh dearie, it's become a real home sweet home! Thank you.",
+        "You've done such a lovely job decorating my home, dearie!",
+    },
+
+    -- A unique string if you collect all trophy fish for her!
+    HERMITCRAB_DECOR_ALL_TROPHY_FISH = { "How did you ever manage to catch all of them? Incredible, dearie!", "Now I have every fish, dearie! Amazing!", "My collection is complete! You're the best, dearie!", "What an astounding feat! You've caught them all, dearie!" },
+    -- She'll play these lines when she's happy with the number of the respective decor you have
+    HERMITCRAB_DECOR_CONTENT =
+    {
+        TILES = { "It's my very own beach! I love it, dearie!", "Thank you, dearie. You've brought the beach to me!", "It's perfect, dearie! My home on the beach!" },
+        ORNAMENTS = { "Wonderful! I love how they dance in the wind.", "They're splendid, dearie.", "Absolutely lovely, my dearie." },
+        DECORATION_TAKER = { "Thank you for the wonderful tables, dearie.","I simply adore these beautiful tables you've made for me, dearie."},
+        FACED_CHAIR = { "Now I can sit down in one of these chairs, rest my legs and enjoy a cup of tea!", "Now I have chairs for when you come to visit!" },
+        POTTED_PLANTS = { "These potted plants are lovely, dearie.", "I really enjoy these potted plants. Thank you, dearie." },
+        DOCK_POSTS = { "The dock pilings are really great, dearie!", "I love my dock pilings, my dearie!" },
+        PICKABLE_PLANTS = { "It all looks so lush!", "Dearie, you certainly have a green thumb!", "Every plant I need is at my clawtips! How thoughtful, dearie." },
+        LIGHT_POSTS = { "My home is so bright and beautiful now!", "All these lights really liven the mood!", "The lights look give such a warm and cozy glow. It's perfect.", },
+        MEAT_RACKS = { "I love my new drying racks!", "Thank you dearie! Now I have so much room for drying!", "I'll never run out of drying space again!", },
+        FLOWERS = { "Oh dearie, I love all the flowers you've planted for me!", "My garden is full of beautiful flowers thanks to you, dearie!", "All these flowers make me so happy! Thank you, my dearie." },
+        BEE_BOXES = { "Thank you for all the bee boxes, dearie!", "My bees love their new homes! Thank you, dearie!", "All these bee boxes! Now I'll have plenty of honey for my tea!" },
+
+        WATER_TREE = { "What a wonderful tree you planted for me, dearie!", "I love my tree, dearie! It protects me from the hot sun and cold rain!", "Thank you for planting the beautiful tree for me, dearie."},
+        CRITTER_PET = { "I don't much take to company, dearie... except yours and now this sweet little one's.", "Thank you for bringing me this perfect little companion, dearie."},
+
+        HOT_SPRING = { "Now I can have a soak and rest my old shell.", "What a lovely hot spring, dearie! Come by anytime for a soak.", "Thank you for the wonderful hot spring, dearie."},
+        TEA_SHOP = { "Oh, dearie! I can't wait for you to taste all my different teas!", "Finally, Pearl's Tea Shop can open for business!", "Thank you for helping me set up my tea shop, dearie."},
+    },
+
+    HERMITCRAB_CRITTER_BANTER =
+    {
+        "Hello, precious little one.",
+        "Aren't you the cutest?",
+        "You are just the sweetest little thing.",
+        "Too cute!",
+        "I'll take good care of you.",
+        "You make me so happy!",
+        "Awwww...",
+    },
+
+    HERMITCRAB_CRITTER_FEED =
+    {
+        "You must be hungry!",
+        "Eat up now, precious.",
+        "Yummy, isn't it?",
+    },
+
+    -- Her decoration system is entirely disabled within these areas
+    HERMITCRAB_DECOR_COMPLAIN_AREA =
+    {
+        MOON_ISLAND = { "This place gives me a terrible headache!", "Those weird little spooks are all around here!", "Please help me find a new place to live, dearie.", "Oh, dearie. I really don't like it here. Help me move, please!", }
+    },
+
+    HERMITCRAB_DECOR_COMPLAIN = {
+        FLOWERS = -- flowers to make her place look nice AND for her bees!
+        {
+            -- low = little to no flowers
+            -- med = some flowers, wants more
+            LOW = { "I do miss my flowers, dearie. Would you please plant some for me?", "Some flowers would make my home so much prettier. Could you plant me some, dearie?" },
+            MED = { "I love the flowers you've planted, dearie. A few more would be wonderful.", "Just a few more flowers would be absolutely perfect, dearie." },
+        },
+        BEE_BOXES =
+        {
+            -- low = just her single bee box
+            -- med = some more bee boxes, but a bit more would be quite nice..
+            LOW = { "My bees need more homes to live in. Will you build them some, dearie?", "Dearie, I need more houses for my bees. Please help!" },
+            MED = { "My bees love their houses, but a few more would be nice, dearie!", "Dearie, would you please build a few more houses for my bees?" },
+        },
+        TILES = -- she likes beach turfs, she wants that!
+        {
+            -- low = barely any tiles are to her liking
+            -- med = a good chunk of tiles are to her liking
+            LOW = { "Dearie, I miss the beach so much. This place is nothing like it.", "I don't feel like I belong here. I wish it was more like the beach." },
+            MED = { "It's starting to feel like the beach, but perhaps needs a little more, dearie.", "Oh dearie, it needs just a little more to feel like my beach." },
+        },
+        FISHING_MARKERS = -- These are invisible markers that dictate where she can fish, she won't be happy when they're blocked.
+        {
+            -- low = a few fishing markers are blocked
+            -- med = half of them are blocked
+            -- high = all of them are blocked.
+            LOW = { "There's more room for me to fish except for a few spots, dearie.", "Dearie, there are just a few more of my favorite fishing spots I can't reach." },
+            MED = { "It's better, but I could still use more fishing spots!", "I can't get to half of my favorite fishing spots, dearie." },
+            HIGH = { "Dearie, there's simply no where for me to fish!", "I have no where to fish! Please help me, my dearie!" },
+        },
+        TROPHY_FISH =
+        {
+            -- she wants some trophy fish!
+            LOW = { "I would love more big fish to display!", "A few more big fish would be wonderful, dearie!" },
+        },
+        ORNAMENTS = -- She wants ornaments on her house
+        {
+            -- low = 1 slot has an ornament
+            -- med = 2-3 slots has an ornament
+            LOW = { "Oh I love these wind charms. Perhaps a few more?", "Dearie, these wind charms are lovely! More, please!" },
+            MED = { "Just a one or two more wind charms should do it!", "We almost have enough wind charms, dearie!" },
+        },
+        DECORATION_TAKER = -- DECORATION_TAKER refers to tables.
+        {
+            -- low = no tables
+            -- med = you built some tables, but still needs a bit more to be homey
+            LOW = { "Dearie, could you please build me a few tables?", "I need a few tables for my home, dearie!" },
+            MED = { "Thank you for the tables, but I'd love a few more.", "A few more tables would be perfect, dearie!" },
+        },
+        POTTED_PLANTS = -- potted ferns and succulents
+        {
+            -- low = no pots
+            -- med = you built some pots
+            LOW = { "Dearie, would you please build me some pots for my plants?", "I would love some pots for my plants, dearie!" },
+            MED = { "These pots are wonderful, but I would love a few more.", "Just a few more pots for my plants would be enough, my dearie." },
+        },
+        DOCK_POSTS = -- dock pilings
+        {
+            -- low = no dock pilings
+            -- med = you placed some dock pilings, more would be nice
+            LOW = { "Dearie, would you please build me some dock pilings?"},
+            MED = { "I love the dock pilings you built, dearie. A few more would be so nice!", "I would just love a few more dock pilings, dearie!" },
+        },
+        FACED_CHAIR = -- proper chairs (not the ruins chairs!)
+        {
+            -- low = no chairs
+            -- med = you placed some chairs,
+            LOW = { "There's nowhere to sit, dearie! Please help me build some chairs.", "I would love some chairs for my home, dearie." },
+            MED = { "The chairs you built are lovely, dearie. A few more would be lovely.", "Could you please build me just a few more chairs, dearie?" },
+        },
+        PICKABLE_PLANTS = -- She wants plants! (grass, saplings, berry bushes)
+        {
+            -- low = little-to-none plants in her area
+            -- med = you planted some more bushes and plants.
+            LOW = { "We will need more plants than this, dearie.", "More plants would be lovely, dearie!" },
+            MED = { "I love all these plants! Perhaps one or two more?", "It's almost perfect, dearie! Just a few more plants!" },
+        },
+        LIGHT_POSTS = -- She wants light posts!
+        {
+            -- low = little-to-none light posts in her area
+            -- med = you built some light posts, but she still wants more!
+            LOW = { "It's still rather dim, dearie!", "More light would be lovely, my dearie." },
+            MED = { "The lights are lovely! Just one or two more should do.", "Dearie, just a little more light please!" },
+        },
+        MEAT_RACKS = -- She wants more meat racks!
+        {
+            -- low = only the current single-slot meat racks she has with her
+            -- med = you built some extra meat racks for her!
+            LOW = { "Dearie, would you please build me some larger drying racks?", "I would love some more drying racks, my dearie." },
+            MED = { "Wonderful! Perhaps one or two more large drying racks, dearie?", "Almost, dearie! Just one or two more large drying racks!" },
+        },
+        SPAWNER = -- There's some spawners in our area (spider dens, pig houses), we're a hermit and don't like that!
+        {
+            -- low = a few spawners are around
+            -- med = many spawners around
+            -- high = unwanted party happening at pearls place
+            LOW = { "Just a few more beastie hiding places left!", "Dearie, could you please help me get rid of just a few more nasty neighbors?" },
+            MED = { "There are still a number of spots for the beasties to hide!", "I still have quite a few unfriendly neighbors. Please help, dearie!" },
+            HIGH = { "Oh dearie, there are so many places here the beasties creep out from!", "The beasties come from every direction here! Please rid the area of them for me, dearie!" },
+        },
+        JUNK = -- There's junk in our area, complain about it
+        {
+            -- low = not much junk, but still bothersome
+            -- med = a bit more junk.. it's messy
+            -- high = hoa violation
+            LOW = { "My house is almost clear of junk! Just a few more pieces to go.", "We're just about there! Would you help me clean up a bit more junk, dearie?" },
+            MED = { "My place is still cluttered with some junk. Could you please help me clean up?", "My dearie, I would be so grateful for your help in clearing some junk around here." },
+            HIGH = { "Dearie, my home is surrounded by junk! Please help me clear it?", "There's junk everywhere! I need your help to clear it, dearie!" },
+        },
+
+    },
 
     --NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
     PIG_TALK_FOLLOWWILSON = { "YOU FRIEND", "I LOVE FRIEND", "YOU IS GOOD", "I FOLLOW!" },
@@ -6845,6 +7298,7 @@ STRINGS =
 		FISHING = "Fishing",
 		WINTERSFEASTCOOKING = "Feast",
         HERMITCRABSHOP = "Bottle Exchange",
+        SHELLWEAVER = "Combrining",
         RABBITKINGSHOP = "Trading Hutch",
         WANDERINGTRADERSHOP = "Trading",
         WAGPUNK_WORKSTATION = "Fabrication",
@@ -8199,6 +8653,7 @@ STRINGS.UI =
 			TRANSFORM = "Transform",
 			RABBITKINGSHOP = "Trade",
 			WANDERINGTRADERSHOP = "Trade",
+            HERMITCRABSHOP = "Trade",
 		},
         TABNEEDSTUFF =
         {
@@ -8235,6 +8690,10 @@ STRINGS.UI =
         NEEDSHERMITCRABSHOP_L2 = "Find someone friendly enough to make this trade!",
         NEEDSHERMITCRABSHOP_L3 = "Find someone friendly enough to make this trade!",
         NEEDSHERMITCRABSHOP_L4 = "Find someone friendly enough to make this trade!",
+        NEEDSHERMITCRABHELP_CRAFTING = "Find someone friendly enough to help you craft this!", -- This is for the case of relocation kit and shellweaver where it's not a trade, she's showing you how to make it.
+        NEEDSSHELLWEAVER_L1 = "Can only be crafted at a Combriner.",
+        NEEDSSHELLWEAVER_L2 = "Can only be crafted at a Combriner.",
+        NEEDSHERMITCRAB_TEASHOP = "Find someone friendly enough to brew this drink!",
         NEEDSRABBITKINGSHOP = "Seek out the Rabbit King to make this trade!",
         NEEDSWANDERINGTRADERSHOP = "Seek out the Wandering Trader to make this trade!",
         NEEDSWAGPUNK_WORKSTATION = "Can only be crafted at a Notional Fabricator.",
@@ -8247,6 +8706,7 @@ STRINGS.UI =
         NEEDSCARPENTRY_THREE = "Use a Sawhorse with a strong blade to build a prototype!",
         NEEDSCELESTIAL_ONE = "Find a small source of lunar energy to craft this at.",
         NEEDSCELESTIAL_THREE = "Find a big source of lunar energy to craft this at.",
+        NEEDSCARTOGRAPHYDESK = "Use a Cartographer's Desk to write this.",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -8259,12 +8719,20 @@ STRINGS.UI =
 		NEEDSWINTERS_FEAST = "Available during Winter's Feast!",
         NEEDSYOTD = "Available during Year of the Dragonfly!",
         NEEDSYOTS = "Available during Year of the Depths Worm!",
+        NEEDSYOTH = "Available during Year of the Clockwork Knight!",
 
+        NEEDSSHRINE = "Make an offering at any Lunar New Year Shrine!", -- For the generic recipes available for any lunar new year.
         NEEDSPERDSHRINE = "Make an offering at the Gobbler Shrine!",
         NEEDSWARGSHRINE = "Make an offering at the Varg Shrine!",
         NEEDSPIGSHRINE = "Make an offering at the Pig Shrine!",
+        NEEDSCARRATSHRINE = "Make an offering at the Carrat Shrine!",
         NEEDSBEEFSHRINE = "Make an offering at the Beefalo Shrine!",
         NEEDSCATCOONSHRINE = "Make an offering at the Catcoon Shrine!",
+        NEEDSRABBITSHRINE = "Make an offering at the Bunnyman Shrine!",
+        NEEDSDRAGONSHRINE = "Make an offering at the Dragonfly Shrine",
+        NEEDSWORMSHRINE = "Make an offering at the Depths Worm Shrine!",
+        NEEDSKNIGHTSHRINE = "Make an offering at the Clockwork Knight Shrine!",
+
         NEEDSMADSCIENCE = "Brew at the Mad Scientist Lab!",
 		NEEDSWINTERSFEASTCOOKING = "Cook this festive meal in the Masonry Oven!",
         NEEDSCARNIVAL_PRIZESHOP = "Purchase at the Cawnival's Prize Booth!",
@@ -8384,6 +8852,8 @@ STRINGS.UI =
             "Kent Reimer",
             "Garnet (G50) Syberg-Olsen",
             "Omar Al-Saadi",
+            "Elaine Chen",
+            "Nathan Bosia",
         },
 
         ALTGAMES =
@@ -8402,6 +8872,25 @@ STRINGS.UI =
         EXTRA_THANKS_2 = "Pieter Wycoff\nMatthew Nickerson\nAnna Sweet",
         SONY_THANKS = "Shane Bettenhausen\nAdam Boyes\nBrian Silva\nNick Suttner\nAlessandro Bovenzi",
         XB1_THANKS = "Rick Ryan\nVictor Castano\nAngela Savarese\nNick Bodenham",
+        NX_THANKS = "Kristen Lynch\nTed Regulski",
+
+        SONY = 
+        {
+            NAMES = 
+            {
+                "Shane Bettenhausen",
+                "Adam Boyes",
+                "Brian Silva", 
+                "Nick Suttner",
+            },
+
+            NAMES2 = 
+            {
+                "Alessandro Bovenzi", 
+                "Alice Liang", 
+                "Andrew Wong",
+            },
+        },
 
         BLIT =
         {
@@ -8455,6 +8944,88 @@ STRINGS.UI =
                 "Norman Fong",
         	},
         },
+
+        SKYMAP = 
+        {
+            TITLE = "%s port by Skymap Games",
+            NAMES =
+            {
+                "Daniel Bourke",
+                "Collin Desmond",
+                "Neal Laurenza",
+                "Jeremy Quinn",
+            },
+            NAMES2 =
+            {
+                "CJ Schiller",
+                "Robert Smith",
+                "Herman Lejter",
+                "James Kilian",
+            },
+            NAMES3 =
+            {
+                "Cameron McQuade",
+                "Karyn Kilian",
+                "Evan Shuey",
+                "Holly Marcella Blooflat",
+            },
+            NAMES4 =
+            {
+                "Jane Quigley",
+                "Marcus Carbone",
+                "Dave Carrigg",
+                "Joseph Owen",
+            },
+            PS5_NAMES =
+            {
+                "Josh LaFrance",
+                "Evan Shuey",
+                "Neal Laurenza",
+                "Dave Carrigg",
+                "Daniel Bourke",
+            },
+            PS5_NAMES2 =
+            {
+                "Preston Peek",
+                "Randy Condon",
+                "Herman Lejter",
+                "Karyn Kilian",
+            },
+        },
+
+        HUWIZ = 
+        {
+            TITLE = "%s QA by HUWIZ QA/UX",
+            NAMES =
+            {
+                "Alexandre Do Rego",
+                "Carolljo Maher",
+                "Frédérik Macchabée",
+                "Gabriel Levac",
+            },
+            NAMES2 =
+            {
+                "Jason Smith Murk",
+                "Kariane Lacharité",
+                "Kevin Proulx",
+                "Louis St-Denis",
+            },
+            NAMES3 =
+            {
+                "Nicolas Lefebvre",
+                "Roxanne Gingras",
+                "Sébastien Chamard",
+                "Thibault Armando",
+            },
+            NAMES4 =
+            {
+                "Alexandre Caron",
+                "Michael Frouin",
+                "Jeanne Dion",
+                "Maxime Landry Lamy",
+            }
+        },
+
         THANKS = "And a very special thanks to all our supporters who braved the challenge of the \"Early-Access\nBeta\". You are too numerous to name - our amazing moderators, the wonderful artists, musicians,\nlivestreamers, to all who made a Let's Play video and everybody who chimed in to let us know\nexactly what you think. Your encouragement, passion and support has been amazing.\n\nDon't Starve Together is truly a better game because of all of you.",
 
         FMOD = "FMOD Sound System,\nCopyright Firelight Technologies",
@@ -8794,7 +9365,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Hostile Takeover: Phase Two - Beta Branch", -- "Title/nBeta Branch"
+		MAINBANNER_BETA_TITLE = "Beta Branch", --"Winter's Feast - Beta Branch", -- "Title/nBeta Branch"
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -9311,6 +9882,10 @@ STRINGS.UI =
 			crabking = "The Crab King",
 		},
 		TROPHYSCALE_UNKNOWN_OWNER = "An Unnamed Donor",
+
+        -- Unique adjectives for Infused shards and moongleams
+        STALE_POWER = "Waning",
+        SPOILED_POWER = "Decayed",
 	},
 
 	CRAFTING_FILTERS =
@@ -9353,10 +9928,12 @@ STRINGS.UI =
 		LUNARFORGING = "Brightsmithy",
 		SHADOWFORGING = "Shadowcraft",
         HERMITCRABSHOP = "Bottle Exchange",
+        SHELLWEAVER = "Combrining",
         RABBITKINGSHOP = "Trading Hutch",
         WANDERINGTRADERSHOP = "Trading",
         WAGPUNK_WORKSTATION = "Fabrication",
         CARPENTRY = "Carpentry",
+        HERMITCRAB_TEASHOP = "Tea Brewing",
 
         SHADOW = "Codex Umbra",
         FOODPROCESSING = "Seasonings",
@@ -9475,6 +10052,14 @@ STRINGS.UI =
 		CARVE = "Carve",
 	},
 
+	PUMPKINHAT_CARVING_POPUP =
+	{
+		RANDOMIZE = "Randomize",
+		REYE = "Eye",
+		LEYE = "Other Eye",
+		MOUTH = "Mouth",
+	},
+
 	SNOWMAN_DECORATING_POPUP =
 	{
 		MAX_DECOR = "You have reached the maximum number of decorations!",
@@ -9551,8 +10136,12 @@ STRINGS.UI =
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
         VIBRATION = "Vibration:",
         CONTROLLER_AUDIO = "Controller Audio:",
-        UI_HAPTICS = "Interface Haptics:",
-        UI_VIBRATION = "Interface Vibration:",
+        HAPTICS_STRENGTH = "Effect Strength:",
+        HAPTICS_EFFECTS_UI = "Interface Effects:",
+        HAPTICS_EFFECTS_DANGER = "Danger Effects:",
+        HAPTICS_EFFECTS_PLAYER = "Player Effects:",
+        HAPTICS_EFFECTS_ENVIRO = "Environmental Effects:",
+        HAPTICS_EFFECTS_BOSS = "Boss Effects:",
         WATHGRITHRFONT = "Wigfrid's Umlauts:",
         WALTERCAMERA = "Campfire Camera:",
         BOATCAMERA = "Seafaring Camera:",
@@ -9606,7 +10195,8 @@ STRINGS.UI =
         DYNAMICCONTENT_ENABLE = "Re-enable Dynamic Content",
         OFFLINE_MODE_TITLE = "Offline Mode",
         OFFLINE_MODE_BODY = "Your selection is not available in offline mode. Please log in and try again.",
-        KLEI_ID_PREFIX = "Klei ID: ",
+        KLEI_ID_PREFIX = "Klei ID",
+        VERSION = "Version",
 		COMMANDWHEEL = "Social Menu Movement:",
 
 		INTRO_MOVIE = "Intro Movie",
@@ -9658,8 +10248,12 @@ STRINGS.UI =
             VIBRATION = "Make your controller vibrate at key gameplay moments.",
 			VIBRATION_WIRELESS = "Enable vibration of your wireless controller at key gameplay moments.",
             CONTROLLER_AUDIO = "Enable audio from your wireless controller at key gameplay moments.",
-            UI_HAPTICS = "Enable vibration and/or audio from your wireless controller when interacting with the user interface.",
-            UI_VIBRATION = "Enable vibration when interacting with the user interface.",
+            HAPTICS_STRENGTH = "Adjust the strength of haptic effects.",
+            HAPTICS_EFFECTS_UI = "Toggle haptic effects from interacting with the user interface.",
+            HAPTICS_EFFECTS_DANGER = "Toggle haptic effects when your character is in danger.",
+            HAPTICS_EFFECTS_PLAYER = "Toggle haptic effects from your character's actions.",
+            HAPTICS_EFFECTS_BOSS = "Toggle haptic effects from boss enemy actions.",
+            HAPTICS_EFFECTS_ENVIRO = "Toggle haptic effects from the environment.",
             FX = "Change how loud things are in the world.",
             MUSIC = "Tone up or down the musical fanfare in your adventures.",
             AMBIENT = "The environment makes noise too, luckily you can control how loudly it does.",
@@ -10690,7 +11284,8 @@ STRINGS.UI =
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
         YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
         YEAR_OF_THE_DRAGONFLY = "Year of the Dragonfly",
-        YEAR_OF_THE_SNAKE = "Year of the Depths Worm",        
+        YEAR_OF_THE_SNAKE = "Year of the Depths Worm",
+        YEAR_OF_THE_KNIGHT = "Year of the Clockwork Knight",
 
         PREFABSWAPS = "Changing Resources",
         PREFABSWAPS_START = "Starting Resource Variety",
@@ -10784,7 +11379,7 @@ STRINGS.UI =
         EARTHQUAKES = "Earthquakes",
         CAVELIGHT = "Sinkhole Lights",
 
-        PENGUINS_MOON = "Moonrock Pengulls",
+        PENGUINS_MOON = "Permafrost Pengulls",
         BEES_SETTING = "Bees",
         CATCOONS = "Catcoons",
         FROGS = "Frogs",
@@ -10846,6 +11441,7 @@ STRINGS.UI =
         FLOWER_CAVE_REGROWTH = "Light Flower",
         LIGHTFLIER_FLOWER_REGROWTH = "Lightbug Flower",
         SALTSTACK_REGROWTH = "Salt Formations",
+        TREE_ROCK_REGROWTH = "Boulderboughs",
 
         MOON_TREE = "Lune Trees",
         MOON_SAPLING = "Lunar Saplings",
@@ -10901,6 +11497,17 @@ STRINGS.UI =
 
         OCEAN_OTTERDENS = "Marotter Dens",
         OTTERS_SETTING = "Marotters",
+
+        MUTATED_BIRDS = "Mutated Birds",
+        MUTATED_MERM = "Mutated Merms",
+        MUTATED_SPIDERQUEEN = "Shattered Spider Holes",
+        MUTATED_BIRD_GESTALT = "Bright-Beaked Birds",
+        MUTATED_BUZZARD_GESTALT = "Crystal-Crested Buzzards",
+        MUTATED_DEERCLOPS = "Crystal Deerclops",
+        MUTATED_BEARGER = "Armored Bearger",
+        MUTATED_WARG = "Possessed Vargs",
+
+        TREE_ROCK = "Boulderboughs",
 		-- End of world customization strings
     },
 
@@ -11179,6 +11786,8 @@ STRINGS.UI =
 		HIDDEN_NAME = "This server name has been filtered",
         HIDDEN_NAME_LISTING = "This server name has been filtered",
 		HIDDEN_DESCRIPTION = "*****",
+		BLOCKED_WORLD = "Blocked World",
+		CREATED_BY = "Created by:"
     },
 
 	DEMOOVERDIALOG =
@@ -12609,6 +13218,8 @@ STRINGS.UI =
         FAILED_NOPERMISSIONS_NOCHOICE = "I understand",
 
         MYSTERYBOX_DISABLE = "You must be logged in to access the Treasury.",
+
+        NOT_AVAILABLE_OFFLINE = "This feature is not available in offline mode."
     },
 
     BEARDSCREEN =
@@ -14329,6 +14940,7 @@ STRINGS.UI =
         CHOICEEVENTS = "Events",
         CHOICESURVIVORS = "Survivors",
         CHOICEGIANTS = "Giants",
+        CHOICELUNARMUTATIONS = "Lunar Mutations",
 
         WORLDSETTINGS_RESOURCEREGROWTH = "Resource Regrowth",
         WORLDSETTINGS_PORTALRESOURCES = "Unnatural Portal Resources",
@@ -15701,7 +16313,56 @@ STRINGS.HECKLERS_OFF_SCRIPT = {
     "It's all gone wrong!"
 }
 
+STRINGS.HECKLERS_YOTH =
+{
+    SHRINE_ARRIVE = -- Arrives to land on the shrine
+    {
+        "Here we go!",
+        "Were you all just waiting for me?",
+        "Hiya, chump!",
+    },
+
+    SHRINE_IDLE = -- Idle when on the shrine
+    {
+        "Do something already!",
+        "What now?",
+        "Whatdya got?",
+    },
+
+    SHRINE_USE = -- When you trade something from the shrine
+    {
+        "There's a sucker born every minute!",
+        "Hope it was worth it!",
+    },
+
+    SHRINE_GIVE_PLAYBILL = -- Drops the play bill for the player
+    {
+        "Here's my bill!",
+    },
+
+    SHRINE_LEAVE = -- Flys away from the shrine.
+    {
+        "Boring!",
+    },
+
+    SHRINE_LEAVE_PLAY = -- Flys away from the shrine to catch a play.
+    {
+        "That's my cue!",
+    },
+
+    SHRINE_BURN = -- Shrine is ignited and heckler flys away.
+    {
+        "Bunch of ashes!",
+    },
+
+    SHRINE_HIT = -- Shrine is getting hammered and heckler flys away
+    {
+        "Was it something I said? HA HA HA HA!",
+    },
+}
+
 STRINGS.CAST = {
+    -- The Doll
     DOLL = "The Doll",
     DOLL_BROKEN = "The Broken Doll",
     DOLL_REPAIRED = "The Shattered Doll",
@@ -15711,9 +16372,16 @@ STRINGS.CAST = {
     MIRROR = "The Mirror",
     FOOL = "The Fool",
     TREE = "The Tree",
+    -- The Veil
     SAGE = "The Sage",
     HALFWIT = "The Halfwit",
     TOADY = "The Toady",
+    -- The Vault
+    VISIONIST = "The Visionist",
+    ARTIFICER = "The Artificer",
+    ELYTRA = "Elytra",
+    -- Year of the Clockwork Knight (The Princess)
+    PRINCESS = "The Princess",
 }
 
 STRINGS.PLAYS = {
@@ -15729,7 +16397,40 @@ STRINGS.PLAYS = {
         "Act 3 - Scene 3",
         "- The Reunion -",
     },
-    THEVEIL = "The Pall",           
+    THEVEIL = "The Pall",
+    THEVAULT = "A Task Complete",
+    THEPRINCESS = "My Knights Four and I", -- Year of the Clockwork Knight
+}
+
+STRINGS.ARCHIVE_RUNE_STATUE = {
+	LINE_1 = "\"We remain faithful to Alter, as Alter remains faithful to us. Ever watching, knowing, waiting.\"",
+	LINE_2 = "\"Alter, Glorious Moon in the cold night sky. Cast your Life-giving Light on us forever.\"",
+	LINE_3 = "\"Mighty Alter, the source of our strength, our sole provider. We are loyal to none but You.\"",
+	LINE_4 = "\"Alter is our Champion. Alter is the Champion. The Champion is Alter.\"",
+	LINE_5 = "\"Alter is good. Alter shall not forsake us. Alter shall return.\"",
+}
+STRINGS.VAULT_RUNE = {
+	LOBBY = "\"This vault shall become a tomb for all who dare trespass.\"",
+	TELEPORT1 = "\"Bound together are these chambers, yet in ways unnatural, wrought to confound all who enter.\"",
+	LORE1 = "\"Trust none. The Shadow twists all it touches.\"",
+	LORE2 = "\"Through the Keystone, all kin and kind shall fall.\"",
+	LORE3 = "\"Let the cursed Keystone never cross this threshold.\"",
+	PUZZLE1 = "\"Paths are taken but once. Leap wisely, tarry not, or the abyss claims all.\"",
+	PUZZLE2 = "\"Only when all torches burn shall the way be revealed.\"",
+}
+STRINGS.NIGHTMARE_OVERGROWTH = {
+    LINE_1 = "\"Forsaken wretches of the one who turned away.\"",
+    LINE_2 = "\"Orphans cast upon the barren expanse. Lost in the wake of neglect.\"",
+    LINE_3 = "\"From desolation were we drawn. Into the veiled embrace of Them.\"",
+    LINE_4 = "\"No longer doth the shadow stir terror within our hearts.\"",
+    LINE_5 = "\"For dark is become our shield. Our sustenance. Our solace.\"",
+}
+STRINGS.ATRIUM_OVERGROWTH = {
+    LINE_1 = "\"The unknown hath been made known. The abyss revealed as refuge.\"",
+    LINE_2 = "\"Dread twisted into devotion. Trembling into gratitude.\"",
+    LINE_3 = "\"Loyalty unending. We kneel before the undying. The unaltering.\"",
+    LINE_4 = "\"Thou art called by manifold names in myriad realms.\"",
+    LINE_5 = "\"To us, Thou art Shrouden. Many and one. Beyond all time. Beyond all realms.\"",
 }
 
 STRINGS.SPELLS = {
@@ -17022,6 +17723,7 @@ STRINGS.SCRAPBOOK = {
         BERNIE = "A powerful friend when Willow's mind approaches insanity.",
         CANARY = "Sensitive to vapours, they tend to die when monstrous poisons are detected nearby.",
         POLLYROGERS = "Gathers loot nearby.",
+        SALTY_DOG = "Gathers loot nearby, and after swimming in the Ocean for a bit will shed Salt Crystals.",
         MOLE = "Ever played \"Whack-A-Mole\"? What a great game.",
         POWDERMONKEY = "Best keep a bribe handy for these freebooters.",
 
@@ -17555,7 +18257,7 @@ STRINGS.SCRAPBOOK = {
         WANDERINGTRADER = "He travels between a few Points of Interest, looking for survivors to trade with. He gets new stock every couple of days, so be sure to check back in regularly!",
         LUNAR_SEED = "They came from an enlightened crown - so return them to one, to bask in eternal enlightenment.",
 
-        -- electrocute
+        -- rifts5.1
         WAGSTAFF_MATERIALS_NOTE = "\n\"Day 89 - Material Study\"\n\n\"Thulecite appears sufficient to contain lunar entities. Structural integrity holds under moderate strain. Further testing advised.\"\n",
         WAGSTAFF_ENERGY_NOTE = "\n\"Day 195 - Energy\"\n\n\"Eureka. Lunar forms radiate boundless energy. Containable. Obedient, even? Control may be possible. Endless applications... if stability holds.\"\n",
         WAGSTAFF_CONTAINMENT_NOTE = "\n\"Day 226 - Containment Measures\"\n\n\"Area of containment necessary prior to experimentation. Consider implementing a kinetic and teleportational dampening field?\"\n",
@@ -17570,6 +18272,43 @@ STRINGS.SCRAPBOOK = {
 
         FENCE_ELECTRIC = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
         FENCE_ELECTRIC_ITEM = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
+
+        -- Rifts 6 and Rifts6.1
+        TREE_ROCK = "The vines uproot more than boulders, depending on where they are planted.",
+        SHADOWTHRALL_CENTIPEDE_HEAD = "Dense and unyielding, it will take great effort to crack its shell.",
+        CAVE_VENT_ROCK = "These vents can billow out more than mere heat.",
+        CAVE_VENT_MITE = "The Fumarole's cycle begins with the Geothermite.",
+        OCEANWHIRLBIGPORTAL = "Hypnotically swirling, ever-drawing, it swallows all caught within its eye.\nHighly destructive to boats and structures alike.",
+        OCEANWHIRLBIGPORTALEXIT = "A heap of sludge. Best dig in!",
+        VAULT_LOBBY_EXIT = "The longer you gaze, the stronger the urge to leap.",
+        VAULT_TELEPORTER = "Flashy transportation. Keep your gaze on the floor if you feel dizzy or disoriented.",
+        VAULT_ORB = "A focus of intent for the Sanctum Waymark, drawing together those beyond.",
+        VAULT_RUNE = "Engraved markings, enduring through eternity. Perhaps decipherable.",
+        VAULT_TORCH = "The flame is calming. If only it would stay lit.",
+        ABYSSPILLAR_MINION = "They block your path. Are they following a pattern?",
+        ABYSSPILLAR_TRIAL = "The urge to pull this lever is... unusually strong.",
+        MASK_ANCIENT_HANDMAIDHAT = "Costume piece used in stage plays.\nShe did what was necessary in service of her Queen.",
+        MASK_ANCIENT_ARCHITECTHAT = "Costume piece used in stage plays.\nIs it better to face the bitter truth or embrace sweet ignorance?",
+        MASK_ANCIENT_MASONHAT = "Costume piece used in stage plays.\nBetrayal begets the darkest of curses.",
+        PLAYBILL_THE_DOLL = "Charlie's version of events.",
+        PLAYBILL_THE_VEIL = "Shady promotional material.",
+        PLAYBILL_THE_VAULT = "A grim testimony from the past, and a foreshadowing of what awaits.",
+
+        -- Halloween 2025
+        MUTATEDBUZZARD_GESTALT = "Beasts of carrion that have come from barren deserts and rocky plains. Watch out for their loony mutagens.",
+
+        -- Winter's Feast 2025
+        HERMITCRAB_TEASHOP = "Pearl's very own tea shop to provide you with riveting teas.",
+        HERMITCRABTEA_PETALS = "Soothe your mind with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_PETALS_EVIL = "Sour your mind with this brewed concoction from Pearl.",
+        HERMITCRABTEA_FOLIAGE = "Protect your mind against scary foes with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Cool yourself with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_FIRENETTLES = "Warm yourself with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_TILLWEED = "Tend to your wounds with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Scare off shadows of the night with this lovingly brewed concoction from Pearl.",
+        HERMITCRABTEA_FORGETMELOTS = "Soothe your mind like nothing else can, with this exception brewed concoction from Pearl.",
+
+        HERMITCRAB_LIGHTPOST = "String up pearlescent lights. Connects to Tea Shops and Pearl's Place too!",
     },
 
     -- Full name: "{name} Scrapbook Page"
@@ -17584,6 +18323,8 @@ STRINGS.TEMP_BETA_MSG =
 	RIFTS5_BASIC = "Thanks for playing the beta!\nBoss final phase and rewards coming soon...",
 	RIFTS5_BASIC_NEW = "Thanks for playing the beta!",
 	RIFTS5_KILLTIME_FMT = "You defeated {name} in {time}s.",
+	--
+	RIFTS6_BASIC = "Thanks for playing the beta!\nThe room beyond this point is not yet available.",
 }
 
 --Don't include this in pot generation as this file is already translated.

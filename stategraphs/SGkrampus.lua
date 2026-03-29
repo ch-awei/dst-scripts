@@ -9,7 +9,7 @@ local actionhandlers =
 local events=
 {
 	EventHandler("attacked", function(inst, data)
-		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("nointerrupt")) then
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("nointerrupt")) then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (inst.sg:HasStateTag("attack") or CommonHandlers.HitRecoveryDelay(inst)) then
@@ -17,7 +17,6 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
 	EventHandler("doattack", function(inst)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			inst.sg:GoToState("attack")
@@ -28,6 +27,10 @@ local events=
     CommonHandlers.OnLocomote(true,false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+    CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -133,15 +136,20 @@ local states=
         name = "death",
         tags = {"busy"},
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/death")
             inst.AnimState:PlayAnimation("death")
 
             inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot()
+            inst:DropDeathLoot()
 
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
 
@@ -157,7 +165,7 @@ local states=
 
             RemovePhysicsColliders(inst)
 
-            inst:StopBrain()
+			inst:StopBrain("SGkrampus_exit")
         end,
 
         timeline =
@@ -187,7 +195,7 @@ local states=
 
             ChangeToCharacterPhysics(inst)
 
-            inst:RestartBrain()
+			inst:RestartBrain("SGkrampus_exit")
         end,
     },
 
@@ -238,4 +246,7 @@ CommonStates.AddRunStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("krampus", states, events, "taunt", actionhandlers)
+CommonStates.AddInitState(states, "taunt")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("krampus", states, events, "init", actionhandlers)

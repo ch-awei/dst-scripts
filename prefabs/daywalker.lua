@@ -950,15 +950,12 @@ local function MakeHostile(inst)
 			PHASES[0].fn(inst)
 		end
 		inst:SetBrain(brain)
-		if inst.brain == nil and not inst:IsAsleep() then
-			inst:RestartBrain()
-		end
 		inst:SetEngaged(inst.components.combat:HasTarget())
 	end
 end
 
 local function MakeDefeated(inst)
-	if not (inst.chained or inst.defated) and inst.hostile then
+	if not (inst.chained or inst.defeated) and inst.hostile then
 		inst.defeated = true
 		inst.hostile = false
 		inst:RemoveEventCallback("attacked", OnAttacked)

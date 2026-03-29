@@ -83,12 +83,16 @@ local function onplayerfinishedreadingnote(player)
 	player:RemoveEventCallback("animover", onplayerfinishedreadingnote)
 end
 
-local function ShouldForceMapReveal(inst)
+local function ShouldForceMapReveal(inst, doer)
 	local hermit = TheWorld.components.messagebottlemanager ~= nil and TheWorld.components.messagebottlemanager:GetHermitCrab() or nil
 
 	if hermit == nil or not hermit.pearlgiven then
 		return false -- The Pearl doesn't exist yet.
 	end
+
+    if hermit.gotcrackedpearl then
+        return true -- The Cracked Pearl has been given to Hermit.
+    end
 
 	if TheSim:FindFirstEntityWithTag("hermitpearl") then
 		return false -- The Pearl or Cracked Pearl exist.
@@ -97,10 +101,13 @@ local function ShouldForceMapReveal(inst)
 	local crabking = TheSim:FindFirstEntityWithTag("crabking")
 
 	if crabking ~= nil and crabking.gemcount ~= nil then
-		return crabking.gemcount.pearl <= 0 -- Checking if crabking has the Pearl.
+		if crabking.gemcount.pearl > 0 then -- Checking if crabking has the Pearl.
+            return false
+        end
 	end
 
-	return true -- The Cracked Pearl has been given to Hermit.
+    hermit.gotcrackedpearl = true -- The Cracked Pearl has been given to Hermit and the flag is in a bad state so let us fix it up.
+	return true
 end
 
 local function prereveal(inst, doer)
@@ -112,7 +119,7 @@ local function prereveal(inst, doer)
 
 	if TheWorld.components.messagebottlemanager ~= nil then
 		if (TheWorld.components.messagebottlemanager:GetPlayerHasUsedABottle(doer) or TheWorld.components.messagebottlemanager:GetPlayerHasFoundHermit(doer))
-			and math.random() < TUNING.MESSAGEBOTTLE_NOTE_CHANCE then
+			and TryLuckRoll(doer, TUNING.MESSAGEBOTTLE_NOTE_CHANCE, LuckFormulas.MessageBottleContainsNote) then
 
 			bottle_contains_note = true
 		end

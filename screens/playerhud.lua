@@ -47,6 +47,7 @@ local ScrapbookScreen = require "screens/redux/scrapbookscreen"
 local InspectaclesScreen = require("screens/redux/inspectaclesscreen")
 local BalatroScreen = require("screens/redux/balatroscreen")
 local PumpkinCarvingScreen = require("screens/redux/pumpkincarvingscreen")
+local PumpkinHatCarvingScreen = require("screens/redux/pumpkinhatcarvingscreen")
 local SnowmanDecoratingScreen = require("screens/redux/snowmandecoratingscreen")
 
 local TargetIndicator = require "widgets/targetindicator"
@@ -55,6 +56,7 @@ local EventAnnouncer = require "widgets/eventannouncer"
 local GiftItemPopUp = require "screens/giftitempopup"
 local GridWardrobePopupScreen = require "screens/redux/wardrobepopupgridloadout"
 local GridGroomerPopupScreen = require "screens/redux/groomerpopupgridloadout"
+local GridHermitCrabWardrobePopupScreen = require "screens/redux/hermitcrabwardrobepopupgridloadout"
 local GridScarecrowClothingPopupScreen = require "screens/redux/scarecrowpopupgridloadout"
 local PlayerAvatarPopup = require "widgets/playeravatarpopup"
 local DressupAvatarPopup = require "widgets/dressupavatarpopup"
@@ -612,6 +614,60 @@ function PlayerHud:CloseGroomerScreen()
     end
 end
 
+
+function PlayerHud:OpenHermitCrabWardrobeScreen(target, filter)
+    --Hack for holding offset when transitioning from giftitempopup to groomerpopup
+    TheCamera:PopScreenHOffset(self)
+
+    if self.hermitcrabwardrobepopup ~= nil and self.hermitcrabwardrobepopup.inst:IsValid() then
+        TheFrontEnd:PopScreen(self.hermitcrabwardrobepopup)
+    end
+
+    self.hermitcrabwardrobepopup =
+        GridHermitCrabWardrobePopupScreen(
+            target,
+            self.owner,
+            Profile,
+            nil,
+            nil,
+            filter
+        )
+
+    if not TheWorld.ismastersim then
+        local map = TheFrontEnd:GetOpenScreenOfType("MapScreen")
+        if map ~= nil and self.controls ~= nil then
+            self.controls:HideMap()
+        end
+    end
+
+    self:ClearRecentGifts()
+    self:OpenScreenUnderPause(self.hermitcrabwardrobepopup)
+    return true
+end
+
+function PlayerHud:CloseHermitCrabWardrobeScreen()
+    local activescreen = TheFrontEnd:GetActiveScreen()
+
+    if activescreen == nil then return end
+
+    if activescreen.name ~= "ItemServerContactPopup" then
+        --Hack for holding offset when transitioning from giftitempopup to hermitcrabwardrobepopup
+        TheCamera:PopScreenHOffset(self)
+        self:ClearRecentGifts()
+
+        if self.hermitcrabwardrobepopup ~= nil then
+            if self.hermitcrabwardrobepopup.inst:IsValid() then
+                TheFrontEnd:PopScreen(self.hermitcrabwardrobepopup)
+            end
+            self.hermitcrabwardrobepopup = nil
+        end
+    else
+        self.inst:DoTaskInTime(.2, function()
+            self:CloseHermitCrabWardrobeScreen()
+        end)
+    end
+end
+
 function PlayerHud:OpenCookbookScreen()
     self:CloseCookbookScreen()
     self.cookbookscreen = CookbookPopupScreen(self.owner)
@@ -729,6 +785,22 @@ function PlayerHud:ClosePumpkinCarvingScreen()
 			TheFrontEnd:PopScreen(self.pumpkincarvingscreen)
 		end
 		self.pumpkincarvingscreen = nil
+	end
+end
+
+function PlayerHud:OpenPumpkinHatCarvingScreen(target)
+	self:ClosePumpkinHatCarvingScreen()
+	self.pumpkinhatcarvingscreen = PumpkinHatCarvingScreen(self.owner, target)
+	self:OpenScreenUnderPause(self.pumpkinhatcarvingscreen)
+	return true
+end
+
+function PlayerHud:ClosePumpkinHatCarvingScreen()
+	if self.pumpkinhatcarvingscreen then
+		if self.pumpkinhatcarvingscreen.inst:IsValid() then
+			TheFrontEnd:PopScreen(self.pumpkinhatcarvingscreen)
+		end
+		self.pumpkinhatcarvingscreen = nil
 	end
 end
 

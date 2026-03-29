@@ -97,7 +97,13 @@ local function GetHunger(bird)
     return (bird and bird.components.perishable and bird.components.perishable:GetPercent()) or 1
 end
 
-local function DigestFood(inst, food)
+local LUCKFORMULA_RECIPROCAL = .2
+local function BirdPoopChanceAdditive(inst, chance, luck)
+    return luck < 0 and chance + (math.abs(luck))
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
+
+local function DigestFood(inst, food, giver)
     --NOTE (Omar): 
     -- Reminder that food is not valid at this point.
     -- So don't call any engine functions or any other functions that check for validity
@@ -132,7 +138,7 @@ local function DigestFood(inst, food)
             else
                 --Otherwise...
                     --Spawn a poop 1/3 times.
-                if math.random() < 0.33 then
+                if TryLuckRoll(giver, TUNING.FEED_BIRD_POOP_CHANCE, BirdPoopChanceAdditive) then
                     local loot = inst.components.lootdropper:SpawnLootPrefab("guano")
                     loot.Transform:SetScale(.33, .33, .33)
                 end
@@ -206,7 +212,7 @@ local function OnGetItem(inst, giver, item)
             end
         end
         --Digest Food in 60 frames.
-        inst:DoTaskInTime(60 * FRAMES, DigestFood, item)
+        inst:DoTaskInTime(60 * FRAMES, DigestFood, item, giver)
     end
 end
 
@@ -420,6 +426,9 @@ local function OnBirdStarve(inst, bird)
     SetCageState(inst, CAGE_STATES.DEAD)
 
     inst.AnimState:PlayAnimation("death")
+    if bird.sounds and bird.sounds.death then
+        inst.SoundEmitter:PlaySound(bird.sounds.death)
+    end
     PushStateAnim(inst, "idle", false)
 
     -- NOTES(JBK): Needed here because OnEmptied is called before this callback which clears the build override.

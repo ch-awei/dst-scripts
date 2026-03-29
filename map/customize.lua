@@ -353,6 +353,7 @@ local WORLDGEN_GROUP = {
 			["fern"] = {value = "default", image = "fern.tex", world={"cave"}},
 			["flower_cave"] = {value = "default", image = "flower_cave.tex", world={"cave"}},
 			["wormlights"] = {value = "default", image = "wormlights.tex", world={"cave"}},
+			["tree_rock"] = {value = "default", image = "tree_rock.tex", world={"cave"}},
 			["berrybush"] = {value = "default", image = "berrybush.tex", world={"forest", "cave"}},
 			["carrot"] = {value = "default", image = "carrot.tex", world={"forest"}},
 			["mushroom"] = {value = "default", image = "mushrooms.tex", world={"forest", "cave"}},
@@ -421,6 +422,28 @@ local MOD_WORLDGEN_GROUP = {}
 local MOD_WORLDGEN_MISC = {}
 
 local WORLDSETTINGS_GROUP = {
+	["lunar_mutations"] = {
+		order = 9,
+		text = STRINGS.UI.SANDBOXMENU.CHOICELUNARMUTATIONS,
+		desc = yesno_descriptions,
+		atlas = "images/worldsettings_customization.xml",
+		items={
+			-- Regular mutations
+			["mutated_hounds"] = {value = "default", image = "mutated_hounds.tex", world={"forest"}},
+			["penguins_moon"] = {value = "default", image = "moon_pengull.tex", world={"forest"}},
+			["moon_spider"] = {value = "default", desc = frequency_descriptions, image = "moon_spider.tex", world={"forest", "cave"}},
+			["mutated_birds"] = {value = "default", image = "mutated_birds.tex", world={"forest", "cave"}},
+			["mutated_merm"] = {value = "default", image = "mutated_merm.tex", world={"forest", "cave"}},
+			["mutated_spiderqueen"] = {value = "default", image = "mutated_spiderqueen.tex", world={"forest", "cave"}},
+
+			-- Gestalt mutations
+			["mutated_bird_gestalt"] = {value = "default", image = "mutated_bird_gestalt.tex", world={"forest"}},
+			["mutated_buzzard_gestalt"] = {value = "default", image = "mutated_buzzard_gestalt.tex", world={"forest"}},
+			["mutated_deerclops"] = {value = "default", image = "mutated_deerclops.tex", world={"forest"}},
+			["mutated_bearger"] = {value = "default", image = "mutated_bearger.tex", world={"forest"}},
+			["mutated_warg"] = {value = "default", image = "mutated_warg.tex", world={"forest"}},
+		}
+	},
 	["giants"] = {
 		order = 8,
 		text = STRINGS.UI.SANDBOXMENU.CHOICEGIANTS,
@@ -456,7 +479,6 @@ local WORLDSETTINGS_GROUP = {
 		desc = frequency_descriptions,
 		atlas = "images/worldsettings_customization.xml",
 		items={
-			["mutated_hounds"] = {value = "default", desc = yesno_descriptions, image = "mutated_hounds.tex", world={"forest"}},
 			["lureplants"] = {value = "default", image = "lureplants.tex", world={"forest"}},
 			["hound_mounds"] = {value = "default", image = "hounds.tex", world={"forest"}},
 			["mosquitos"] = {value = "default", image = "mosquitos.tex", world={"forest"}},
@@ -464,8 +486,6 @@ local WORLDSETTINGS_GROUP = {
 			["squid"] = {value = "default", image = "squid.tex", world={"forest"}},
 			["wasps"] = {value = "default", image = "wasps.tex", world={"forest"}},
 			["frogs"] = {value = "default", image = "frogs.tex", world={"forest"}},
-			["penguins_moon"] = {value = "default", desc = yesno_descriptions, image = "moon_pengull.tex", world={"forest"}},
-			["moon_spider"] = {value = "default", image = "moon_spider.tex", world={"forest"}},
 			["walrus_setting"] = {value = "default", image = "mactusk.tex", world={"forest"}},
 			["cookiecutters"] = {value = "default", image = "cookiecutters.tex", world={"forest"}},
             ["pirateraids"] = {value = "default", image = "pirateattacks.tex", world={"forest"}},
@@ -524,13 +544,13 @@ local WORLDSETTINGS_GROUP = {
 		items={
 			["regrowth"] = {value = "default", image = "regrowth.tex", order = 1, world={"forest", "cave"}},
 
-			["evergreen_regrowth"] = {value = "default", image = "evergreen.tex", world={"forest"}},
+			["evergreen_regrowth"] = {value = "default", image = "evergreen.tex", world={"forest", "cave"}},
 			["deciduoustree_regrowth"] = {value = "default", image = "deciduoustree.tex", world={"forest"}},
-			["twiggytrees_regrowth"] = {value = "default", image = "twiggytrees.tex", world={"forest"}},
+			["twiggytrees_regrowth"] = {value = "default", image = "twiggytrees.tex", world={"forest", "cave"}},
 			["moon_tree_regrowth"] = {value = "default", image = "moon_tree.tex", world={"forest"}},
 			["flowers_regrowth"] = {value = "default", image = "flowers.tex", world={"forest"}},
 			["carrots_regrowth"] = {value = "default", image = "carrots.tex", world={"forest"}},
-			["reeds_regrowth"] = {value = "default", image = "reeds.tex", world={"forest"}},
+			["reeds_regrowth"] = {value = "default", image = "reeds.tex", world={"forest", "cave"}},
 			["cactus_regrowth"] = {value = "default", image = "cactus.tex", world={"forest"}},
 			["saltstack_regrowth"] = {value = "default", image = "saltstack.tex", world={"forest"}},
             ["palmconetree_regrowth"] = {value = "default", image = "palmconetree.tex", world={"forest"}},
@@ -539,6 +559,7 @@ local WORLDSETTINGS_GROUP = {
 			["lightflier_flower_regrowth"] = {value = "default", image = "lightflier_flower.tex", world={"cave"}},
 			["mushtree_regrowth"] = {value = "default", image = "mushtree.tex", world={"cave"}},
 			["mushtree_moon_regrowth"] = {value = "default", image = "mushtree_moon.tex", world={"cave"}},
+			["tree_rock_regrowth"] = {value = "default", image = "tree_rock.tex", world={"cave"}},
 
 			["basicresource_regrowth"] = {value = "none", image = "basicresource_regrowth.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, master_sync = true},
 		}
@@ -628,7 +649,8 @@ local WORLDSETTINGS_GROUP = {
 			["year_of_the_catcoon"] = {value = "default", image = "yot_catcoonshrine.tex", masteroption = true, master_controlled = true, order = 9},
 			["year_of_the_bunnyman"] = {value = "default", image = "yotr_rabbitshrine.tex", masteroption = true, master_controlled = true, order = 10},
 			["year_of_the_dragonfly"] = {value = "default", image = "yotd_dragonshrine.tex", masteroption = true, master_controlled = true, order = 11},
-			["year_of_the_snake"] = {value = "default", image = "yots_wormshrine.tex", masteroption = true, master_controlled = true, order = 12},			
+			["year_of_the_snake"] = {value = "default", image = "yots_wormshrine.tex", masteroption = true, master_controlled = true, order = 12},
+			["year_of_the_knight"] = {value = "default", image = "yoth_knightshrine.tex", masteroption = true, master_controlled = true, order = 13},
 		}
 	},
 	["global"] = {

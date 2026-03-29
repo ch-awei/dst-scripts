@@ -84,7 +84,7 @@ end
 local function SpawnLandShadowCreature(player)
     return SpawnPrefab(
         player.components.sanity:GetPercent() < .1 and
-        math.random() < TUNING.TERRORBEAK_SPAWN_CHANCE and
+        TryLuckRoll(player, TUNING.TERRORBEAK_SPAWN_CHANCE, LuckFormulas.TerrorbeakSpawn) and
         "terrorbeak" or
         "crawlinghorror"
     )
@@ -92,7 +92,6 @@ end
 
 local function SpawnOceanShadowCreature(player)
     return SpawnPrefab("oceanhorror")
-
 end
 
 function self:SpawnShadowCreature(player, params)
@@ -100,7 +99,7 @@ function self:SpawnShadowCreature(player, params)
 
     local x, y, z = player.Transform:GetWorldPosition()
     local boat = player:GetCurrentPlatform()
-    if player.components.sanity:GetPercent() < .1 and boat ~= nil then
+	if boat and boat:HasTag("boat") and player.components.sanity:GetPercent() < 0.1 then
         local boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
 
         local angle = math.random() * TWOPI
@@ -199,11 +198,11 @@ local function UpdatePopulation(player, params)
         --Figure out our new target
         if targetpop > maxpop then
             targetpop = targetpop - 1
-        elseif math.random() < inc_chance then
+        elseif TryLuckRoll(player, inc_chance, LuckFormulas.IncreaseSanityMonsterPopulation) then
             if targetpop < maxpop then
                 targetpop = targetpop + 1
             end
-        elseif targetpop > 0 and math.random() < dec_chance then
+        elseif targetpop > 0 and TryLuckRoll(player, dec_chance, LuckFormulas.DecreaseSanityMonsterPopulation) then
             if targetpop < maxpop then
                 targetpop = targetpop - 1
             end
@@ -250,11 +249,11 @@ local function UpdatePopulation(player, params)
         --Figure out our new target
         if targetpop > maxpop then
             targetpop = targetpop - 1
-        elseif inc_chance > 0 and math.random() < inc_chance then
+        elseif inc_chance > 0 and TryLuckRoll(player, inc_chance, LuckFormulas.IncreaseSanityMonsterPopulation) then
             if targetpop < maxpop then
                 targetpop = targetpop + 1
             end
-        elseif dec_chance > 0 and math.random() < dec_chance then
+        elseif dec_chance > 0 and TryLuckRoll(player, dec_chance, LuckFormulas.DecreaseSanityMonsterPopulation) then
             if targetpop < maxpop then
                 targetpop = targetpop - 1
             end

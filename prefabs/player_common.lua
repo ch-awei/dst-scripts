@@ -325,6 +325,11 @@ fns.OnStopChannelCastingItem = function(inst)
 	inst.components.locomotor:StopStrafing()
 end
 
+fns.IsTeetering = function(inst)
+	local platform = inst:GetCurrentPlatform()
+	return platform ~= nil and platform:HasTag("teeteringplatform")
+end
+
 local function ShouldAcceptItem(inst, item)
     if inst:HasTag("playerghost") then
         return item:HasTag("reviver") and inst:IsOnPassablePoint()
@@ -367,7 +372,7 @@ local function DropWetTool(inst, data)
     end
 
     local tool = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-	if tool and tool:GetIsWet() and not tool:HasTag("stickygrip") and math.random() < easing.inSine(TheWorld.state.wetness, 0, 0.15, inst.components.moisture:GetMaxMoisture()) then
+	if tool and tool:GetIsWet() and not tool:HasTag("stickygrip") and TryLuckRoll(inst, easing.inSine(TheWorld.state.wetness, 0, TUNING.PLAYER_DROP_WET_TOOL_CHANCE_MAX, inst.components.moisture:GetMaxMoisture()), LuckFormulas.DropWetTool) then
         local projectile =
             data.weapon ~= nil and
             data.projectile == nil and
@@ -384,6 +389,9 @@ local function DropWetTool(inst, data)
             if tool.components.inventoryitem ~= nil then
                 tool.components.inventoryitem:OnDropped()
             end
+		elseif data.weapon and tool ~= data.weapon then
+			--weapon match only required for "attack" events, not "working"
+			return
         else
             inst.components.inventory:Unequip(EQUIPSLOTS.HANDS, true)
             inst.components.inventory:DropItem(tool)
@@ -510,6 +518,7 @@ end
 local function OnActionFailed(inst, data)
     if inst.components.talker ~= nil
 		and not data.action.action.silent_fail
+        and (not data.action.action.silent_generic_fail or data.reason ~= nil)
         and (data.reason ~= nil or
             not data.action.autoequipped or
             inst.components.inventory.activeitem == nil) then
@@ -568,6 +577,8 @@ end
 --------------------------------------------------------------------------
 --Enlightenment events
 --------------------------------------------------------------------------
+
+--NOTE (Omar): If adding a new lunacy source, think about whether its applicable for Map:IsInLunacyArea too.
 fns.OnChangeArea = function(inst, area)
 	local enable_lunacy = area ~= nil and area.tags and table.contains(area.tags, "lunacyarea")
 	inst.components.sanity:EnableLunacy(enable_lunacy, "lunacyarea")
@@ -713,6 +724,9 @@ local function AddActivePlayerComponents(inst)
     inst:AddComponent("playerhearing")
 	inst:AddComponent("raindomewatcher")
 	inst:AddComponent("strafer")
+	if TheWorld:HasTag("cave") then
+		inst:AddComponent("vaultmusiclistener")
+	end
 end
 
 local function RemoveActivePlayerComponents(inst)
@@ -720,6 +734,7 @@ local function RemoveActivePlayerComponents(inst)
     inst:RemoveComponent("playerhearing")
 	inst:RemoveComponent("raindomewatcher")
 	inst:RemoveComponent("strafer")
+	inst:RemoveComponent("vaultmusiclistener")
 end
 
 local function ActivateHUD(inst)
@@ -1625,6 +1640,12 @@ fns.ScreenFlash = function(inst, intensity)
     end
 end
 
+fns.SetBathingPoolCamera = function(inst, target)
+	if TheWorld.ismastersim then
+		inst.player_classified:SetBathingPoolCamera(target)
+	end
+end
+
 --------------------------------------------------------------------------
 
 fns.ApplyScale = function(inst, source, scale)
@@ -1913,6 +1934,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_boat_channel.zip"),
         Asset("ANIM", "anim/player_bush_hat.zip"),
         Asset("ANIM", "anim/player_attacks.zip"),
+        Asset("ANIM", "anim/player_attacks_recoil.zip"),
         --Asset("ANIM", "anim/player_idles.zip"),--Moved to global.lua for use in Item Collection
         Asset("ANIM", "anim/player_rebirth.zip"),
         Asset("ANIM", "anim/player_jump.zip"),
@@ -1940,6 +1962,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		Asset("ANIM", "anim/player_sit_wave.zip"),
 		--
 		Asset("ANIM", "anim/player_float.zip"),
+		Asset("ANIM", "anim/player_teetering.zip"),
+		Asset("ANIM", "anim/player_hotspring.zip"),
 		--
 
         Asset("ANIM", "anim/player_slurtle_armor.zip"),
@@ -2013,7 +2037,6 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		Asset("ANIM", "anim/player_pushing.zip"),
         Asset("ANIM", "anim/player_drink.zip"),
 
-
         Asset("ANIM", "anim/player_sandstorm.zip"),
         Asset("ANIM", "anim/player_tiptoe.zip"),
         Asset("IMAGE", "images/colour_cubes/ghost_cc.tex"),
@@ -2049,6 +2072,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_mount_hornblow.zip"),
         Asset("ANIM", "anim/player_mount_strum.zip"),
 		Asset("ANIM", "anim/player_mount_deploytoss.zip"),
+		Asset("ANIM", "anim/player_mount_attacks_recoil.zip"),
 
         Asset("ANIM", "anim/player_mighty_gym.zip"),
         Asset("ANIM", "anim/mighty_gym.zip"),
@@ -2070,6 +2094,17 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         Asset("SCRIPT", "scripts/prefabs/player_common_extensions.lua"),
         Asset("SCRIPT", "scripts/prefabs/skilltree_defs.lua"),
+
+        Asset("ANIM", "anim/chalice_swap.zip"),
+        Asset("ANIM", "anim/vault_dagger.zip"),
+
+        Asset("ANIM", "anim/player_ancient_handmaid.zip"),
+        Asset("ANIM", "anim/player_ancient_architect.zip"),
+        Asset("ANIM", "anim/player_ancient_mason.zip"),
+
+        Asset("ANIM", "anim/player_gallop_run.zip"),
+        Asset("ANIM", "anim/player_lancecharge.zip"),
+        Asset("ANIM", "anim/player_lancejab.zip"),
     }
 
     local prefabs =
@@ -2103,8 +2138,10 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         "ghostvision_buff",
         "elixir_player_forcefield",
 		"player_float_hop_water_fx",
+		"player_hotspring_water_fx",
 		"ocean_splash_swim1",
 		"ocean_splash_swim2",
+        "round_puff_fx_sm",
 
         -- Player specific classified prefabs
         "player_classified",
@@ -2164,6 +2201,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.IsCarefulWalking = IsCarefulWalking -- Didn't want to make carefulwalking a networked component
 		inst.IsChannelCasting = fns.IsChannelCasting -- Didn't want to make channelcaster a networked component
 		inst.IsChannelCastingItem = fns.IsChannelCastingItem -- Didn't want to make channelcaster a networked component
+		inst.IsTeetering = fns.IsTeetering
         inst.EnableMovementPrediction = EnableMovementPrediction
         inst.EnableBoatCamera = fns.EnableBoatCamera
 		inst.EnableTargetLocking = ex_fns.EnableTargetLocking
@@ -2269,8 +2307,8 @@ local function auratest(inst, target, can_initiate)
         return false
     end
 
-    if target.components.follower and target.components.follower.leader ~= nil and
-         target.components.follower.leader:HasTag("player") then
+    if target.components.follower and target.components.follower:GetLeader() ~= nil and
+         target.components.follower:GetLeader():HasTag("player") then
         return false
     end
 
@@ -2320,6 +2358,7 @@ end
         inst.AnimState:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")
         inst.AnimState:OverrideSymbol("shadow_hands", "shadow_hands", "shadow_hands")
         inst.AnimState:OverrideSymbol("snap_fx", "player_actions_fishing_ocean_new", "snap_fx")
+        inst.AnimState:OverrideSymbol("chalice_swap_comp", "chalice_swap", "chalice_swap_comp")
 
         --Additional effects symbols for hit_darkness animation
         inst.AnimState:AddOverrideBuild("player_hit_darkness")
@@ -2376,6 +2415,9 @@ end
 
 		SetInstanceFunctions(inst)
 
+		inst.footstepoverridefn = ex_fns.FootstepOverrideFn
+		inst.foleyoverridefn = ex_fns.FoleyOverrideFn
+
         inst.foleysound = nil --Characters may override this in common_postinit
         inst.playercolour = DEFAULT_PLAYER_COLOUR --Default player colour used in case it doesn't get set properly
         inst.ghostenabled = GetGhostEnabled()
@@ -2404,6 +2446,17 @@ end
         inst:AddComponent("playervision")
         inst:AddComponent("areaaware")
         inst.components.areaaware:SetUpdateDist(.45)
+
+		--use for player runspeed modifiers that should be ignored when mounted
+		--e.g. character specific things:
+		--       -wx speed chip
+		--       -wormwood bloom level
+		--       -wolfgang skilltree for normal size speedup
+		--     stategraph specific things:
+		--       -wonkey running
+		--       -galloping
+		inst:AddComponent("playerspeedmult")
+		inst.components.playerspeedmult:SetSpeedMultCap(2)
 
         inst:AddComponent("attuner")
         --attuner server listeners are not registered until after "ms_playerjoined" has been pushed
@@ -2485,7 +2538,6 @@ end
             inst:ListenForEvent("localplayer._shadowportalmax", OnShadowPortalMax)
             inst:ListenForEvent("localplayer._hermit_music", OnHermitMusic)
             
-
             inst:AddComponent("hudindicatable")
             inst.components.hudindicatable:SetShouldTrackFunction(ShouldTrackfn)
         end
@@ -2499,13 +2551,10 @@ end
         inst._piratemusicstate = net_bool(inst.GUID, "player.piratemusicstate", "piratemusicstatedirty")
         inst._piratemusicstate:set(false)
         inst:ListenForEvent("piratemusicstatedirty", OnPirateMusicStateDirty)
-
         
         inst:ListenForEvent("parasiteoverlaydirty", OnParasiteOverlayDirty)
         inst:ListenForEvent("healthbarbuffsymboldirty", OnHealthbarBuffSymbolDirty)
         inst:ListenForEvent("blackoutdirty", OnBlackoutDirty)
-        
-
 
         inst.PostActivateHandshake = ex_fns.PostActivateHandshake
         inst.OnPostActivateHandshake_Client = ex_fns.OnPostActivateHandshake_Client
@@ -2515,6 +2564,7 @@ end
         inst.SynchronizeOneClientAuthoritativeSetting = ex_fns.SynchronizeOneClientAuthoritativeSetting
 
         inst.entity:SetPristine()
+
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2551,6 +2601,7 @@ end
         inst.player_classified.entity:SetParent(inst.entity)
 
         inst.components.boatcannonuser:SetClassified(inst.player_classified)
+		inst.components.playerspeedmult:SetClassified(inst.player_classified)
 
         inst:ListenForEvent("death", ex_fns.OnPlayerDeath)
         if inst.ghostenabled then
@@ -2709,6 +2760,7 @@ end
 
         inst:AddComponent("petleash")
         inst.components.petleash:SetMaxPets(1)
+        inst.components.petleash:SetMaxPetsForPrefab("gestalt_guard_evolved", TUNING.GESTALT_EVOLVED_PLANTING_MAX_SPAWNS_PER_PLAYER)
         inst.components.petleash:SetOnSpawnFn(OnSpawnPet)
         inst.components.petleash:SetOnDespawnFn(OnDespawnPet)
 
@@ -2761,6 +2813,13 @@ end
 
         inst:AddComponent("experiencecollector")
 
+		inst:AddComponent("joustuser")
+		inst.components.joustuser:SetOnStartJoustFn(ex_fns.OnStartJoust)
+		inst.components.joustuser:SetOnEndJoustFn(ex_fns.OnEndJoust)
+		inst.components.joustuser:SetEdgeDistance(2)
+
+        inst:AddComponent("luckuser")
+
         -------------------------------------
 
         local aura = inst:AddComponent("aura")
@@ -2776,6 +2835,7 @@ end
         inst:AddInherentAction(ACTIONS.CHANGEIN)
 
         inst:SetStateGraph("SGwilson")
+        inst.sg.mem.nocorpse = not TheSim:HasPlayerSkeletons()
 
         RegisterMasterEventListeners(inst)
 
@@ -2794,6 +2854,7 @@ end
         inst.SnapCamera = fns.SnapCamera
         inst.ScreenFade = fns.ScreenFade
         inst.ScreenFlash = fns.ScreenFlash
+		inst.SetBathingPoolCamera = fns.SetBathingPoolCamera
         inst.YOTB_unlockskinset = fns.YOTB_unlockskinset
         inst.YOTB_issetunlocked = fns.YOTB_issetunlocked
         inst.YOTB_isskinunlocked = fns.YOTB_isskinunlocked
@@ -2839,7 +2900,7 @@ end
         inst.IsActing = ex_fns.IsActing
 
 		fns.OnAlterNight(inst)
-        fns.OnFullMoonEnlightenment(inst)
+        fns.OnFullMoonEnlightenment(inst, TheWorld.state.isfullmoon)
 
         --V2C: used by multiplayer_portal_moon
         inst.SaveForReroll = SaveForReroll

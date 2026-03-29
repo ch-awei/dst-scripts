@@ -381,6 +381,7 @@ end
 ---------------------------------------------------------------------------------------
 
 local function OnBecameRobot(inst)
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
     --Override with overcharge light values
     inst.Light:Enable(false)
     inst.Light:SetRadius(2)

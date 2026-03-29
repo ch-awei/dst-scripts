@@ -556,6 +556,15 @@ local prefabs =
     -- lunarhailbuildup
     "moonglass",
     "moonglass_charged",
+
+    --rifts 6
+    "oceanwhirlbigportal",
+
+	--winter 2025
+	"giftsurprise",
+
+    -- Year of the Clockwork Knight
+    "yothknightwarningsound",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -668,6 +677,7 @@ local function master_postinit(inst)
 
     if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
         inst:AddComponent("gingerbreadhunter")
+        inst:AddComponent("wintersurprisespawner")
     end
     inst:AddComponent("snowballmanager")
 
@@ -678,6 +688,8 @@ local function master_postinit(inst)
     inst:AddComponent("yotd_raceprizemanager")
     inst:AddComponent("yotc_raceprizemanager")
     inst:AddComponent("yotb_stagemanager")
+    inst:AddComponent("yoth_knightmanager")
+    inst:AddComponent("yoth_hecklermanager")
 
     inst:AddComponent("moonstormmanager")
 
@@ -716,6 +728,11 @@ local function master_postinit(inst)
     inst:AddComponent("lunaralterguardianspawner")
     inst:AddComponent("wagboss_tracker")
     inst:AddComponent("wanderingtraderspawner")
+
+    -- Hallowed Nights 2025
+    --inst:AddComponent("mutatedbirdmanager") -- NOTES(OMAR): This component is deprecated.
+    inst:AddComponent("migrationmanager")
+    inst:AddComponent("mutatedbuzzardmanager")
 end
 
 return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {

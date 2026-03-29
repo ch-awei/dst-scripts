@@ -54,7 +54,7 @@ end
 local function checkinterruptstun(inst)
 	if not inst.sg.statemem.not_interrupted and inst.components.timer:TimerExists("endstun") then
 		inst.components.timer:StopTimer("endstun")
-		inst:RestartBrain()
+		inst:RestartBrain("SGminotaur_stun")
 	end
 end
 
@@ -128,6 +128,9 @@ local events =
 			inst.sg:GoToState("stun_pst")
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -165,7 +168,7 @@ local states =
             inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/scuff")
             inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/voice")
             inst.AnimState:PlayAnimation("atk_pre")
-            inst.AnimState:PlayAnimation("paw_loop", true)
+			inst.AnimState:PushAnimation("paw_loop")
             inst.sg:SetTimeout(1.5)
             inst.chargecount = 0
         end,
@@ -343,7 +346,7 @@ local states =
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
             inst.persists = false
-            inst.components.lootdropper:DropLoot()
+            inst:DropDeathLoot()
 
             local chest = SpawnPrefab("minotaurchestspawner")
             chest.Transform:SetPosition(inst.Transform:GetWorldPosition())
@@ -356,6 +359,11 @@ local states =
 
             inst:AddTag("NOCLICK")
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -572,7 +580,7 @@ local states =
             end
             local stuntime = math.max(1.5,Remap(inst.chargecount,0, 1, 0, 6 ) )
             inst.components.timer:StartTimer("endstun", stuntime)
-            inst:StopBrain()
+			inst:StopBrain("SGminotaur_stun")
         end,
 
         timeline=
@@ -753,4 +761,7 @@ nil, --timeline
 
 CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
-return StateGraph("minotaur", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("minotaur", states, events, "init")

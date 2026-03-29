@@ -34,6 +34,10 @@ local events=
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
+    CommonHandlers.OnWakeEx(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function DoChewSound(inst)
@@ -376,9 +380,17 @@ CommonStates.AddCombatStates(states,
         TimeEvent(4*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") end ),
         TimeEvent(15*FRAMES, LandFlyingCreature),
     },
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states, LandFlyingCreature, RaiseFlyingCreature)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("bat", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("bat", states, events, "init", actionhandlers)

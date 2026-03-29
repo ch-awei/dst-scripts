@@ -366,7 +366,6 @@ local PREFABS =
     ["marble"] = true,
     ["mastupgrade_lamp_item"] = true,
     ["chesspiece_twinsofterror"] = true,
-    --["playbill_the_doll"] = true,
     ["bonestew"] = true,
     ["abigail_flower"] = true,
     ["book_moon"] = true,
@@ -1950,6 +1949,87 @@ local PREFABS =
     ["gingerbreadwarg"] = true,
     --["dreadstone_stack"] = true, --Not a seperate prefab
 
+    -- [[ Rifts 6 and Rifts 6.1 ]]
+
+    -- fumarole biome
+    ["tree_rock"] = true,
+    ["shadowthrall_centipede_head"] = true,
+    ["cave_vent_rock"] = true,
+    ["cave_vent_mite"] = true,
+    ["cave_fern_withered"] = true,
+    ["flower_cave_withered"] = true,
+
+    -- sanctum
+    ["oceanwhirlbigportal"] = true,
+    ["oceanwhirlbigportalexit"] = true, -- Item collector for the big whirlpool.
+    ["vault_lobby_exit"] = true, -- Hole to jump in.
+    ["vault_teleporter"] = true,
+    ["vault_orb"] = true,
+    ["vault_chandelier_broken"] = true,
+    ["vault_rune"] = true, -- Lore stones.
+    ["vault_statue"] = true,
+    ["vault_torch"] = true,
+    ["ancient_husk"] = true, -- Skeleton remains.
+	--["vaultrelic_bowl"] = true,
+	--["vaultrelic_vase"] = true,
+	--["vaultrelic_planter"] = true,
+
+    ["abysspillar_minion"] = true,
+    ["abysspillar_trial"] = true,
+
+    ["mask_ancient_handmaidhat"] = true,
+    ["mask_ancient_architecthat"] = true,
+    ["mask_ancient_masonhat"] = true,
+
+    ["playbill_the_doll"] = true,
+    ["playbill_the_veil"] = true,
+    ["playbill_the_vault"] = true,
+
+    -- Hallowed Nights 2025
+    ["mutatedbuzzard_gestalt"] = true,
+    ["pumpkinhat"] = true,
+
+    -- Winter's Feast 2025
+
+    ["hermitcrab_teashop"] = true,
+    ["hermitcrab_lightpost"] = true,
+
+    ["hermitcrabtea_petals"] = true,
+    ["hermitcrabtea_petals_evil"] = true,
+    ["hermitcrabtea_foliage"] = true,
+    ["hermitcrabtea_succulent_picked"] = true,
+    ["hermitcrabtea_firenettles"] = true,
+    ["hermitcrabtea_tillweed"] = true,
+    ["hermitcrabtea_moon_tree_blossom"] = true,
+    ["hermitcrabtea_forgetmelots"] = true,
+
+    ["petals_dried"] = true,
+    ["petals_evil_dried"] = true,
+    ["foliage_dried"] = true,
+    ["succulent_picked_dried"] = true,
+    ["firenettles_dried"] = true,
+    ["tillweed_dried"] = true,
+    ["moon_tree_blossom_dried"] = true,
+    ["forgetmelots_dried"] = true,
+
+    ["fishmeat_dried"] = true,
+    ["fishmeat_small_dried"] = true,
+
+    ["shellweaver"] = true,
+    ["nonslipgrit"] = true,
+    ["nonslipgritboosted"] = true,
+    ["desiccant"] = true,
+    ["desiccantboosted"] = true,
+    ["salty_doghat"] = true,
+    ["salty_dog"] = true,
+    ["hermitcrab_shell"] = true,
+
+    ["hermithotspring"] = true,
+    ["meatrack_hermit_multi"] = true,
+    ["hermithouse_ornament"] = true,
+    ["hermithouse_laundry_socks"] = true,
+    ["hermithouse_laundry_shorts"] = true,
+    ["hermit_chair_rocking"] = true,
 
     -----------------------------------------------
 

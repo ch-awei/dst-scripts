@@ -85,7 +85,6 @@ local events=
 			end
         end
     end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("morph", function(inst, data)
         inst.sg:GoToState("morph", data.morphfn)
     end),
@@ -101,6 +100,10 @@ local events=
             inst.sg:GoToState("devoured", data)
         end
     end),
+    CommonHandlers.OnDeath(),
+
+    -- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -152,6 +155,11 @@ local states=
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -516,7 +524,7 @@ local states=
             inst:ClearBufferedAction()
             inst.AnimState:PlayAnimation("empty")
 
-            inst:StopBrain()
+			inst:StopBrain("SGchester_devoured")
 
             inst:Hide()
             inst.DynamicShadow:Enable(false)
@@ -584,7 +592,7 @@ local states=
                     end
                 end
             end
-            inst:RestartBrain()
+			inst:RestartBrain("SGchester_devoured")
             inst:Show()
             inst.DynamicShadow:Enable(true)
             if inst.sg.statemem.isphysicstoggle then
@@ -738,4 +746,7 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 	end,
 })
 
-return StateGraph("chester", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("chester", states, events, "init")

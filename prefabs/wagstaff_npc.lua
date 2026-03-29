@@ -1490,7 +1490,7 @@ local function finale_Brighten(inst)
 	end
 end
 
-local function finale_OnEntityRemoved(inst)
+local function finale_OnRemoveEntity(inst)
 	if inst.highlightparent then
 		table.removearrayvalue(inst.highlightparent.highlightchildren, inst)
 		if inst.fx then
@@ -1510,7 +1510,7 @@ local function finale_OnEntityReplicated(inst)
 		table.insert(parent.highlightchildren, inst)
 		table.insert(parent.highlightchildren, inst.fx)
 		inst.highlightparent = parent
-		inst.OnEntityRemoved = finale_OnEntityRemoved
+		inst.OnRemoveEntity = finale_OnRemoveEntity
 	end
 end
 
@@ -1520,7 +1520,7 @@ local function AttachToAlter(inst, alter)
 	if inst.fx then
 		inst.fx.entity:SetParent(alter.entity)
 		inst.fx.Follower:FollowSymbol(alter.GUID, "player_follow")
-		inst.OnEntityRemoved = finale_OnEntityRemoved --need this for fx or highlightchildren
+		inst.OnRemoveEntity = finale_OnRemoveEntity --need this for fx or highlightchildren
 	end
 	if alter.highlightchildren then
 		table.insert(alter.highlightchildren, inst)
@@ -1528,7 +1528,7 @@ local function AttachToAlter(inst, alter)
 			table.insert(alter.highlightchildren, inst.fx)
 		end
 		inst.highlightparent = alter
-		inst.OnEntityRemoved = finale_OnEntityRemoved --need this for fx or highlightchildren
+		inst.OnRemoveEntity = finale_OnRemoveEntity --need this for fx or highlightchildren
 	end
 end
 
@@ -1546,16 +1546,11 @@ local function finale_DoTalkSound(inst, len)
 	inst._talktask = inst:DoTaskInTime(len, finale_StopTalkSound)
 end
 
-local function finale_CancelPostUpdate(inst, finale_PostUpdate)
-	inst._cancelpostupdate = nil
-	inst.components.updatelooper:RemovePostUpdateFn(finale_PostUpdate)
-end
-
 local function finale_PostUpdate(inst)
-	if inst._cancelpostupdate == nil and inst.AnimState:IsCurrentAnimation("wagstaff_finale2") then
+	if inst.AnimState:IsCurrentAnimation("wagstaff_finale2") then
 		inst.fx.AnimState:PlayAnimation("wagstaff_finale2")
 		inst.fx.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
-		inst._cancelpostupdate = inst:DoStaticTaskInTime(0, finale_CancelPostUpdate, finale_PostUpdate)
+		inst.components.updatelooper:RemovePostUpdateFn(finale_PostUpdate)
 	end
 end
 

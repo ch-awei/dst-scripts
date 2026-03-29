@@ -99,6 +99,9 @@ local states=
             RemovePhysicsColliders(inst)
             inst.AnimState:PlayAnimation("death")
             inst.persists = false
+            if inst.sounds.death then
+                inst.SoundEmitter:PlaySound(inst.sounds.death)
+            end
         end,
     },
 
@@ -348,5 +351,20 @@ local states=
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+
+-- Mutant birds use a different sg, so we only use the _pst here!
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutatepst_timeline = {
+        FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.attack) end)
+    },
+},
+{
+    mutate_pst = "mutated_bird_spawn",
+},
+nil,
+{
+    post_mutate_state = "idle_taunt",
+})
 
 return StateGraph("bird_mutant", states, events, "idle", actionhandlers)

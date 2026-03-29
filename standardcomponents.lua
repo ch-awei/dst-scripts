@@ -512,6 +512,24 @@ function ChangeToGhostPhysics(inst)
     return phys
 end
 
+function ChangeToFlyingCharacterPhysics(inst, mass, rad)
+    local phys = inst.Physics
+    if mass then
+        phys:SetMass(mass)
+        phys:SetFriction(0)
+        phys:SetDamping(5)
+    end
+    phys:SetCollisionGroup(COLLISION.FLYERS)
+	phys:SetCollisionMask(
+		TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND or COLLISION.WORLD,
+		COLLISION.FLYERS
+	)
+    if rad then
+        phys:SetCapsule(rad, 1)
+    end
+    return phys
+end
+
 function ChangeToCharacterPhysics(inst, mass, rad)
     local phys = inst.Physics
     if mass then
@@ -777,6 +795,8 @@ function MakeSnowCovered(inst)
 end
 
 function UpdateLunarHailBuildup(inst)
+    inst.updatelunarhailbuilduptask = nil
+
     local issnowcovered = TheWorld.state.issnowcovered
     local isbuildupworkable = inst.components.lunarhailbuildup and inst.components.lunarhailbuildup:IsBuildupWorkable()
     local shouldshowsymbol = issnowcovered or isbuildupworkable
@@ -807,7 +827,15 @@ end
 function MakeLunarHailBuildup(inst) -- Integrated into MakeSnowCovered.
     local lunarhailbuildup = inst:AddComponent("lunarhailbuildup")
     inst:ListenForEvent("lunarhailbuildupworkablestatechanged", OnLunarHailBuildupWorkableStateChanged)
-    inst:DoTaskInTime(0, UpdateLunarHailBuildup)
+    inst.updatelunarhailbuilduptask = inst:DoTaskInTime(0, UpdateLunarHailBuildup)
+end
+function RemoveLunarHailBuildup(inst)
+    inst:RemoveComponent("lunarhailbuildup")
+    inst:RemoveEventCallback("lunarhailbuildupworkablestatechanged", OnLunarHailBuildupWorkableStateChanged)
+    if inst.updatelunarhailbuilduptask then
+        inst.updatelunarhailbuilduptask:Cancel()
+        inst.updatelunarhailbuilduptask = nil
+    end
 end
 
 function SetLunarHailBuildupAmountSmall(inst)
@@ -838,7 +866,7 @@ local function oneat(inst)
     end
 end
 
-local function onperish(inst, donotremove)
+local function onperish(inst)
     local owner = inst.components.inventoryitem.owner
     if owner ~= nil then
 		local loots
@@ -874,13 +902,6 @@ local function onperish(inst, donotremove)
 				container:GiveItem(v)
 			end
 		end
-    else
-        if inst.components.lootdropper ~= nil then
-            inst.components.lootdropper:DropLoot()
-        end
-        if not donotremove then
-            inst:Remove()
-        end
     end
 end
 
@@ -912,21 +933,14 @@ function MakeSmallPerishableCreature(inst, starvetime, oninventory, ondropped)
     end)
 end
 
-function MakeSmallPerishableCreatureAlwaysPerishing(inst, starvetime, oninventory, ondropped, onperishpre)
+function MakeSmallPerishableCreatureAlwaysPerishing(inst, starvetime, oninventory, ondropped)
     MakeSmallPerishableCreaturePristine(inst)
 
     --We want to see the warnings for duplicating perishable
     inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(starvetime)
     inst.components.perishable:StartPerishing()
-    inst.components.perishable:SetOnPerishFn(function(inst)
-        local donotremove = false
-        if onperishpre ~= nil then
-            donotremove = onperishpre(inst)
-        end
-        print("RH perish", donotremove)
-        onperish(inst, donotremove)
-    end)
+    inst.components.perishable:SetOnPerishFn(onperish)
 
     inst.components.inventoryitem:SetOnPutInInventoryFn(function(inst, owner)
         if oninventory ~= nil then
@@ -1884,3 +1898,37 @@ function MakeCraftingMaterialRecycler(inst, data)
     inst.OnBuiltFn  = MaterialRecycler_OnBuilt
 end
 
+--------------------------------------------------------------------------
+
+function IsWithinHermitCrabArea(inst)
+	local hermitcrabmanager = TheWorld.components.hermitcrab_relocation_manager
+	local house = hermitcrabmanager and hermitcrabmanager:GetPearlsHouse()
+	return house ~= nil
+		and house.components.pearldecorationscore ~= nil
+		and house.components.pearldecorationscore:IsEntityWithin(inst)
+end
+
+function MakeHermitCrabAreaListener(inst, callbackfn)
+	if callbackfn == nil then
+		return
+	end
+
+	local updateonspawn
+    local function UpdateWithinStatus()
+		if updateonspawn then
+			inst:RemoveEventCallback("entitywake", UpdateWithinStatus)
+			inst:RemoveEventCallback("entitysleep", UpdateWithinStatus)
+			updateonspawn = nil
+		end
+		callbackfn(inst, IsWithinHermitCrabArea(inst))
+    end
+    inst:ListenForEvent("ms_updatepearldecorationscore_tiles", UpdateWithinStatus, TheWorld)
+    inst:ListenForEvent("pearldecorationscore_updatestatus", UpdateWithinStatus, TheWorld)
+	inst:ListenForEvent("onbuilt", UpdateWithinStatus)
+
+	if not POPULATING then
+		updateonspawn = true
+		inst:ListenForEvent("entitywake", UpdateWithinStatus)
+		inst:ListenForEvent("entitysleep", UpdateWithinStatus)
+	end
+end

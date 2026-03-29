@@ -14,6 +14,11 @@ local prefabs =
     --"lunarfeather",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 SetSharedLootTable('bird_mutant_rift',
 {
     {'spoiled_food',       1.00},
@@ -97,6 +102,8 @@ local function OnTimerDone(inst, data)
     end
 end
 
+--
+
 local function OnDeath(inst)
     inst.AnimState:ClearSymbolBloom("bird_gem")
     inst.AnimState:SetSymbolLightOverride("bird_gem", 0)
@@ -132,14 +139,14 @@ local function commonfn()
 		COLLISION.SMALLOBSTACLES
 	)
     inst.Physics:SetMass(1)
-    inst.Physics:SetSphere(0.25) --FIXME (Omar): Change back to 1 after new behaviours
+    inst.Physics:SetSphere(0.25)
 
 	inst:AddTag("soulless") -- no wortox souls
-    inst:AddTag("canbetrapped")
     inst:AddTag("bird")
     inst:AddTag("lunar_aligned")
     inst:AddTag("smallcreature")
     inst:AddTag("bird_mutant_rift")
+    inst:AddTag("gestaltmutant")
 
     inst.Transform:SetTwoFaced()
 
@@ -159,6 +166,8 @@ local function commonfn()
         return inst
     end
 
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
+
     inst.sounds = sounds
     inst.flyawaydistance = TUNING.BIRD_SEE_THREAT_DISTANCE
 
@@ -171,7 +180,7 @@ local function commonfn()
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = TUNING.RIFT_BIRD_WALKSPEED
-    inst.components.locomotor.runspeed = TUNING.RIFT_BIRD_WALKSPEED
+    inst.components.locomotor.runspeed = TUNING.RIFT_BIRD_RUNSPEED
     inst.components.locomotor:EnableGroundSpeedMultiplier(true)
     inst.components.locomotor:SetTriggersCreep(true)
 
@@ -225,6 +234,7 @@ local function commonfn()
 
     inst:SetStateGraph("SGbird")
     inst:SetBrain(brain)
+    inst.sg.mem.nocorpse = true
 
     inst.PutOnBrillianceCooldown = PutOnBrillianceCooldown
     inst.UpdateBrillianceVisual = UpdateBrillianceVisual

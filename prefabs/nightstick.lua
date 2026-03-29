@@ -21,7 +21,15 @@ end
 
 local function onequip(inst, owner)
     inst.components.burnable:Ignite()
-    owner.AnimState:OverrideSymbol("swap_object", "swap_nightstick", "swap_nightstick")
+
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_nightstick", inst.GUID, "swap_nightstick")
+    else
+        owner.AnimState:OverrideSymbol("swap_object", "swap_nightstick", "swap_nightstick")
+    end
+
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
 
@@ -37,6 +45,11 @@ local function onequip(inst, owner)
 end
 
 local function onunequip(inst, owner)
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
+
     if inst.fire ~= nil then
         inst.fire:Remove()
     end
@@ -91,6 +104,18 @@ local function onattack(inst, attacker, target)
     SpawnElectricHitSparks(attacker, target, true)
 end
 
+local function OnBatteryUsed(inst, battery)
+    if inst.components.fueled:IsFull() then
+        return false, "CHARGE_FULL"
+    end
+
+    local newpercent = math.clamp(inst.components.fueled:GetPercent() + TUNING.NIGHTSTICK_BATTERYCHARGE, 0, 1)
+    inst.components.fueled:SetPercent(newpercent)
+    SpawnElectricHitSparks(inst, battery, true)
+
+    return true
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -106,6 +131,12 @@ local function fn()
     MakeInventoryPhysics(inst)
 
     inst:AddTag("wildfireprotected")
+
+    --batteryuser (from batteryuser component) added to pristine state for optimization
+    --inst:AddTag("batteryuser") -- FIXME(JBK): WF: Uncomment this up when strings.
+
+    --moonsparkchargeable (from moonsparkchargeable component) added to pristine state for optimization
+    inst:AddTag("moonsparkchargeable")
 
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
@@ -149,6 +180,12 @@ local function fn()
     inst.components.fueled:InitializeFuelLevel(TUNING.NIGHTSTICK_FUEL)
     inst.components.fueled:SetDepletedFn(inst.Remove)
     inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
+
+    inst:AddComponent("moonsparkchargeable")
+    inst.components.moonsparkchargeable:SetFueledPercent(TUNING.NIGHTSTICK_SPARKCHARGE)
+
+    --inst:AddComponent("batteryuser") -- FIXME(JBK): WF: Uncomment this up when strings.
+    --inst.components.batteryuser.onbatteryused = OnBatteryUsed -- FIXME(JBK): WF: Uncomment this up when strings.
 
     MakeHauntableLaunch(inst)
 

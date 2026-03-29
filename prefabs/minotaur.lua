@@ -35,6 +35,7 @@ local prefabs =
     "minotaur_blood_big",
     "support_pillar_scaffold_blueprint",
     "minotaurchest",
+    "minotaurcorpse",
 }
 
 local prefabs_chest =
@@ -140,7 +141,7 @@ local function Retarget(inst)
             inst,
             TUNING.MINOTAUR_TARGET_DIST,
             function(guy)
-                return not (inst.components.follower ~= nil and inst.components.follower.leader == guy)
+                return not (inst.components.follower ~= nil and inst.components.follower:GetLeader() == guy)
                        and inst.components.combat:CanTarget(guy)
             end,
             RETARGET_MUST_TAGS,
@@ -471,7 +472,7 @@ end
 local function checkstunend(inst, data)
     if data ~= nil then
         if data.name == "endstun" then
-            inst:RestartBrain()
+			inst:RestartBrain("SGminotaur_stun")
 			inst:PushEventImmediate("endstun")
         end
     end

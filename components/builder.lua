@@ -280,7 +280,21 @@ function Builder:EvaluateTechTrees()
 							local recipe = GetValidRecipe(recname)
 							if recipe and recipe.nounlock then
 								--only nounlock recipes can be unlocked via crafting station
-								self.station_recipes[recname] = v.components.craftingstation:GetRecipeCraftingLimit(recipe.name) or true
+                                local has_unlocked_skin = false
+                                if recipe.unlocks_from_skin and (recipe.unlocks_from_skin == SKINUNLOCKS.CRAFTINGSTATION) and self.inst.isplayer then
+                                    local prefabskins = PREFAB_SKINS[recipe.product]
+                                    if prefabskins ~= nil then
+                                        for _, skin in ipairs(prefabskins) do
+                                            if TheInventory:CheckClientOwnership(self.inst.userid, skin) then
+                                                has_unlocked_skin = true
+                                                break
+                                            end
+                                        end
+                                    end
+                                else
+                                    has_unlocked_skin = true
+                                end
+                                self.station_recipes[recname] = v.components.craftingstation:GetRecipeCraftingLimit(recipe.name) or has_unlocked_skin or nil
 							end
 						end
 					end
@@ -512,6 +526,18 @@ function Builder:CheckIngredientsForMimic(ingredients)
     return false
 end
 
+-- TODO If we ever add more discount equippables, make this a LOT better!
+function Builder:CheckDiscountEquipsForMimic()
+    if self.inst.components.inventory then
+        for slot, item in pairs(self.inst.components.inventory.equipslots) do
+            if item and item.prefab == "greenamulet" and item.components.itemmimic then
+                item.components.itemmimic:TurnEvil(self.inst)
+                return true
+            end
+        end
+    end
+end
+
 function Builder:RemoveIngredients(ingredients, recname, discounted)
 	if self.freebuildmode then
 		return
@@ -596,7 +622,7 @@ function Builder:HasTechIngredient(ingredient)
 end
 
 function Builder:MakeRecipe(recipe, pt, rot, skin, onsuccess)
-    if recipe ~= nil and not self.inst.sg:HasStateTag("drowning") and not self.inst.sg:HasStateTag("falling") then -- TODO(JBK): Check if "drowning" can be replaced with "busy" instead with no side effects.
+    if recipe ~= nil and not self.inst.sg:HasAnyStateTag("drowning", "falling", "floating") then -- TODO(JBK): This should be refactored to not do the state checks here.
         self.inst:PushEvent("makerecipe", { recipe = recipe })
         if self:IsBuildBuffered(recipe.name) or self:HasIngredients(recipe) then
             self.inst.components.locomotor:Stop()
@@ -640,14 +666,17 @@ function Builder:DoBuild(recname, pt, rotation, skin)
                 self.current_prototyper == nil or
                 not self.current_prototyper:IsValid() or
                 self.current_prototyper.components.prototyper == nil or
-                not CanPrototypeRecipe(recipe.level, self.current_prototyper.components.prototyper.trees)
+                ( not CanPrototypeRecipe(recipe.level, self.current_prototyper.components.prototyper.trees) and not (self.current_prototyper.components.craftingstation and self.current_prototyper.components.craftingstation:KnowsRecipe(recipe.name)))
             ) then
             -- manufacturing stations requires the current active protyper in order to work
             return false
         end
 
+        if recipe.unlocks_from_skin and not skin then
+            return false
+        end
         if recipe.canbuild ~= nil then
-			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation, self.current_prototyper)
+			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation, self.current_prototyper, skin)
 			if not success then
 				return false, msg
 			end
@@ -676,12 +705,12 @@ function Builder:DoBuild(recname, pt, rotation, skin)
 
         self.inst:PushEvent("refreshcrafting")
 
-		if recipe.manufactured then
-			local materials, discounted = self:GetIngredients(recname)
-            if self:CheckIngredientsForMimic(materials) then
-                return false, "ITEMMIMIC"
-            end
+        local materials, discounted = self:GetIngredients(recname)
+        if self:CheckIngredientsForMimic(materials) or (discounted and self:CheckDiscountEquipsForMimic()) then
+            return false, "ITEMMIMIC"
+        end
 
+		if recipe.manufactured then
 			self:RemoveIngredients(materials, recname, discounted)
 			   -- its up to the prototyper to implement onactivate and handle spawning the prefab
 		   return true
@@ -693,11 +722,6 @@ function Builder:DoBuild(recname, pt, rotation, skin)
 
             if prod.components.inventoryitem ~= nil then
                 if self.inst.components.inventory ~= nil then
-					local materials, discounted = self:GetIngredients(recname)
-                    if self:CheckIngredientsForMimic(materials) then
-                        return false, "ITEMMIMIC"
-                    end
-
 					local wetlevel = self:GetIngredientWetness(materials)
 					if wetlevel > 0 and prod.components.inventoryitem ~= nil then
 						prod.components.inventoryitem:InheritMoisture(wetlevel, self.inst:GetIsWet())
@@ -769,11 +793,6 @@ function Builder:DoBuild(recname, pt, rotation, skin)
                 end
             else
 				if not is_buffered_build then -- items that have intermediate build items (like statues)
-					local materials, discounted = self:GetIngredients(recname)
-                    if self:CheckIngredientsForMimic(materials) then
-                        return false, "ITEMMIMIC"
-                    end
-
 					self:RemoveIngredients(materials, recname, discounted)
 				end
 
@@ -818,9 +837,27 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
 	end
     if recipe == nil then
         return false
-	elseif self.freebuildmode then
+	elseif self.freebuildmode and not PREFAB_SKINS_SHOULD_NOT_SELECT[recipe.product] then
 		return true
 	end
+
+    local has_unlocked_skin = false
+    if recipe.unlocks_from_skin and self.inst.isplayer then
+        local prefabskins = PREFAB_SKINS[recipe.product]
+        if prefabskins ~= nil then
+            for _, skin in ipairs(prefabskins) do
+                if TheInventory:CheckClientOwnership(self.inst.userid, skin) then
+                    has_unlocked_skin = true
+                    if recipe.unlocks_from_skin == SKINUNLOCKS.ALWAYS then
+                        return true
+                    end
+                end
+            end
+        end
+        if recipe.unlocks_from_skin == SKINUNLOCKS.ALWAYS then
+            return false
+        end
+    end
 
 	--the following builder_tag/skill checks are require due to character swapping
 	if (recipe.builder_tag and not self.inst:HasTag(recipe.builder_tag)) or
@@ -837,10 +874,16 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
 	--
 
 	if self.station_recipes[recipe.name] or table.contains(self.recipes, recipe.name) then
-		return true
+        if recipe.unlocks_from_skin then
+            return has_unlocked_skin
+        end
+        return true
 	end
 
     if cached_tech_trees and cached_tech_trees[recipe.level] ~= nil then
+        if recipe.unlocks_from_skin then
+            return has_unlocked_skin and cached_tech_trees[recipe.level]
+        end
         return cached_tech_trees[recipe.level]
     end
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
@@ -858,6 +901,9 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
 
     if cached_tech_trees then
         cached_tech_trees[recipe.level] = true
+    end
+    if recipe.unlocks_from_skin then
+        return has_unlocked_skin
     end
     return true
 end
@@ -919,6 +965,13 @@ function Builder:LongUpdate(dt)
     end
 end
 
+local function TryActivateCurrentResearchMachineOnFreeBuild(self, recipe)
+    local craftingstation = self.current_prototyper and self.current_prototyper.components.prototyper and self.current_prototyper.components.craftingstation
+    if not table.contains(self.recipes, recipe.name) and (CanPrototypeRecipe(recipe.level, self.accessible_tech_trees) or (craftingstation and craftingstation:KnowsRecipe(recipe.name))) then
+        self:ActivateCurrentResearchMachine(recipe)
+    end
+end
+
 --------------------------------------------------------------------------
 --RPC handlers
 --------------------------------------------------------------------------
@@ -941,9 +994,7 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 
 					if self.freebuildmode then
 						--V2C: free-build should still trigger prototyping
-						if not table.contains(self.recipes, ing_recipe.name) and CanPrototypeRecipe(ing_recipe.level, self.accessible_tech_trees) then
-							self:ActivateCurrentResearchMachine(ing_recipe)
-						end
+                        TryActivateCurrentResearchMachineOnFreeBuild(self, ing_recipe)
 					elseif not knows_no_temp and canproto_no_temp and canlearn then
 						--assert(not usingtempbonus) --sanity check
 						--V2C: for recipes known through temp bonus buff,
@@ -1000,9 +1051,7 @@ function Builder:MakeRecipeFromMenu(recipe, skin)
 
                         if self.freebuildmode then
                             --V2C: free-build should still trigger prototyping
-                            if not table.contains(self.recipes, recipe.name) and CanPrototypeRecipe(recipe.level, self.accessible_tech_trees) then
-                                self:ActivateCurrentResearchMachine(recipe)
-                            end
+                            TryActivateCurrentResearchMachineOnFreeBuild(self, recipe)
 						elseif not knows_no_temp and canproto_no_temp and canlearn then
 							--assert(not usingtempbonus) --sanity check
 							--V2C: for recipes known through temp bonus buff,
@@ -1059,7 +1108,7 @@ function Builder:MakeRecipeAtPoint(recipe, pt, rot, skin)
     end
 
     if recipe.placer ~= nil and
-        self:KnowsRecipe(recipe) and
+		(recipe.always_allow_buffered_placer or self:KnowsRecipe(recipe)) and
         self:IsBuildBuffered(recipe.name) and
         TheWorld.Map:CanDeployRecipeAtPoint(pt, recipe, rot) then
         self:MakeRecipe(recipe, pt, rot, skin)
@@ -1078,6 +1127,14 @@ function Builder:BufferBuild(recname)
 		local canlearn = self:CanLearn(recname)
 		local usingtempbonus = not knows_no_temp and not canproto_no_temp
 
+        local materials, discounted = self:GetIngredients(recname)
+        if self:CheckIngredientsForMimic(materials) or (discounted and self:CheckDiscountEquipsForMimic()) then
+            if self.inst.components.talker then
+                self.inst.components.talker:Say(GetActionFailString(self.inst, "GENERIC", "ITEMMIMIC"))
+            end
+            return
+        end
+
         if self:KnowsRecipe(recipe) then
 			if usingtempbonus then
 				self:ConsumeTempTechBonuses()
@@ -1085,11 +1142,7 @@ function Builder:BufferBuild(recname)
 
             if self.freebuildmode then
                 --V2C: free-build should still trigger prototyping
-                if not table.contains(self.recipes, recname) and CanPrototypeRecipe(recipe.level, self.accessible_tech_trees) then
-					-- Note:	This can currently activate prototypers that have no relation to the item or structure
-					--			built, such as when building a Fire Pit near a Science Machine or Mad Science Lab.
-                    self:ActivateCurrentResearchMachine(recipe)
-                end
+                TryActivateCurrentResearchMachineOnFreeBuild(self, recipe)
 			elseif not knows_no_temp and canproto_no_temp and canlearn then
 				--assert(not usingtempbonus) --sanity check
 				--V2C: for recipes known through temp bonus buff,
@@ -1110,11 +1163,6 @@ function Builder:BufferBuild(recname)
 		else
 			return
 		end
-
-        local materials, discounted = self:GetIngredients(recname)
-        if self:CheckIngredientsForMimic(materials) then
-            return
-        end
 
         self:RemoveIngredients(materials, recname, discounted)
         self.buffered_builds[recname] = true

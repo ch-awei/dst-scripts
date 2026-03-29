@@ -27,6 +27,9 @@ local events =
             inst.sg:GoToState("cheer")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -76,8 +79,8 @@ local states =
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-            end            
+                inst:DropDeathLoot()
+            end
         end,
 
         events =
@@ -85,6 +88,8 @@ local states =
             EventHandler("animover", function(inst)
                 if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
                     TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                elseif inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("corpse")
                 end
             end),
         },        
@@ -201,21 +206,6 @@ local states =
             end),
         },
     },
-
-    State{
-        name = "parasite_revive",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("parasite_death_pst")
-            inst.Physics:Stop()
-        end,
-
-        events=
-        {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
-        },
-    },    
 }
 
 CommonStates.AddWalkStates(states, {
@@ -263,5 +253,9 @@ CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { 
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
+CommonStates.AddParasiteReviveState(states)
 
-return StateGraph("bunnyman", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("bunnyman", states, events, "init", actionhandlers)

@@ -11,6 +11,9 @@ local TEMPLATES = require "widgets/redux/templates"
 local IngredientUI = require "widgets/ingredientui"
 local CraftingMenuDetails = require "widgets/redux/craftingmenu_details"
 
+--For access to RecipeTile.sSetImageFromRecipe
+local RecipeTile = require("widgets/recipetile")
+
 require("util")
 
 -- ref: craftslot.lua, craftslots.lua, crafting.lua, recipetile.lua, recipepopup.lua
@@ -164,7 +167,7 @@ local function text_filter(recipe, search_str)
         return true
     end
 
-	local name_upper = string.upper(recipe.name)
+	local name_upper = string.upper(recipe.nameoverride or recipe.name)
 
 	local product = recipe.product
 	local product_upper = string.upper(product)
@@ -218,6 +221,7 @@ function CraftingMenuWidget:ApplyFilters()
 	for i, recipe_name in metaipairs(self.sort_class) do
 		local data = self.crafting_hud.valid_recipes[recipe_name]
 		if data and
+            (not data.meta.hide_due_to_missing_skin) and
 			(show_hidden or data.meta.build_state ~= "hide") and
 			(show_forced_hints or data.meta.build_state ~= "hint" or not data.recipe.force_hint) and
 			IsRecipeValidForFilter(self, recipe_name, filter_recipes) and
@@ -1051,10 +1055,6 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 
 			widget.cell_root:Show()
 
-			local image = recipe.imagefn ~= nil and recipe.imagefn() or recipe.image
-			widget.item_img:SetTexture(recipe:GetAtlas(), image, image ~= recipe.image and recipe.image or nil)
-			widget.item_img:ScaleToSize(item_size, item_size)
-
 			local tint = 1
 
 			if meta.build_state == "buffered" then
@@ -1089,23 +1089,8 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
                 widget.fgcount:Hide()
 			end
 
-			widget.item_img:SetTint(tint, tint, tint, 1)
-
-			if recipe.fxover ~= nil then
-				if widget.fxover == nil then
-					widget.fxover = widget.item_img:AddChild(UIAnim())
-					widget.fxover:SetClickable(false)
-					widget.fxover:SetScale(.25)
-					widget.fxover:GetAnimState():AnimateWhilePaused(false)
-				end
-				widget.fxover:GetAnimState():SetBank(recipe.fxover.bank)
-				widget.fxover:GetAnimState():SetBuild(recipe.fxover.build)
-				widget.fxover:GetAnimState():PlayAnimation(recipe.fxover.anim, true)
-				widget.fxover:GetAnimState():SetMultColour(tint, tint, tint, 1)
-			elseif widget.fxover ~= nil then
-				widget.fxover:Kill()
-				widget.fxover = nil
-			end
+			RecipeTile.sSetImageFromRecipe(widget.item_img, recipe, nil, tint)
+			widget.item_img:ScaleToSize(item_size, item_size)
 
 			widget:Enable()
 		else

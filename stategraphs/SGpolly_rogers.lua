@@ -15,7 +15,7 @@ local events=
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -23,9 +23,7 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst, data)
-				inst.sg:GoToState("death", data)
-			end),
+    CommonHandlers.OnDeath(),
     EventHandler("flyaway", function(inst, data)
                 if not inst.components.health:IsDead() then
 					if inst.sg:HasStateTag("electrocute") then
@@ -50,6 +48,14 @@ local events=
                     end
                 end
             end),
+
+    EventHandler("despawn", function(inst, data)
+        if not inst.components.health:IsDead() then
+            inst.sg:GoToState("despawn")
+        end
+    end),
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -310,11 +316,17 @@ local states=
             inst.AnimState:PlayAnimation("death")
             inst.SoundEmitter:PlaySound("monkeyisland/pollyroger/death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
+
         onexit = function(inst)
             inst:AddTag("flying")
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -494,6 +506,25 @@ local states=
             end),
         },
     },
+    State{
+        name = "despawn",
+        tags = {"busy", "nointerrupt"},
+
+        onenter = function(inst)
+            inst.readytogather = nil
+            inst.persists = false
+            inst.OnEntitySleep = inst.Remove
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("idle", true)
+            inst.sg:SetTimeout(0.8)
+        end,
+        ontimeout = function(inst)
+            inst:Remove()
+        end,
+        onexit = function(inst)
+            inst:DoTaskInTime(0, inst.Remove)
+        end,
+    },
 }
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
@@ -545,4 +576,7 @@ nil, --timeline
 	end,
 })
 
-return StateGraph("polly_rogers", states, events, "glide", actionhandlers)
+CommonStates.AddInitState(states, "glide")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("polly_rogers", states, events, "init", actionhandlers)

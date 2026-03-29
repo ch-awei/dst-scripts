@@ -369,6 +369,7 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 }
 
 CRAFTING_FILTERS.CRAFTING_STATION.recipes =
@@ -469,7 +470,54 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"hermitshop_supertacklecontainer",
 	"hermitshop_winter_ornament_boss_hermithouse",
 	"hermitshop_winter_ornament_boss_pearl",
-    "hermitshop_hermitcrab_relocation_kit",
+    --   Post crab king
+    "shellweaver",
+    --   Post eviction
+    "hermitcrab_relocation_kit",
+    --   Post relocation
+	"hermithouse_ornament",
+	"hermithotspring_constr",
+	"hermitcrab_teashop",
+	"meatrack_hermit_multi",
+	"hermitcrab_lightpost",
+
+	"hermitcrabtea_petals_1",
+  	"hermitcrabtea_petals_evil_1",
+  	"hermitcrabtea_foliage_1",
+  	"hermitcrabtea_succulent_picked_1",
+  	"hermitcrabtea_moon_tree_blossom_1",
+  	"hermitcrabtea_firenettles_1",
+  	"hermitcrabtea_tillweed_1",
+  	"hermitcrabtea_forgetmelots_1",
+
+	"hermitcrabtea_petals_2",
+  	"hermitcrabtea_petals_evil_2",
+  	"hermitcrabtea_foliage_2",
+  	"hermitcrabtea_succulent_picked_2",
+  	"hermitcrabtea_moon_tree_blossom_2",
+  	"hermitcrabtea_firenettles_2",
+  	"hermitcrabtea_tillweed_2",
+  	"hermitcrabtea_forgetmelots_2",
+
+	"hermitcrabtea_petals_3",
+  	"hermitcrabtea_petals_evil_3",
+  	"hermitcrabtea_foliage_3",
+  	"hermitcrabtea_succulent_picked_3",
+  	"hermitcrabtea_moon_tree_blossom_3",
+  	"hermitcrabtea_firenettles_3",
+  	"hermitcrabtea_tillweed_3",
+  	"hermitcrabtea_forgetmelots_3",
+
+    -- SHELLWEAVER
+    "shellweaver_messagebottleempty",
+    "shellweaver_icestaff2",
+    "shellweaver_icestaff3",
+    "shellweaver_nonslipgrit",
+    "shellweaver_nonslipgritboosted",
+    "shellweaver_desiccant",
+    "shellweaver_desiccantboosted",
+    "shellweaver_salty_doghat",
+    "shellweaver_hermitcrab_shell",
 
     -- Rabbit King
     "rabbitkingshop_armor_carrotlure",
@@ -522,6 +570,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"critter_glomling_builder",
 	"critter_lunarmothling_builder",
 	"critter_eyeofterror_builder",
+    "critter_bulbin_builder",
 
 	-- Sculpting
 	"chesspiece_hornucopia_builder",
@@ -568,6 +617,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_yots_builder",
 	"chesspiece_wagboss_robot_builder",
 	"chesspiece_wagboss_lunar_builder",
+	"chesspiece_yoth_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -597,8 +647,13 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"halloween_experiment_moon",
 	"halloween_experiment_root",
 
+	-- Year of the Clockwork Knight
+	"yoth_knightstick",
+	"yoth_chair_rocking_item",
+	"chesspiece_yoth_sketch",
+
 	-- Year of the Snake
-	"yots_lantern_post_item",
+	-- "yots_lantern_post_item", -- This is available for all lunar new years, so its in the "Year of the X" section
 	"chesspiece_yots_sketch",
 
     -- Year of the Dragon
@@ -691,6 +746,8 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"firecrackers",
 	"redlantern",
 	"miniboatlantern",
+	"floatinglantern",
+	"yots_lantern_post_item", -- marked with yots, but it is for all lunar years
 	"dragonheadhat",
 	"dragonbodyhat",
 	"dragontailhat",
@@ -735,6 +792,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"stone_chair",
 	"wood_stool",
 	"stone_stool",
+	"hermit_chair_rocking",
 	"wood_table_round",
 	"stone_table_round",
 	"wood_table_square",
@@ -853,6 +911,7 @@ CRAFTING_FILTERS.PROTOTYPERS.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 }
 
 CRAFTING_FILTERS.REFINE.recipes =
@@ -970,6 +1029,7 @@ CRAFTING_FILTERS.CLOTHING.recipes =
 	"antlionhat",
 	"moonstorm_goggleshat",
 	"watermelonhat",
+	"pumpkinhat",
 	"icehat",
 	"beehat",
 	"featherhat",
@@ -1185,6 +1245,7 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 
 	"researchlab",
 	"researchlab2",
@@ -1384,6 +1445,7 @@ CRAFTING_FILTERS.SUMMER.recipes =
 	"green_mushroomhat",
 	"blue_mushroomhat",
 	"watermelonhat",
+	"pumpkinhat",
 	"deserthat",
 	"icehat",
 	"eyebrellahat",
@@ -1475,6 +1537,7 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"turf_ruinstrim",
 	"turf_ruinstrim_glow",
 	"turf_archive",
+	"turf_vault",
 
 	"turf_pebblebeach",
 	"turf_shellbeach",
@@ -1488,6 +1551,7 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"turf_rocky",
 	"turf_cave",
 	"turf_underrock",
+	"turf_vent",
 	"turf_sinkhole",
 	"turf_marsh",
 	"turf_mud",
@@ -1502,15 +1566,21 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"ruinsrelic_chair",
 	"ruinsrelic_table",
 
+	"vaultrelic_bowl",
+	"vaultrelic_vase",
+	"vaultrelic_planter",
+
 	"chesspiece_anchor_sketch",
 
 	"phonograph",
 	"record",
+	"w_radio",
 
 	"wood_chair",
 	"stone_chair",
 	"wood_stool",
 	"stone_stool",
+	"hermit_chair_rocking",
 	"wood_table_round",
 	"stone_table_round",
 	"wood_table_square",

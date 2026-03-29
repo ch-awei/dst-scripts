@@ -115,6 +115,11 @@ local states =
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -249,4 +254,25 @@ CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
-return StateGraph("pigelite", states, events, "idle")
+--in order: blue, red, white, green
+local BUILD_VARIATIONS =
+{
+    ["1"] = { "pig_ear", "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
+    ["2"] = { "pig_arm", "pig_ear", "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
+    ["3"] = { "pig_arm", "pig_ear", "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
+    ["4"] = { "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
+}
+
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states, nil,
+{
+    corpseoncreate = function(inst, corpse)
+        corpse.AnimState:Hide("HAT")
+
+        for i, v in ipairs(BUILD_VARIATIONS[inst.sg.mem.variation]) do
+            corpse.AnimState:OverrideSymbol(v, "pig_elite_build", v.."_"..inst.sg.mem.variation)
+        end
+    end,
+}, "pigcorpse")
+
+return StateGraph("pigelitefighter", states, events, "init")

@@ -238,6 +238,7 @@ local function remove_progress_tags(inst)
 end
 
 function StageActingProp:EndPerformance(doer)
+	self.inst:PushEvent("play_ended")
     if self.onperformanceended ~= nil then
         self.onperformanceended(self.inst, doer, self.script, self.cast)
     end
@@ -354,13 +355,16 @@ function StageActingProp:DoLines()
                         or (self.cast["MONOLOGUE"] and self.cast["MONOLOGUE"].castmember)
 
 					if line.anim or line.line then
-                        local next_line_data = { anim = line.anim, line = line.line, animtype = line.animtype,  endidleanim = line.endidleanim}
-						actor:PushEvent("perform_do_next_line", next_line_data)
-
                         if line.line then
                             local line_text = ProcessString(actor) or line.line
                             actor.components.talker:Say(line_text, duration, nil, nil, nil, nil, nil, nil, nil, line.sgparam)
                         end
+
+						local next_line_data = { 
+							anim = line.anim, line = line.line, animtype = line.animtype,  endidleanim = line.endidleanim, do_emote_sound = line.do_emote_sound,
+							do_idle_for_line = line.do_idle_for_line, check_current_anim = line.check_current_anim, loopendidleanim = line.loopendidleanim
+						}
+						actor:PushEvent("perform_do_next_line", next_line_data)
 
 						if line.castsound and actor.SoundEmitter then
 							for sound_role, sound_name in pairs(line.castsound) do
@@ -379,7 +383,7 @@ function StageActingProp:DoLines()
         end
     end
 
-    self.inst:PushEvent("play_performed", { next = script_data.next, error = self.performance_problem })
+    self.inst:PushEvent("play_performed", { next = script_data.next, error = self.performance_problem, skip_hound_spawn = script_data.skip_hound_spawn or nil })
 
     if script_data.next then
         self:FinishAct(script_data.next)

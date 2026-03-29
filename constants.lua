@@ -1,11 +1,14 @@
 require "util"
 local TechTree = require("techtree")
 
-local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
+local IS_BETA = BRANCH == "staging" or BRANCH == "dev"
 
 PI = math.pi
 PI2 = PI*2
 TWOPI = PI2
+HALFPI = PI/2
+QUARTERPI = PI/4
+EIGHTHPI = PI/8
 SQRT2 = math.sqrt(2)
 GOLDENANGLE = PI * (3 - math.sqrt(5))
 DEGREES = PI/180
@@ -23,6 +26,15 @@ PLAYER_CAMERA_SEE_DISTANCE = 40.0 -- NOTES(JBK): Based off of an approximation o
 PLAYER_CAMERA_SEE_DISTANCE_SQ = PLAYER_CAMERA_SEE_DISTANCE * PLAYER_CAMERA_SEE_DISTANCE -- Helper.
 PLAYER_CAMERA_SHOULD_SNAP_DISTANCE = 20.0 -- NOTES(JBK): This is an approximate distance traveled where the camera should snap and fade out to not cause disorientations.
 PLAYER_CAMERA_SHOULD_SNAP_DISTANCE_SQ = PLAYER_CAMERA_SHOULD_SNAP_DISTANCE * PLAYER_CAMERA_SHOULD_SNAP_DISTANCE -- Helper.
+--NOTE if we ever have other ways of increasing camera in-game, increase this!
+PLAYER_CAMERA_MAX_DIST = 65 -- 50 maxdist in forest world + 15 maxdist from scrap_monoclehat
+PLAYER_CAMERA_MAX_DIST_CAVES = 50 -- 35 maxdist in caves world + 15 maxdist from scrap_monoclehat
+
+ENTITY_POPIN_RADIUS = 64.0 -- Read only value.
+ENTITY_POPOUT_RADIUS = ENTITY_POPIN_RADIUS * 1.2 -- Read only value.
+
+ENTITY_POPIN_RADIUS_SQ = ENTITY_POPIN_RADIUS * ENTITY_POPIN_RADIUS
+ENTITY_POPOUT_RADIUS_SQ = ENTITY_POPOUT_RADIUS * ENTITY_POPOUT_RADIUS
 
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
@@ -833,9 +845,9 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
     YOTS = "year_of_the_snake",
+    YOTH = "year_of_the_knight",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
---WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.YOTH
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -864,6 +876,7 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
     [SPECIAL_EVENTS.YOTR] = true,
     [SPECIAL_EVENTS.YOTD] = true,
     [SPECIAL_EVENTS.YOTS] = true,
+    [SPECIAL_EVENTS.YOTH] = true,
 }
 
 
@@ -885,11 +898,18 @@ FESTIVAL_EVENT_FRONTEND_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_frontend" }
 ---------------------------------------------------------
 SPECIAL_EVENT_MUSIC =
 {
+	--hallowed nights
+	[SPECIAL_EVENTS.HALLOWED_NIGHTS] =
+	{
+		bank = "music_frontend_hallowednights2024.fsb",
+		sound = "dontstarve/music/music_FE_hallowednights2025",
+	},
+
     --winter's feast carol
     [SPECIAL_EVENTS.WINTERS_FEAST] =
     {
-        bank = "music_frontend_winters_feast.fsb",
-        sound = "dontstarve/music/music_FE_WF",
+		bank = "music_frontend_wintersfeast2025.fsb",
+		sound = "dontstarve/music/music_FE_winterfeast2025",
     },
 
     --year of the gobbler
@@ -963,6 +983,12 @@ SPECIAL_EVENT_MUSIC =
         sound = "dontstarve/music/music_FE_yotg",
     },  
     ]]  
+
+    [SPECIAL_EVENTS.YOTH] =
+    {
+        bank = "music_frontend_yoth2026.fsb",
+        sound = "dontstarve/music/music_FE_yoth2026",
+    },
 }
 
 FESTIVAL_EVENT_MUSIC =
@@ -1145,9 +1171,9 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_wagboss"
+    "dontstarve/music/music_FE_cavepuzzle"
+    --"dontstarve/music/music_FE_wagboss"
     --"dontstarve/music/music_FE_balatro"
-    --"dontstarve/music/music_FE_hallowednights2024"
     --"dontstarve/music/music_FE_rifts4"
     --"dontstarve/music/music_FE_winonawurt"
     --"dontstarve/music/music_FE_junkyardhog"
@@ -1177,9 +1203,10 @@ PICKUPSOUNDS = {
     ["metal"] = "aqol/new_test/metal",
     ["rock"] = "aqol/new_test/rock",
     ["vegetation_firm"] = "aqol/new_test/vegetation_firm",
-    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",    
+    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",
     ["squidgy"] = "aqol/new_test/squidgy",
     ["grainy"] = "aqol/new_test/grainy",
+    ["paper"] = "aqol/new_test/paper",
     ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
 	["NONE"] = nil, --reserved
 }
@@ -1235,6 +1262,7 @@ TECH =
     RABBITOFFERING_THREE = { RABBITOFFERING = 3 },
     DRAGONOFFERING_THREE = { DRAGONOFFERING = 3 },
     WORMOFFERING_THREE = { WORMOFFERING = 3 },
+    KNIGHTOFFERING_THREE = { KNIGHTOFFERING = 3 },
 
     MADSCIENCE_ONE = { MADSCIENCE = 1 },
 	CARNIVAL_PRIZESHOP_ONE = { CARNIVAL_PRIZESHOP = 1 },
@@ -1249,6 +1277,9 @@ TECH =
 	HERMITCRABSHOP_THREE = { HERMITCRABSHOP = 3 },
 	HERMITCRABSHOP_FIVE = { HERMITCRABSHOP = 5 },
     HERMITCRABSHOP_SEVEN = { HERMITCRABSHOP = 7 },
+
+    SHELLWEAVER_ONE = { SHELLWEAVER = 1 },
+    SHELLWEAVER_THREE = { SHELLWEAVER = 3 },
 
     RABBITKINGSHOP_TWO = { RABBITKINGSHOP = 2 },
 
@@ -1271,6 +1302,7 @@ TECH =
     YOTR = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTD = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTS = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
+    YOTH = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
 
     LOST = { MAGIC = 10, SCIENCE = 10, ANCIENT = 10 },
 
@@ -1502,11 +1534,13 @@ RECIPETABS =
 	FISHING =				{ str = "FISHING",				sort = 100, icon = "tab_fishing.tex",			crafting_station = true },
 	WINTERSFEASTCOOKING =	{ str = "WINTERSFEASTCOOKING",	sort = 100, icon = "tab_feast_oven.tex",		crafting_station = true },
     HERMITCRABSHOP =		{ str = "HERMITCRABSHOP",		sort = 100, icon = "tab_hermitcrab_shop.tex",	crafting_station = true, shop = true},
+    SHELLWEAVER =           { str = "SHELLWEAVER",          sort = 100, icon = "tab_shellweaver.tex",       crafting_station = true, manufacturing_station = true, icon_atlas = "images/hud2.xml"},
     RABBITKINGSHOP =		{ str = "RABBITKINGSHOP",		sort = 100, icon = "tab_rabbitking.tex",		crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
     WANDERINGTRADERSHOP =	{ str = "WANDERINGTRADERSHOP",	sort = 100, icon = "tab_wanderingtrader.tex",	crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
     WAGPUNK_WORKSTATION =	{ str = "WAGPUNK_WORKSTATION",	sort = 100, icon = "tab_wagpunk_workstation.tex",crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
     TURFCRAFTING =		    { str = "TURFCRAFTING", 		sort = 100, icon = "tab_turfcrafting.tex",      crafting_station = true, icon_atlas = "images/hud2.xml" },
     CARPENTRY =	    	    { str = "CARPENTRY",			sort = 100, icon = "station_carpentry.tex",     crafting_station = true, icon_atlas = "images/hud2.xml" },
+    HERMITCRAB_TEASHOP =    { str = "HERMITCRABTEASHOP",    sort = 100, icon = "tab_hermitcrab_teashop.tex",crafting_station = true, manufacturing_station = true, icon_atlas = "images/hud2.xml"},
 }
 
 CUSTOM_RECIPETABS =
@@ -1988,6 +2022,7 @@ FOODTYPE =
     MONSTER = "MONSTER", -- Added in for woby, uses the secondary foodype originally added for the berries
     LUNAR_SHARDS = "LUNAR_SHARDS", -- For rift birds, yummy glass
     CORPSE = "CORPSE", -- For rift buzzards potentially
+    MIASMA = "MIASMA", -- For the centipede thrall
 }
 
 FOODGROUP =
@@ -2144,6 +2179,8 @@ EQUIPMENTSETNAMES =
     DREADSTONE = "dreadstone",
     LUNARPLANT = "lunarplant",
     VOIDCLOTH = "voidcloth",
+    YOTH_KNIGHT = "yoth_knight",
+    YOTH_PRINCESS = "yoth_princess",
 }
 
 -- this is a net_tinybyte on inventoryitem_classified.deploymode
@@ -2385,6 +2422,7 @@ WORMHOLETYPE =
     WORM = 0,
     TENTAPILLAR = 1,
     OCEANWHIRLPORTAL = 2,
+    VAULTLOBBYEXIT = 3,
 }
 
 -- Houndwarning level, max value of 63 (net_smallbyte)
@@ -2875,6 +2913,15 @@ NIGHTSWORD_FX_OFFSETS = {
     DOWN = 2.9,-- 2.6,
 }
 
+SHARDTRANSACTIONSTEPS = {
+    INITIATE = 0,
+    ACCEPTED = 1,
+    FINALIZED = 2,
+}
+SHARDTRANSACTIONTYPES = {
+    TRANSFERINVENTORYITEM = 0,
+}
+
 -- Tag pairs in this list behave mutually exclusively,
 -- when trying to attune to different objects.
 EQUIVALENT_ATTUNABLE_TAGS =
@@ -2886,11 +2933,59 @@ EQUIVALENT_ATTUNABLE_TAGS =
 -- This must match the Categories enum in HapticsManager
 HAPTICS = 
 {
-    Category_Default     = 1,       -- 0x01
-    Category_UI          = 2,       -- 0x02
-    Category_Danger 	 = 4,       -- 0x04
-    Category_Player      = 8,       -- 0x08
-    Category_Environment = 16,      -- 0x10
-    Category_Boss        = 32,      -- 0x20
-    Category_All         = 255,     -- 0xFF
+    CATEGORIES = 
+    {
+        ["ui"]          = 2,       -- 0x02
+        ["danger"] 	    = 4,       -- 0x04
+        ["player"]      = 8,       -- 0x08
+        ["environment"] = 16,      -- 0x10
+        ["boss"]        = 32,      -- 0x20
+
+        -- These are included here for reference only since they exist and have meaning in C++
+        -- I won't include them in the table so we don't accidentally iterate over them        
+        -- ["default"]     = 1,       -- 0x01
+        -- ["all"]         = 255,     -- 0xFF    
+    },
+
+    CATEGORY_ENABLED_BY_DEFAULT = rawget(_G, "IsPS5") and IsPS5() or false,
+}
+
+MIGRATION_TYPES = {
+    MUTATED_BIRD_GESTALT = "mutatedbird_gestalt",
+    MUTATED_BUZZARD_GESTALT = "mutatedbuzzard_gestalt",
+}
+
+PEARL_DECORATION_TYPES =
+{
+    UNIQUE_DECORATION = "UNIQUE_DECORATION",
+    WATER_TREE = "WATER_TREE",
+    CRITTER_PET = "CRITTER_PET",
+    TILES = "TILES",
+    BEE_BOXES = "BEE_BOXES",
+    FLOWERS = "FLOWERS",
+    ORNAMENTS = "ORNAMENTS",
+    LVL5_HOUSE = "LVL5_HOUSE",
+    LIGHT_POSTS = "LIGHT_POSTS",
+    PICKABLE_PLANTS = "PICKABLE_PLANTS",
+    MEAT_RACKS = "MEAT_RACKS",
+    FACED_CHAIR = "FACED_CHAIR",
+    TROPHY_FISH = "TROPHY_FISH",
+    POTTED_PLANTS = "POTTED_PLANTS",
+    DOCK_POSTS = "DOCK_POSTS",
+    DECORATION_TAKER = "DECORATION_TAKER",
+    FISHING_MARKERS = "FISHING_MARKERS",
+    SPAWNER = "SPAWNER",
+    JUNK = "JUNK",
+}
+
+YOTH_HORSE_NAMES = {
+    "CONQUEST",
+    "WAR",
+    "FAMINE",
+    "DEATH",
+}
+
+SKINUNLOCKS = {
+    ALWAYS = 1,
+    CRAFTINGSTATION = 2,
 }

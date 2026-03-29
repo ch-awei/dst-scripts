@@ -72,7 +72,13 @@ SGCritterStates.AddIdle = function(states, num_emotes, timeline, idle_anim_fn)
 						inst.sg:GoToState("combat_pre")
 					else
 						local choice = math.random(inst.components.crittertraits:IsDominantTrait("playful") and (num_emotes + 1) or num_emotes) -- if playful, then add a chance to play the cute emote instead of normal emotes
-						inst.sg:GoToState("emote_"..((choice <= num_emotes) and tostring(choice) or "cute"))
+						local emote_suffix = ((choice <= num_emotes) and tostring(choice) or "cute")
+						inst.sg:GoToState("emote_"..emote_suffix)
+
+						local leader = inst.components.follower and inst.components.follower:GetLeader()
+						if leader then
+							leader:PushEvent("critter_doemote", { critter = inst })
+						end
 					end
 
 				else
@@ -206,17 +212,19 @@ SGCritterStates.AddRandomEmotes = function(states, emotes)
 	for i,v in ipairs(emotes) do
 		table.insert(states, State{
 			name = "emote_"..i,
-			tags = { "busy", "canrotate" },
+			tags = v.tags or { "busy", "canrotate" },
 
-			onenter = function(inst, pushanim)
-				if inst.components.locomotor ~= nil then
-					inst.components.locomotor:StopMoving()
-				end
+			onenter = function(inst, data)
+                if not v.ignorestandardonenter then
+                    if inst.components.locomotor ~= nil then
+                        inst.components.locomotor:StopMoving()
+                    end
 
-				inst.AnimState:PlayAnimation(v.anim)
+    				inst.AnimState:PlayAnimation(v.anim)
+                end
 
                 if v.fns ~= nil and v.fns.onenter ~= nil then
-                    v.fns.onenter(inst)
+                    v.fns.onenter(inst, data)
                 end
 			end,
 
@@ -225,7 +233,9 @@ SGCritterStates.AddRandomEmotes = function(states, emotes)
 			events =
 			{
 				EventHandler("animover", function(inst)
-					if inst.AnimState:AnimDone() then
+                    if v.fns and v.fns.animover then
+                        v.fns.animover(inst, "emote_"..i)
+                    elseif inst.AnimState:AnimDone() then
 						inst.sg:GoToState("idle")
 					end
 				end),

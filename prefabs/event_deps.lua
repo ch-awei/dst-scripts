@@ -70,7 +70,9 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-                Asset("ANIM", "anim/dst_menu_halloween3.zip"),
+				Asset("ANIM", "anim/dst_menu_halloween4.zip"),
+				Asset("PKGREF", "sound/music_frontend_hallowednights2024.fsb"),
+				Asset("PKGREF", "anim/dst_menu_halloween3.zip"),
                 Asset("PKGREF", "anim/dst_menu_rift4.zip"),
                 Asset("PKGREF", "anim/dst_menu_rift3.zip"),
                 Asset("PKGREF", "anim/dst_menu_rift3_bg.zip"),
@@ -90,7 +92,8 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-                Asset("ANIM", "anim/dst_menu_meta5.zip"),
+				Asset("ANIM", "anim/dst_menu_winter2025.zip"),
+				Asset("PKGREF", "anim/dst_menu_meta5.zip"),
 				Asset("PKGREF", "anim/dst_menu_winter2024.zip"),
                 Asset("PKGREF", "anim/dst_menu_waxwell.zip"),
 	            Asset("PKGREF", "anim/dst_menu_feast.zip"),
@@ -98,6 +101,7 @@ local SPECIAL_EVENT_DEPS =
                 Asset("PKGREF", "sound/music_frontend_winters_feast.fsb"),
                 Asset("PKGREF", "anim/dst_menu_inker_winter.zip"),
                 Asset("PKGREF", "anim/dst_menu_farming_winter.zip"),
+				Asset("PKGREF", "sound/music_frontend_wintersfeast2025.fsb"),
             },
         },
     },
@@ -244,13 +248,26 @@ local SPECIAL_EVENT_DEPS =
         },
     },
 
+    [SPECIAL_EVENTS.YOTH] =
+    {
+        frontend =
+        {
+            assets =
+            {
+                Asset("ANIM", "anim/dst_menu_yoth.zip"),
+                Asset("SOUND", "sound/music_frontend_yoth2026.fsb"),
+            },
+        },
+    },
+
     [SPECIAL_EVENTS.NONE] =
     {
         frontend =
         {
             assets =
             {
-				Asset("ANIM", "anim/dst_menu_rift5.zip"),
+                Asset("ANIM", "anim/dst_menu_rift6.zip"),
+				Asset("PKGREF", "anim/dst_menu_rift5.zip"),
 				Asset("PKGREF", "anim/dst_menu_meta5.zip"),
                 Asset("PKGREF", "anim/dst_menu_halloween3.zip"),
 				Asset("PKGREF", "anim/dst_menu_rift4.zip"),

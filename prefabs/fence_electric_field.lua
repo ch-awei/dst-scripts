@@ -75,23 +75,14 @@ local function ClearSegs(inst)
 		inst.segs = nil
 	end
 
-	--[[if not TheWorld.ismastersim then
+	if not TheWorld.ismastersim then
 		return
-	end]] --it's fine to run the cleanup code on clients anyway
-
-	if TheWorld.ismastersim then -- Not fine to run this cleanup code on client!
-		inst.SoundEmitter:KillSound("linked_lp")
 	end
 
-	if inst.Physics then --Doesn't exist on client!
-		inst.Physics:SetCollides(true) --We're unloaded, activate our physics!
-		inst.Physics:SetCollisionCallback(nil)
-	end
+	inst.SoundEmitter:KillSound("linked_lp")
 
-	if inst.targettask then
-		inst.targettask:Cancel()
-		inst.targettask = nil
-	end
+	inst.Physics:SetCollides(true) --We're unloaded, activate our physics!
+	inst.Physics:SetCollisionCallback(nil)
 end
 --local OnEntitySleep = ClearSegs --this is set in prefab constructor
 
@@ -130,21 +121,16 @@ end
 --local GLOBAL_SHOCK_TARGETS = setmetatable({}, { __mode = 'k' })
 local BrainCommon = require("brains/braincommon")
 
-local function CanShockEnt(ent)
-	return not IsEntityElectricImmune(ent) and CanEntityBeElectrocuted(ent)
-		-- Because the above two don't check for nointerrupt, even though they probably should. FIXME
-		and (ent.sg == nil or (not ent.sg:HasAnyStateTag("dead", "nointerrupt", "noelectrocute") or ent.sg:HasStateTag("canelectrocute")))
-end
-
 local function DoCollideShock(other, inst)
 	local t = GetTime()
 	if (inst.targets[other] or -math.huge) < t and
 		other:IsValid() and not other:IsInLimbo()
 	then
-		if not IsEntityDead(other) and CanShockEnt(other) then
+		other:PushEventImmediate("electrocute", { duration=TUNING.ELECTROCUTE_SHORT_DURATION, noburn=true })
+
+		if other.sg and other.sg:HasStateTag("electrocute") then -- Successful
 			ClearForgetTask(other)
 
-			--TODO MORE WHEN WET?
 			if BrainCommon.HasElectricFencePanicTriggerNode(other) and other.panic_electric_field ~= inst then
 				other:PushEvent("shocked_by_new_field", inst)
 
@@ -152,7 +138,6 @@ local function DoCollideShock(other, inst)
 				other:ListenForEvent("onremove", ObjectNonPermanence, inst) --Just in case?
 			end
 
-			other:PushEventImmediate("electrocute", {duration=TUNING.ELECTROCUTE_SHORT_DURATION, noburn=true})
 			other.forget_field_task = other:DoTaskInTime(TUNING.ELECTRIC_FIELD_MOB_PANICTIME, ObjectNonPermanence)
 		end
 
@@ -165,20 +150,20 @@ end
 -- NOTE(Omar): A little trick!
 -- Collision callbacks still run even if Physics:SetCollides is false
 -- And physics are gonna be a bit more reliable than our old detection
-local function OnCollisionCallback(inst, other,
-	world_position_on_a_x, world_position_on_a_y, world_position_on_a_z,
-	world_position_on_b_x, world_position_on_b_y, world_position_on_b_z,
-	world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z,
-	lifetime_in_frames)
+local function OnCollisionCallback(inst, other)
+	-- world_position_on_a_x, world_position_on_a_y, world_position_on_a_z,
+	-- world_position_on_b_x, world_position_on_b_y, world_position_on_b_z,
+	-- world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z,
+	-- lifetime_in_frames)
 
 	if not (other ~= nil and other:IsValid() and inst:IsValid()) then
         return
     end
 
 	if not other.do_collide_shock_task then
-		if other.components.locomotor and CanShockEnt(other) and (inst.targets[other] or -math.huge) < GetTime() then
-			other.components.locomotor:Stop()
-		end
+		-- if other.components.locomotor and CanShockEnt(other) and (inst.targets[other] or -math.huge) < GetTime() then
+		-- 	other.components.locomotor:Stop()
+		-- end
 
 		other.do_collide_shock_task = other:DoTaskInTime(0, DoCollideShock, inst) -- Next frame for physics safety
 	end
@@ -210,7 +195,6 @@ local function AddPlane(triangles, x0, y0, z0, x1, y1, z1)
     table.insert(triangles, z1)
 end
 
-local HALFPI = PI/2
 local function BuildFenceMesh(halflen, rot)
     local triangles = {}
 
@@ -319,7 +303,6 @@ local function SetUpPhysics(inst)
     )
 	inst.Physics:SetCollides(false)
 	inst.Physics:SetDontRemoveOnSleep(true)
-	inst.Physics:SetCollisionCallback(OnCollisionCallback)
 end
 
 local function ForcePhysicsUpdate(inst) --HACK! We need to force a physics update for entities that stay still
@@ -354,6 +337,9 @@ local function fn()
 	inst.entity:AddTransform()
 	inst.entity:AddSoundEmitter()
 	inst.entity:AddNetwork()
+
+	SetUpPhysics(inst) -- Realistically this is only needed for server side, but there are almost NO C++ components that should be added on one side and not the other (except for ClientSleepable)
+	--Otherwise we run into deserialization errors on the SoundEmitter component. I'm surprised there weren't more issues!
 	--
 	inst:AddTag("CLASSIFIED")
 	inst:AddTag("notarget")
@@ -362,7 +348,6 @@ local function fn()
 	inst.len = net_byte(inst.GUID, "fence_electric_field.len", "beamdirty")
 	inst.rot = net_byte(inst.GUID, "fence_electric_field.rot", "beamdirty")
 
-	inst:SetPrefabNameOverride("fence_electric_field") --for death announce (Omar) NOTE: Can't die but just in case someone changes/mods it to do damage.
 	inst.CanMouseThrough = CanMouseThrough
 
 	inst.entity:SetPristine()
@@ -373,11 +358,10 @@ local function fn()
 		return inst
 	end
 
-	SetUpPhysics(inst) --NOTE: Yup! Physics is only needed on server side
+	inst.Physics:SetCollisionCallback(OnCollisionCallback)
 
 	inst.targets = {}
 
-	inst.targettask = nil
 	inst.SetBeam = SetBeam
 	inst.OnEntitySleep = OnEntitySleep
 	inst.OnEntityWake = OnEntityWake

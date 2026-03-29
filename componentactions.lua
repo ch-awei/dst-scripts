@@ -13,22 +13,21 @@ local function CanCastFishingNetAtPoint(thrower, target_x, target_z)
 end
 
 local function Row(inst, doer, pos, actions)
-    local map = TheWorld.Map
+	local my_platform = doer:GetCurrentPlatform()
+	if my_platform == nil or not my_platform:HasTag("boat") then
+		return
+	end
 
-    local platform_under_cursor = map:GetPlatformAtPoint(pos.x, pos.z)
+    local map = TheWorld.Map
+	local is_controller_attached = doer.components.playercontroller.isclientcontrollerattached
+	if not is_controller_attached then
+		local platform_under_cursor = map:GetPlatformAtPoint(pos.x, pos.z)
+		if my_platform == platform_under_cursor then
+			return
+		end
+	end
 
     local doer_x, doer_y, doer_z = doer.Transform:GetWorldPosition()
-    local my_platform = doer:GetCurrentPlatform()
-    local is_controller_attached = doer.components.playercontroller.isclientcontrollerattached
-
-    local is_hovering_cursor_over_my_platform = false
-    if not is_controller_attached then
-        is_hovering_cursor_over_my_platform = my_platform ~= nil and (my_platform == platform_under_cursor)
-    end
-
-    if is_hovering_cursor_over_my_platform or my_platform == nil then
-        return
-    end
 
     if CLIENT_REQUESTED_ACTION == ACTIONS.ROW_FAIL then
         table.insert(actions, ACTIONS.ROW_FAIL)
@@ -105,7 +104,7 @@ local function CheckRowOverride(doer, target)
     if target ~= nil then
         local doer_pos = doer:GetPosition()
         local boat = TheWorld.Map:GetPlatformAtPoint(doer_pos.x, doer_pos.z)
-        if boat == nil then
+		if boat == nil or not boat:HasTag("boat") then
             return false
         end
 
@@ -173,6 +172,10 @@ local COMPONENT_ACTIONS =
                 table.insert(actions, ACTIONS.ATTUNE)
             end
         end,
+
+		bathingpool = function(inst, doer, actions)
+			table.insert(actions, ACTIONS.SOAKIN)
+		end,
 
         battery = function(inst, doer, actions)
             if inst:HasTag("battery") and doer:HasTag("batteryuser") then
@@ -251,10 +254,10 @@ local COMPONENT_ACTIONS =
 
         channelable = function(inst, doer, actions, right)
             if right and inst:HasTag("channelable") then
-                if not inst:HasTag("channeled") then
-                    table.insert(actions, ACTIONS.STARTCHANNELING)
-                elseif doer:HasTag("channeling") then
+                if doer:HasTag("channeling") then
                     table.insert(actions, ACTIONS.STOPCHANNELING)
+                elseif not inst:HasTag("channeled") then
+                    table.insert(actions, ACTIONS.STARTCHANNELING)
                 end
             end
         end,
@@ -315,10 +318,14 @@ local COMPONENT_ACTIONS =
                 	--Removed for wobysmall -> moved into her command wheel
                     --[[if inst.replica.container then -- Added for wobysmall
                         table.insert(actions, ACTIONS.PET)
-                    else]]if doer.replica.builder ~= nil
-                       and doer.replica.builder:GetTechTrees().ORPHANAGE > 0
-                       and not inst:HasTag("noabandon") then
-                        table.insert(actions, ACTIONS.ABANDON)
+                    else]]
+                    local techtrees = doer.replica.builder ~= nil and doer.replica.builder:GetTechTrees()
+                    if techtrees and not inst:HasTag("noabandon") then
+                        if techtrees.HERMITCRABSHOP >= 7 and IsInValidHermitCrabDecorArea(doer) then
+                            table.insert(actions, ACTIONS.TRANSFER_CRITTER)
+                        elseif techtrees.ORPHANAGE > 0 then
+                            table.insert(actions, ACTIONS.ABANDON)
+                        end
                     end
                 elseif inst.replica.container == nil then
                     table.insert(actions, ACTIONS.PET)
@@ -847,7 +854,7 @@ local COMPONENT_ACTIONS =
 
         teleporter = function(inst, doer, actions, right)
             if inst:HasTag("teleporter") then
-                if not inst:HasTag("townportal") then
+                if not inst:HasAnyTag("townportal", "vault_teleporter") then
                     table.insert(actions, ACTIONS.JUMPIN)
                 elseif right and not doer:HasTag("channeling") then
                     table.insert(actions, ACTIONS.TELEPORT)
@@ -1008,6 +1015,12 @@ local COMPONENT_ACTIONS =
         bathbomb = function(inst, doer, target, actions)
             if inst:HasTag("bathbomb") and target:HasTag("bathbombable") then
                 table.insert(actions, ACTIONS.BATHBOMB)
+            end
+        end,
+
+        batteryuser = function(inst, doer, target, actions, right)
+            if right and inst:HasTag("batteryuser") and target:HasTag("battery") then
+                table.insert(actions, ACTIONS.CHARGE_FROM)
             end
         end,
 
@@ -1517,8 +1530,16 @@ local COMPONENT_ACTIONS =
         end,
 
 		pumpkincarver = function(inst, doer, target, actions)
-			if target.components.pumpkincarvable then --component exists on clients
+			--V2C: pumpkincarvable and pumpkinhatcarvable exist on clients
+			if target.components.pumpkincarvable then
 				table.insert(actions, ACTIONS.CARVEPUMPKIN)
+			elseif target.components.pumpkinhatcarvable then
+				local equippable = target.replica.equippable
+				if not (equippable and equippable:IsEquipped()) and
+					not (target.components.floater and target.components.floater:IsFloating())
+				then
+					table.insert(actions, ACTIONS.CARVEPUMPKIN)
+				end
 			end
 		end,
 
@@ -1616,7 +1637,7 @@ local COMPONENT_ACTIONS =
                     if target:HasTag("repairable_"..v) then
                         if (inst:HasTag("work_"..v) and target:HasTag("workrepairable"))
                             or (inst:HasTag("health_"..v) and target:HasTag("healthrepairable"))
-                            or (inst:HasTag("freshen_"..v) and (target:HasTag("fresh") or target:HasTag("stale") or target:HasTag("spoiled")))
+							or (inst:HasTag("freshen_"..v) and (target:HasAnyTag("fresh", "stale", "spoiled")))
                             or (inst:HasTag("finiteuses_"..v) and target:HasTag("finiteusesrepairable")) then
                             table.insert(actions, ACTIONS.REPAIR)
                         end
@@ -1948,7 +1969,7 @@ local COMPONENT_ACTIONS =
             local x,y,z = pos:Get()
             if right and (TheWorld.Map:IsAboveGroundAtPoint(x,y,z) or TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
                 local doerx, doery, doerz = doer.Transform:GetWorldPosition()
-                if TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) == TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(doerx, doery, doerz) then
+                if IsTeleportingPermittedFromPointToPoint(x, y, z, doerx, doery, doerz) then
                     table.insert(actions, ACTIONS.BLINK)
                 end
             end
@@ -2010,6 +2031,12 @@ local COMPONENT_ACTIONS =
 			if right and CanCastFishingNetAtPoint(doer, pos.x, pos.z) then
 				table.insert(actions, ACTIONS.FISH_OCEAN)
 			end
+        end,
+
+        joustsource = function(inst, doer, pos, actions, right, target)
+            if right and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) and TheWorld.Map:IsAboveGroundAtPoint(pos:Get()) then
+                table.insert(actions, ACTIONS.JOUST)
+            end
         end,
 
         inventoryitem = function(inst, doer, pos, actions, right, target)
@@ -2115,6 +2142,12 @@ local COMPONENT_ACTIONS =
 
     EQUIPPED = --args: inst, doer, target, actions, right
     {
+        batteryuser = function(inst, doer, target, actions, right)
+            if right and inst:HasTag("batteryuser") and target:HasTag("battery") then
+                table.insert(actions, ACTIONS.CHARGE_FROM)
+            end
+        end,
+
         brush = function(inst, doer, target, actions, right)
             if not right and target:HasTag("brushable") then
                 table.insert(actions, ACTIONS.BRUSH)
@@ -2141,7 +2174,14 @@ local COMPONENT_ACTIONS =
 		end,
 
         complexprojectile = function(inst, doer, target, actions, right)
-            if right and not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) then
+			--V2C: This is so mousing over entities doesn't block the "Toss" action; just forward
+			--     to the ground position of the target, and the target will get highlighted.
+			--     "nohighlight" can counter this specifically, used for things like decor vault_pillar,
+			--     where we do want to block the action and prevent highlighting.
+			if right and
+				not (doer.components.playercontroller and doer.components.playercontroller.isclientcontrollerattached) and
+				not target:HasTag("nohighlight")
+			then
                 local targetpos = target:GetPosition()
                 if not TheWorld.Map:IsGroundTargetBlocked(targetpos) and
                     (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer, targetpos)) and
@@ -2209,6 +2249,12 @@ local COMPONENT_ACTIONS =
         gravedigger = function(inst, doer, target, actions, right)
             if right and target:HasTag("gravediggable") and doer:HasTag("gravedigger_user") then
                 table.insert(actions, ACTIONS.GRAVEDIG)
+            end
+        end,
+
+        joustsource = function(inst, doer, target, actions, right)
+            if right and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) then
+                table.insert(actions, ACTIONS.JOUST)
             end
         end,
 

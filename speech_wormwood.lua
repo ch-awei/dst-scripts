@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -104,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "No zaps",
+            CHARGE_FULL = "Many zaps",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -274,6 +275,7 @@ return{
         PICK =
         {
             NOTHING_INSIDE = "Ooh. Empty",
+			STUCK = "Stuck",
         },
         PICKUP =
         {
@@ -318,7 +320,7 @@ return{
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             -- Electrocute
+--fallback to speech_wilson.lua             -- rifts5.1
 --fallback to speech_wilson.lua             DEADBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 		REMOTE_TELEPORT =
@@ -486,6 +488,12 @@ return{
         {
             MISSED = "Stay, friend!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Friend there",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1174,11 +1182,28 @@ return{
     ANNOUNCE_FLOATER_HELD = "Good baby floater",
     ANNOUNCE_FLOATER_LETGO = "Bye, baby flo-",
 
-    -- Electrocute
+    -- rifts5.1
     ANNOUNCE_LUNARHAIL_BIRD_SOUNDS = "No, tweeters!",
     ANNOUNCE_LUNARHAIL_BIRD_CORPSES = "Tweeter?",
     ANNOUNCE_FLOAT_SWIM_TIRED = "Resting",
     ANOUNCE_MUTATED_BIRD_ATTACK = "Tweeters!",
+
+    -- Rift 6
+    ANNOUNCE_WEAPON_TOOWEAK = "Need more stronger!",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Same?",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Bad hand friend! Why doing that?",
+
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Hmmm... meat tweeter look different", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "No?",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Here!",
+
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "Neigh machine busy busy?",
 
 	BATTLECRY =
 	{
@@ -1763,6 +1788,8 @@ return{
 		TURF_FUNGUS="Mushy",
 		TURF_FUNGUS_MOON = "Mushy",
 		TURF_ARCHIVE = "Not dirt",
+        TURF_VAULT = "Not dirt",
+        TURF_VENT = "Too rocky",
 		TURF_SINKHOLE="Slimy",
 		TURF_UNDERROCK="Too rocky",
 		TURF_MUD="Sticky",
@@ -2065,7 +2092,7 @@ return{
         },
         CHESSPIECE_KNIGHT =
         {
-            GENERIC = "Stone Neigher!",
+            GENERIC = "Stone neighe machine!",
             STRUGGLE = "What's happening?",
         },
         CHESSPIECE_BISHOP =
@@ -2113,6 +2140,7 @@ return{
         CHESSPIECE_YOTS = "Little wiggly",
         CHESSPIECE_WAGBOSS_ROBOT = "Stone robot friend",
         CHESSPIECE_WAGBOSS_LUNAR = "Friend no hurt more",
+        CHESSPIECE_YOTH = "Neigh machine?",
 
         CHESSJUNK1 = "Machine stuff",
         CHESSJUNK2 = "Lots of machine stuff",
@@ -2153,6 +2181,7 @@ return{
         CRITTER_KITTEN = "Me-Raow, Teeny Kitkit",
         CRITTER_PERDLING = "Wee Tweeter is friend now",
 		CRITTER_LUNARMOTHLING = "Flap flap Flappy friend",
+        CRITTER_BULBIN = "Don't worry, friend! Safe now",
 
 		CROW =
 		{
@@ -2821,7 +2850,7 @@ return{
 			SCULPTURE = "Fun! Want to do again!",
 			BURNT = "Nooooo!",
    		},
-        SCULPTURE_KNIGHTHEAD = "Hello Neigher!",
+        SCULPTURE_KNIGHTHEAD = "Hello neigh machine!",
 		SCULPTURE_KNIGHTBODY =
 		{
 			COVERED = "Like it!",
@@ -3013,8 +3042,8 @@ return{
 		TRINKET_27 = "Stick? No not stick", --Coat Hanger
 		TRINKET_28 = "Can't play", --Rook
         TRINKET_29 = "Anyone to play with?", --Rook
-        TRINKET_30 = "Little Neigher", --Knight
-        TRINKET_31 = "Little Neigher", --Knight
+        TRINKET_30 = "Little neigh machine", --Knight
+        TRINKET_31 = "Little neigh machine", --Knight
         TRINKET_32 = "Ball!", --Cubic Zirconia Ball
         TRINKET_33 = "Hello? Oh. Not alive", --Spider Ring
         TRINKET_34 = "Where's rest?", --Monkey Paw
@@ -3334,6 +3363,7 @@ return{
         WINTER_ORNAMENTBOSS = "Put on friends",
 		WINTER_ORNAMENTFORGE = "It goes on friend",
 		WINTER_ORNAMENTGORGE = "For friends to feel pretty",
+        WINTER_ORNAMENTPEARL = "From crabby friend",
 
         WINTER_FOOD1 = "Friend?", --gingerbread cookie
         WINTER_FOOD2 = "Oh. Didn't fall from sky", --sugar cookie
@@ -4430,6 +4460,13 @@ return{
             LINE_4 = "Pretty",
             LINE_5 = "Skritch scratches",
         },
+		VAULT_RUNE = "Scratch, scratch, scratch?",
+		VAULT_STATUE =
+		{
+			LORE1 = "Dark inside Bug King",
+			LORE2 = "Not sleeping",
+			LORE3 = "Hi, friends! Why mad?",
+		},
 
         ARCHIVE_RESONATOR = {
             GENERIC = "That way",
@@ -5132,6 +5169,7 @@ return{
 
         PLAYBILL_THE_DOLL = "Sad story",
         PLAYBILL_THE_VEIL = "Scare show",
+        PLAYBILL_THE_VAULT = "Old story",
         STATUEHARP_HEDGESPAWNER = "Friends giving statue a hug",
         HEDGEHOUND = "Why friends mad?",
         HEDGEHOUND_BUSH = "Friends?",
@@ -5738,7 +5776,7 @@ return{
         FLOTATIONCUSHION = "No more scared biiig water",
         LUNAR_SEED = "Love Baby Night Ball! Love!",
 
-        -- electrocute
+        -- rifts5.1
         WAGBOSS_ROBOT_CONSTRUCTIONSITE = "Half big-big robot friend",
         WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "Big-big robot friend inside!",
         WAGBOSS_ROBOT_CREATION_PARTS = "Found parts for big-big robot friend!",
@@ -5759,6 +5797,234 @@ return{
             BURNING  = "Bye, tweeter", --when its burning
             REVIVING = "Tweeter back...", --when its mutating and being revived
         },
+
+        BUZZARDCORPSE = {
+            GENERIC  = "Meat tweeter dead", --witnessing the corpse
+            BURNING  = "Bye, meat tweeter", --when its burning
+            REVIVING = "Meat tweeter back...", --when its mutating and being revived
+        },
+
+        MUTATEDBUZZARD_GESTALT = {
+            GENERIC = "Dead not dead meat tweeter", -- Generic string
+            EATING_CORPSE = "Forever hungry", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
+        },
+
+        -- Rifts 6
+
+        SHADOWTHRALL_CENTIPEDE = {
+            HEAD = "Hello, legs friend head", --The head segment
+            BODY = "Legs friend many legs", --The body segment
+            FLIPPED = "Up down, down up", --When it's flipped over (either head or body segment)
+        },
+
+        TREE_ROCK =
+		{
+			BURNING = "Friend too hot!", --It's vines are burning, it will collapse
+			CHOPPED = "Where vine friend?", --It's 'chopped', so the rock fell
+			GENERIC = "Good vine friend!", --Rock is still on tree
+		},
+
+        -- NOTE: Unsure about HOT and COLD, just do GENERIC, GAS, MIASMA for now!
+        CAVE_VENT_ROCK =
+        {
+            GENERIC = "No stink now", -- Not ventilating anything
+            HOT     = "Hot water smoke?", -- Ventiliating hot air, making the area warm
+            GAS     = "Bad smell!", -- Ventiliating Toadstools gas fumes and spores
+            MIASMA  = "Danger stinky!", -- Ventiliating the shadow rift miasma
+        },
+        CAVE_FERN_WITHERED = "Dead",
+        FLOWER_CAVE_WITHERED = "Glowy friend dying",
+
+		ABYSSPILLAR_MINION =
+		{
+			GENERIC = "Friend sleeping", --off, looks like decor/statue
+			ACTIVATED = "Where friend going?", --turned on and hopping over puzzle pillars
+		},
+		ABYSSPILLAR_TRIAL = "Pull?",
+
+        VAULT_TELEPORTER =
+        {
+            GENERIC = "Make poof!",
+            BROKEN = "Broken?",
+            UNPOWERED = "No spark",
+        },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
+		VAULT_ORB = "Who friend lose ball?",
+        VAULT_LOBBY_EXIT = "Jump!",
+		VAULT_CHANDELIER_BROKEN = "Ball fall down",
+
+		ANCIENT_HUSK = "Why, friends? Why?",
+		MASK_ANCIENT_HANDMAIDHAT = "Friend face hard!",
+		MASK_ANCIENT_ARCHITECTHAT = "Science man?",
+		MASK_ANCIENT_MASONHAT = "Friend face strong!",
+
+        TREE_ROCK_SEED = "Baby friend!",
+        TREE_ROCK_SAPLING = "Hey kid",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Good stuff", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Torch friend",
+			BROKEN = "Torch friend broke?", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Gassy friend not sleeping",
+			GENERIC = "Hello gassy friend",
+			SLEEPING = "Dream rock friends or bug friends?",
+            VENTING = "Gassy friend gassing!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Wear pumpkin friend face?!",
+			UNCARVED = "Don't be scared, pumpkin friend",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Ice tweeter dead", --witnessing the corpse
+            BURNING  = "Hot ice tweeter", --when its burning
+            REVIVING = "Ice tweeter back...", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Dead leggy bug",
+			BURNING = "Leggy bug burn",
+			REVIVING = "Leggy bug again",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Leggy bug mommy dead",
+			BURNING = "Bye, leggy bug mommy",
+			REVIVING = "Leggy bug mommy turn buggy home",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Aw, Glub Glub",
+			BURNING = "Sorry Glub Glub",
+			REVIVING = "Back but not same Glub Glub",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "Won't wake up",
+            BURNING = "Bye bye",
+            REVIVING = "Back?",
+        },
+
+		--Winter's Feast 2025
+
+		W_RADIO = "What friend do?",
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Warm! Nice!",
+            GENERIC = "Pool party!",
+            EMPTY = "Muddy",
+        },
+		HERMITHOTSPRING_CONSTR = "Still growing",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Done",
+            DRYING = "Getting unwet",
+            DRYINGINRAIN = "Rain can't help",
+            GENERIC =  "Big unwet",
+            BURNT = "Oh",
+            DONE_NOTMEAT = "Done?",
+            DRYING_NOTMEAT = "Getting unwet",
+            DRYINGINRAIN_NOTMEAT = "Rain not helping",
+            DONE_SALT = "Some salty",
+			ABANDONED = "Broken",
+        },
+		HERMITHOUSE_ORNAMENT = "Pretty stuff for crabby friend house",
+		HERMITHOUSE_LAUNDRY = "Crabby friend things",
+
+        PETALS_DRIED = "Dry stuff",
+        PETALS_EVIL_DRIED = "Dry stuff",
+        FOLIAGE_DRIED = "Dry stuff",
+        SUCCULENT_PICKED_DRIED = "Dry stuff",
+        FIRENETTLES_DRIED = "Dry stuff",
+        TILLWEED_DRIED = "Dry stuff",
+        MOON_TREE_BLOSSOM_DRIED = "Dry stuff",
+        FORGETMELOTS_DRIED = "Dry stuff",
+
+        HERMITCRABTEA_PETALS = "For small head hurt",
+        HERMITCRABTEA_PETALS_EVIL = "Why want small head hurt?",
+        HERMITCRABTEA_FOLIAGE = "Purple friend tea",
+        HERMITCRABTEA_SUCCULENT_PICKED = "To cool friend",
+        HERMITCRABTEA_FIRENETTLES = "To warm friend",
+        HERMITCRABTEA_TILLWEED = "Make friend better",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Mmmmmm",
+        HERMITCRABTEA_FORGETMELOTS = "For big head hurt",
+        SHELLWEAVER = "Make salty things",
+        ICESTAFF2 = "Chilly-chilly stick!",
+        ICESTAFF3 = "Chilly-chilly-chilly stick!",
+        NONSLIPGRIT = "No whoops",
+        NONSLIPGRITBOOSTED = "More no whoops",
+        DESICCANT = "Make unwet!",
+        DESICCANTBOOSTED = "No wet?",
+        HERMITCRAB_SHELL = "To crabby friend!",
+        SALTY_DOGHAT = "Salty head thing!",
+        SALTY_DOG = "Sea Woofer!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Where crabby friend?", -- Inactive state, no Pearl inside.
+            ACTIVE = "Like crabby friend tea!", -- Active, Pearl is inside, can buy from her
+            BREWING = "Thirsty time", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Bad fire!", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Dry Glub Glub",
+        FISHMEAT_SMALL_DRIED = "Dry Glub Glub",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Pretty bright",
+            ABANDONED = "Oh no",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Where put pretty bright?",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Neigh machine full", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What neigh machine want?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Bye neigh machine!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Princess Neigh",
+        COSTUME_PRINCESS_BODY = "Princess dress",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Princess Neigh show",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Neigh machine mad", -- Generic quote. It's aggressive.
+            FOLLOWING = "Nice neigh machine.", -- Following the character examining
+            FOLLOWING_OTHER = "Whose neigh machine?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Neigh hat",
+        ARMOR_YOTH_KNIGHT = "Neigh suit",
+        HORSESHOE = "What lucky?",
+        YOTH_LANCE = "Run poke stick!",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Why sky light?", -- Depleted and on the ground
+            HELD = "Sky light", -- In the players inventory
+            GENERIC = "Fly sky light!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Make faster friend",
+        YOTH_CHAIR_ROCKING_ITEM = "Rocking friend!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "Friend?",

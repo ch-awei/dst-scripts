@@ -9,6 +9,8 @@ local prefabs =
     "glommerfuel",
     "glommerwings",
     "monstermeat",
+    
+    "glommercorpse",
 }
 
 local brain = require("brains/glommerbrain")
@@ -62,7 +64,7 @@ local function OnStopFollowing(inst)
 end
 
 local function OnStartFollowing(inst)
-    if inst.components.follower.leader:HasTag("glommerflower") then
+    if inst.components.follower.leader:HasTag("glommerflower") then -- Getting leader directly special case.
         inst:AddTag("companion")
     end
 end

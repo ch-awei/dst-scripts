@@ -24,21 +24,37 @@ local FOLLOWER_ONEOF_TAGS = {"pig", "merm", "farm_plant"}
 local FOLLOWER_CANT_TAGS = {"werepig", "player"}
 local HAUNTEDFOLLOWER_MUST_TAGS = {"pig"}
 
+local function is_merm_valid(owner, merm)
+    local skilltreeupdater = owner.components.skilltreeupdater
+
+    if merm:HasTag("lunarminion") then
+        return skilltreeupdater and skilltreeupdater:IsActivated("wurt_lunar_allegiance_1")
+    end
+
+    if merm:HasTag("shadowminion") then
+        return skilltreeupdater and skilltreeupdater:IsActivated("wurt_shadow_allegiance_1")
+    end
+
+    return true
+end
+
 local function band_update( inst )
     local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner
     if owner and owner.components.leader then
         local x,y,z = owner.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, TUNING.ONEMANBAND_RANGE, nil, FOLLOWER_CANT_TAGS, FOLLOWER_ONEOF_TAGS)
         for k,v in pairs(ents) do
-            if v.components.follower and not v.components.follower.leader and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
+            if v.components.follower and not v.components.follower:GetLeader() and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
                 if v:HasTag("merm") then
-                    if v:HasTag("mermguard") then
-                        if owner:HasTag("merm") and not owner:HasTag("mermdisguise") then
-                            owner.components.leader:AddFollower(v)
-                        end
-                    else
-                        if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) then
-                            owner.components.leader:AddFollower(v)
+                    if is_merm_valid(owner, v) then
+                        if v:HasTag("mermguard") then
+                            if owner:HasTag("merm") and not owner:HasTag("mermdisguise") then
+                                owner.components.leader:AddFollower(v)
+                            end
+                        else
+                            if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) then
+                                owner.components.leader:AddFollower(v)
+                            end
                         end
                     end
                 else
@@ -54,7 +70,7 @@ local function band_update( inst )
                 if k:HasTag("pig") then
                     k.components.follower:AddLoyaltyTime(3)
 
-                elseif k:HasTag("merm") then
+                elseif k:HasTag("merm") and is_merm_valid(owner, k) then
                     if k:HasTag("mermguard") then
                         if owner:HasTag("merm") and not owner:HasTag("mermdisguise") then
                             k.components.follower:AddLoyaltyTime(3)
@@ -71,7 +87,7 @@ local function band_update( inst )
         local x,y,z = inst.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, TUNING.ONEMANBAND_RANGE, HAUNTEDFOLLOWER_MUST_TAGS, FOLLOWER_CANT_TAGS)
         for k,v in pairs(ents) do
-            if v.components.follower and not v.components.follower.leader  and not inst.components.leader:IsFollower(v) and inst.components.leader.numfollowers < 10 then
+            if v.components.follower and not v.components.follower:GetLeader() and not inst.components.leader:IsFollower(v) and inst.components.leader.numfollowers < 10 then
                 inst.components.leader:AddFollower(v)
                 --owner.components.sanity:DoDelta(-TUNING.SANITY_MED)
             end

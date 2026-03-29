@@ -53,11 +53,11 @@ local events=
         end
     end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (	inst.sg:HasAnyStateTag("attack", "electrocute") or
-							CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) --hit dealy only for projectiles
+							CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) --hit delay only for projectiles
 						)
 			then
 				inst.sg:GoToState("hit")
@@ -649,8 +649,7 @@ local states=
                 end
             else
                 RemovePhysicsColliders(inst)
-
-                inst.components.lootdropper:DropLoot()
+                inst:DropDeathLoot()
                 -- We handle our own erode, rather than the health component ~gjans
                 inst:DoTaskInTime(2, ErodeAway)
             end
@@ -675,10 +674,6 @@ local states=
             inst.components.health:SetInvincible(true)
 
             inst.components.sleeper:WakeUp()
-
-            if inst.brain ~= nil and inst.brain.stopped then
-                inst.brain:Start()
-            end
         end,
 
         timeline=
@@ -1018,5 +1013,8 @@ CommonStates.AddSleepExStates(states,
     },
 })
 
-return StateGraph("beefalo", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+-- CommonStates.AddCorpseStates(states) -- TODO (Omar): No corpse states for now due to shadow revive beefalo corpse being handled differently.
+
+return StateGraph("beefalo", states, events, "init", actionhandlers)
 

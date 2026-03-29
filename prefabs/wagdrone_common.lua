@@ -1,6 +1,5 @@
 local REGISTERED_TARGET_TAGS
 
---(Omar): NOTE This is also used for electric fence fx
 local function FindShockTargets(x, z, radius)
 	if REGISTERED_TARGET_TAGS == nil then
 		REGISTERED_TARGET_TAGS = TheSim:RegisterFindTags(
@@ -48,6 +47,9 @@ local function RemoveLootConfig(inst)
 end
 
 local function RemoveFriendlyConfig(inst)
+	if inst.components.health then
+		inst.components.health.redirect = nil
+	end
 	inst:RemoveComponent("inventoryitem")
 	inst:RemoveComponent("finiteuses")
 	inst:RemoveComponent("knowndynamiclocations")
@@ -221,8 +223,10 @@ local function ChangeToFriendly(inst)
 		RemoveLootConfig(inst)
 		inst:AddTag("companion")
 
-		inst.components.health:SetPercent(1)
-		inst.components.health.redirect = FriendlyDamageToUses
+		if inst.components.health then
+			inst.components.health:SetPercent(1)
+			inst.components.health.redirect = FriendlyDamageToUses
+		end
 
 		inst:AddComponent("inventoryitem")
 		inst.components.inventoryitem:SetOnDroppedFn(toground)
@@ -254,7 +258,8 @@ local function MakeFriendablePristine(inst)
 	--Sneak this into pristine state for optimization
 	inst:AddTag("__inventoryitem")
 
-	MakeInventoryFloatable(inst, "med", 0.5, { 1.1, 1.3, 1.1 })
+	--V2C: need that swap_data because reskinning forces a call to floater:SwitchToDefaultAnim(true)
+	MakeInventoryFloatable(inst, "med", 0.5, { 1.1, 1.3, 1.1 }, nil, nil, { anim = "off_idle" })
 end
 
 local function MakeFriendable(inst)

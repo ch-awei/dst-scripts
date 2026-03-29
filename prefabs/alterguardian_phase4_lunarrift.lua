@@ -40,6 +40,7 @@ local prefabs =
 	"gears",
 	"temp_beta_msg", --#TEMP_BETA
     "chesspiece_wagboss_lunar_sketch",
+	"winter_ornament_boss_celestialscion",
 }
 
 SetSharedLootTable("alterguardian_phase4_lunarrift",
@@ -636,10 +637,17 @@ local function RetargetFn(inst)
 	--NOTE: grouptargets aleady have checked for inarena conditions during UpdatePlayerTargets
 	assert(next(inst._temptbl1) == nil)
 	local nearplayers = inst._temptbl1
-	for k in pairs(inst.components.grouptargeter:GetTargets()) do
-		local range = inrange and TUNING.ALTERGUARDIAN_PHASE4_LUNARRIFT_ATTACK_RANGE + k:GetPhysicsRadius(0) or inst.aggrodist
-		if k:GetDistanceSqToPoint(x, y, z) < range * range then
+	if not inrange and inst._engagetask ~= nil and not inst._engagetask.engaged and inst.engaged then
+		--V2C: when pending reset (was in combat but lost aggro), retarget the entire arena until successfully reset
+		for k in pairs(inst.components.grouptargeter:GetTargets()) do
 			table.insert(nearplayers, k)
+		end
+	else
+		for k in pairs(inst.components.grouptargeter:GetTargets()) do
+			local range = inrange and TUNING.ALTERGUARDIAN_PHASE4_LUNARRIFT_ATTACK_RANGE + k:GetPhysicsRadius(0) or inst.aggrodist
+			if k:GetDistanceSqToPoint(x, y, z) < range * range then
+				table.insert(nearplayers, k)
+			end
 		end
 	end
 	if #nearplayers > 0 then
@@ -698,7 +706,7 @@ end
 
 local function SetEngaged(inst, engaged, delay)
 	if delay then
-		if inst._engagetask == nil or inst._engagetask ~= engaged then
+		if inst._engagetask == nil or inst._engagetask.engaged ~= engaged then
 			if inst._engagetask then
 				inst._engagetask:Cancel()
 			end
@@ -1137,16 +1145,9 @@ local function slamfx_CreateGroundFx()
 	return fx
 end
 
-local function slamfx_CancelPostUpdate_Client(inst, slamfx_PostUpdate_Client)
-	inst._cancelpostupdatetask = nil
-	inst.components.updatelooper:RemovePostUpdateFn(slamfx_PostUpdate_Client)
-end
-
 local function slamfx_PostUpdate_Client(inst)
-	if inst._cancelpostupdatetask == nil then
-		inst._cancelpostupdatetask = inst:DoStaticTaskInTime(0, slamfx_CancelPostUpdate_Client, slamfx_PostUpdate_Client)
-		inst.ring.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
-	end
+	inst.ring.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
+	inst.components.updatelooper:RemovePostUpdateFn(slamfx_PostUpdate_Client)
 end
 
 local function slamfxfn()

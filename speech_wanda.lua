@@ -75,6 +75,7 @@ return{
 			REVIVE_FAILED = "It looks like I was too late...",
 			WARP_NO_POINTS_LEFT = "That's enough backtracking for now.",
 			SHARD_UNAVAILABLE = "There's too much wobble wibbling the timestream.",
+			NO_TELEPORT_ZONE = "The timestream here is too unstable... I shouldn't risk it.",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -104,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "There's not enough charge.",
+            CHARGE_FULL = "Fully charged.",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -274,6 +275,7 @@ return{
         PICK =
         {
             NOTHING_INSIDE = "I forgot it would be empty.",
+			STUCK = "I knew it was stuck.",
         },
         PICKUP =
         {
@@ -318,7 +320,7 @@ return{
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             -- Electrocute
+--fallback to speech_wilson.lua             -- rifts5.1
 --fallback to speech_wilson.lua             DEADBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 		REMOTE_TELEPORT =
@@ -486,6 +488,12 @@ return{
         {
             MISSED = "Missed! Bad timing...",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "I can't occupy the same space as another.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -706,7 +714,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Ack! Leave me alone!!",
+    ANNOUNCE_SPOOKED = "Ack! I don't need this in my life!!",
 	ANNOUNCE_BRAVERY_POTION = "It doesn't seem quite as scary this time around.",
 	ANNOUNCE_MOONPOTION_FAILED = "Well that didn't work out like I hoped.",
 
@@ -1170,11 +1178,28 @@ return{
     ANNOUNCE_FLOATER_HELD = "I saw my life flash before my eyes... not in any particular order.",
     ANNOUNCE_FLOATER_LETGO = "I hate this part!",
 
-    -- Electrocute
+    -- rifts5.1
     ANNOUNCE_LUNARHAIL_BIRD_SOUNDS = "I'll never get over that dreadful sound.",
     ANNOUNCE_LUNARHAIL_BIRD_CORPSES = "They never stood a chance.",
     ANNOUNCE_FLOAT_SWIM_TIRED = "I need a rest.",
     ANOUNCE_MUTATED_BIRD_ATTACK = "Heads up!",
+
+    -- Rift 6
+    ANNOUNCE_WEAPON_TOOWEAK = "Oh botheration! I'll need something stronger than this...",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Now this is rather annoying.",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "That's strange. You don't belong down here.",
+
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "I know what those are... nothing right about them.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Well that was a waste of time.",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "How efficient.",
+
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "The knights must be preoccupied. Hardly an excuse, if you ask me.",
 
 	BATTLECRY =
 	{
@@ -1759,6 +1784,8 @@ return{
 		TURF_FUNGUS="Why am I wasting time staring at the ground?",
 		TURF_FUNGUS_MOON = "Why am I wasting time staring at the ground?",
 		TURF_ARCHIVE = "Slightly more interesting to look at, but still just ground.",
+        TURF_VAULT = "Slightly more interesting to look at, but still just ground.",
+        TURF_VENT = "Why am I wasting time staring at the ground?",
 		TURF_SINKHOLE="Why am I wasting time staring at the ground?",
 		TURF_UNDERROCK="Why am I wasting time staring at the ground?",
 		TURF_MUD="Why am I wasting time staring at the ground?",
@@ -2109,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "And I just managed to forget you.",
         CHESSPIECE_WAGBOSS_ROBOT = "Do we really need a reminder of this?",
         CHESSPIECE_WAGBOSS_LUNAR = "Can't we just leave this monstrosity in the past?",
+        CHESSPIECE_YOTH = "I have mixed emotions about this one.",
 
         CHESSJUNK1 = "I don't see much in the way of proper clockwork in there.",
         CHESSJUNK2 = "I have a suspicion these were held together with more magic than craftsmanship.",
@@ -2149,6 +2177,7 @@ return{
         CRITTER_KITTEN = "Curious little thing, aren't you?",
         CRITTER_PERDLING = "I'm teaching her to chirp the hour.",
 		CRITTER_LUNARMOTHLING = "Time flies, and so do you!",
+        CRITTER_BULBIN = "Aren't you a little far from home?",
 
 		CROW =
 		{
@@ -3330,6 +3359,7 @@ return{
         WINTER_ORNAMENTBOSS = "Ah. Memories.",
 		WINTER_ORNAMENTFORGE = "I must have missed this one.",
 		WINTER_ORNAMENTGORGE = "Such a lovely family.",
+        WINTER_ORNAMENTPEARL = "I should spend more time with her.",
 
         WINTER_FOOD1 = "I half expect it to start running at any moment.", --gingerbread cookie
         WINTER_FOOD2 = "It's so hard to stop once you've eaten one.", --sugar cookie
@@ -4426,6 +4456,13 @@ return{
             LINE_4 = "I'd go back and ask what it means, but this time period is a bit beyond my reach.",
             LINE_5 = "I won't waste my time trying to decipher this gibberish.",
         },
+		VAULT_RUNE = "I'll not figure this out anytime soon.",
+		VAULT_STATUE =
+		{
+			LORE1 = "I don't think he foresaw this.",
+			LORE2 = "This is how it ended for them.",
+			LORE3 = "They've stood guard for a long time.",
+		},
 
         ARCHIVE_RESONATOR = {
             GENERIC = "Finally, something to point me in the right direction!",
@@ -5128,6 +5165,7 @@ return{
 
         PLAYBILL_THE_DOLL = "What an odd little play.",
         PLAYBILL_THE_VEIL = "Rather disturbing if you ask me.",
+        PLAYBILL_THE_VAULT = "This one takes me back.",
         STATUEHARP_HEDGESPAWNER = "There's just something about it...",
         HEDGEHOUND = "Fool me once, shame on you. Fool me twice, shame on you again!",
         HEDGEHOUND_BUSH = "Was that rosebush there a second ago?",
@@ -5734,7 +5772,7 @@ return{
         FLOTATIONCUSHION = "How convenient!",
         LUNAR_SEED = "I forget if this is the end or the beginning.",
 
-        -- electrocute
+        -- rifts5.1
         WAGBOSS_ROBOT_CONSTRUCTIONSITE = "Again?!",
         WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "Am I the only one who thinks this is a bad idea?",
         WAGBOSS_ROBOT_CREATION_PARTS = "Here we go...",
@@ -5755,6 +5793,234 @@ return{
             BURNING  = "This should put an end to it.", --when its burning
             REVIVING = "I hate this part.", --when its mutating and being revived
         },
+
+        BUZZARDCORPSE = {
+            GENERIC  = "I know what comes next.", --witnessing the corpse
+            BURNING  = "This should put an end to it.", --when its burning
+            REVIVING = "I hate this part.", --when its mutating and being revived
+        },
+
+        MUTATEDBUZZARD_GESTALT = {
+            GENERIC = "This is not good.", -- Generic string
+            EATING_CORPSE = "I see it hasn't lost its appetite.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
+        },
+
+        -- Rifts 6
+
+        SHADOWTHRALL_CENTIPEDE = {
+            HEAD = "Is it moving forwards or backwards?", --The head segment
+            BODY = "I almost forgot how huge they are.", --The body segment
+            FLIPPED = "There isn't much time!", --When it's flipped over (either head or body segment)
+        },
+
+        TREE_ROCK =
+		{
+			BURNING = "The stone will fall any time now.", --It's vines are burning, it will collapse
+			CHOPPED = "Time to mine.", --It's 'chopped', so the rock fell
+			GENERIC = "Looks like a quick job.", --Rock is still on tree
+		},
+
+        -- NOTE: Unsure about HOT and COLD, just do GENERIC, GAS, MIASMA for now!
+        CAVE_VENT_ROCK =
+        {
+            GENERIC = "Let's go around those, shall we?", -- Not ventilating anything
+            HOT     = "I feel sluggish in this heat.", -- Ventiliating hot air, making the area warm
+            GAS     = "Oh that dreadful, noxious odor.", -- Ventiliating Toadstools gas fumes and spores
+            MIASMA  = "Oh botheration, I've no desire to wade through that vile substance.", -- Ventiliating the shadow rift miasma
+        },
+        CAVE_FERN_WITHERED = "Not interesting at all.",
+        FLOWER_CAVE_WITHERED = "This flower's time is running out.",
+
+		ABYSSPILLAR_MINION =
+		{
+			GENERIC = "There's something about it...", --off, looks like decor/statue
+			ACTIVATED = "Yes, they follow a pattern...", --turned on and hopping over puzzle pillars
+		},
+		ABYSSPILLAR_TRIAL = "Is it my choice to pull the lever now if I already know what I'm going to do?",
+
+        VAULT_TELEPORTER =
+        {
+            GENERIC = "A shame it's not portable.",
+            BROKEN = "It's plain to see it's broken.",
+            UNPOWERED = "I knew I forgot something.",
+        },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
+		VAULT_ORB = "This is the functional piece.",
+        VAULT_LOBBY_EXIT = "Sure, why not?",
+		VAULT_CHANDELIER_BROKEN = "I'm surprised it stayed up that long in the first place.",
+
+		ANCIENT_HUSK = "How awful.",
+		MASK_ANCIENT_HANDMAIDHAT = "It reminds me of someone with authority.",
+		MASK_ANCIENT_ARCHITECTHAT = "Looks rather familiar.",
+		MASK_ANCIENT_MASONHAT = "A mask like this is earned through years of hard labor.",
+
+        TREE_ROCK_SEED = "I could plant this anywhere.",
+        TREE_ROCK_SAPLING = "It has its whole life ahead of it.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Not how I want to spend my time.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Is there an order to this.",
+			BROKEN = "It's broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "That's the end of that.",
+			GENERIC = "I was hoping not to see or smell you again.",
+			SLEEPING = "That's one way to pass the time.",
+            VENTING = "Disgusting.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Yes, that will go nicely.",
+			UNCARVED = "Pumpkin carving reminds me of a simpler time.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "I know what comes next.", --witnessing the corpse
+            BURNING  = "This should put an end to it.", --when its burning
+            REVIVING = "I hate this part.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "I have a bad feeling about it.",
+			BURNING = "A wise choice.",
+			REVIVING = "This was predictable.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "We should burn it, if I recall correctly.",
+			BURNING = "I hope I never see you again.",
+			REVIVING = "A new cycle begins.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "That merm needs to be burned.",
+			BURNING = "It's the right thing to do.",
+			REVIVING = "What a terrible fate for that poor merm.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "I'd better burn that thing before it's too late.",
+            BURNING = "One less potential reanimated corpse to worry about.",
+            REVIVING = "I was afraid of this.",
+        },
+
+		--Winter's Feast 2025
+
+		W_RADIO = "I don't trust it.",
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "There's a time to slow down and enjoy the little things.",
+            GENERIC = "It looks so warm and inviting.",
+            EMPTY = "No sense standing around an empty hole.",
+        },
+		HERMITHOTSPRING_CONSTR = "Of course it's not done.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "It's done! Finally!!",
+            DRYING = "I'll be old and grey before it's done...",
+            DRYINGINRAIN = "The weather is not cooperating.",
+            GENERIC =  "Drying is slow. This helps.",
+            BURNT = "Oh botheration!",
+            DONE_NOTMEAT = "I think it's been aged enough.",
+            DRYING_NOTMEAT = "It's like watching paint dry.",
+            DRYINGINRAIN_NOTMEAT = "This isn't helping.",
+            DONE_SALT = "Salt? That was easy.",
+			ABANDONED = "I'm afraid it's beyond repair.",
+        },
+		HERMITHOUSE_ORNAMENT = "Rather charming.",
+		HERMITHOUSE_LAUNDRY = "When's the last time I did laundry?",
+
+        PETALS_DRIED = "Smells lovely.",
+        PETALS_EVIL_DRIED = "Smells lovely.",
+        FOLIAGE_DRIED = "Smells lovely.",
+        SUCCULENT_PICKED_DRIED = "Smells lovely.",
+        FIRENETTLES_DRIED = "Smells lovely.",
+        TILLWEED_DRIED = "Smells lovely.",
+        MOON_TREE_BLOSSOM_DRIED = "Smells lovely.",
+        FORGETMELOTS_DRIED = "Smells lovely.",
+
+        HERMITCRABTEA_PETALS = "A charming cup of tea to keep the insanity away.",
+        HERMITCRABTEA_PETALS_EVIL = "I'm sure there's a good use for it.",
+        HERMITCRABTEA_FOLIAGE = "Only good if I remember to take it beforehand.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Hm. For a quick cool down.",
+        HERMITCRABTEA_FIRENETTLES = "It'll keep the chill out of my bones.",
+        HERMITCRABTEA_TILLWEED = "A nice little pick-me-up.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "The moon imparts an unforgettable taste.",
+        HERMITCRABTEA_FORGETMELOTS = "A sure way to gather my wits.",
+        SHELLWEAVER = "So much to make, and so little time!",
+        ICESTAFF2 = "I could dabble in some ice magic.",
+        ICESTAFF3 = "I'll need a hot cup of tea after this.",
+        NONSLIPGRIT = "I'm not losing my grip just yet!",
+        NONSLIPGRITBOOSTED = "A little traction couldn't hurt.",
+        DESICCANT = "It should keep me from getting too waterlogged.",
+        DESICCANTBOOSTED = "I won't have to worry about getting soggy!",
+        HERMITCRAB_SHELL = "How long has it been since I last paid Pearl a visit?",
+        SALTY_DOGHAT = "The fur trim is quite fetching.",
+        SALTY_DOG = "I always did have a soft spot for crusty little dogs.",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "I hope Pearl is in soon.", -- Inactive state, no Pearl inside.
+            ACTIVE = "It is time for tea.", -- Active, Pearl is inside, can buy from her
+            BREWING = "One must take their time brewing tea.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "A shame. I should have seen it coming.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "A dry, tough piece of fish meat.",
+        FISHMEAT_SMALL_DRIED = "A dry, tough piece of fish meat.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "What a cheery sight.",
+            ABANDONED = "Oh botheration, what a mess.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "I think she'll be rather pleased with this.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Satisfied?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What does it want now?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "That's the end of that.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "She has an attitude about her.",
+        COSTUME_PRINCESS_BODY = "A rather fancy outfit for a horse.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "It was something about horses.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "What happened to chivalry?", -- Generic quote. It's aggressive.
+            FOLLOWING = "A loyal horse.", -- Following the character examining
+            FOLLOWING_OTHER = "Who do you serve?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "There's a time to be brave.",
+        ARMOR_YOTH_KNIGHT = "This should offer some protection.",
+        HORSESHOE = "A little luck never hurt.",
+        YOTH_LANCE = "Rather old fashioned.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "It's time ran out.", -- Depleted and on the ground
+            HELD = "I should use it at nightfall.", -- In the players inventory
+            GENERIC = "There's something calming about it.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "If galloping saves me time, then call me Nellie.",
+        YOTH_CHAIR_ROCKING_ITEM = "Riding a horse that goes nowhere? And yet...", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

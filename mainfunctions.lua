@@ -400,13 +400,13 @@ function PrefabExists(name)
     return Prefabs[name] ~= nil
 end
 
-function SpawnPrefab(name, skin, skin_id, creator)
+function SpawnPrefab(name, skin, skin_id, creator, skin_custom)
     name = string.sub(name, string.find(name, "[^/]*$"))
     if skin and not IsItemId(skin) then
         print("Unknown skin", skin)
 		skin = nil
     end
-    local guid = TheSim:SpawnPrefab(name, skin, skin_id, creator)
+    local guid = TheSim:SpawnPrefab(name, skin, skin_id, creator, skin_custom)
     return Ents[guid]
 end
 
@@ -676,23 +676,23 @@ function OnEntitySleep(guid)
             inst:OnEntitySleep()
         end
 
-        inst:StopBrain()
+		inst:_DisableBrain_Internal()
 
         if inst.sg then
             SGManager:Hibernate(inst.sg)
         end
+
+		inst.sleepstatepending = nil
 
         if inst.emitter then
             EmitterManager:Hibernate(inst.emitter)
         end
 
         for k,v in pairs(inst.components) do
-
             if v.OnEntitySleep then
                 v:OnEntitySleep()
             end
         end
-
     end
 end
 
@@ -710,11 +710,13 @@ function OnEntityWake(guid)
         --     :HasTag("INLIMBO").  But there should be no networked
         --     entities on clients that can go to sleep.
         if not inst:IsInLimbo() then
-            inst:RestartBrain()
+			inst:_EnableBrain_Internal()
             if inst.sg then
                 SGManager:Wake(inst.sg)
             end
         end
+
+		inst.sleepstatepending = nil
 
         if inst.emitter then
             EmitterManager:Wake(inst.emitter)
@@ -2072,6 +2074,12 @@ function ResumeExistingUserSession(data, guid)
 
             -- Spawn the player to last known location
 			local x, y, z, platform = ResolveSaveRecordPosition(data)
+            if TheWorld.Map:IsPointInVaultRoom(x, y, z) then
+                local vault_lobby_center = TheWorld.components.vaultroommanager:GetVaultLobbyCenterMarker()
+                if vault_lobby_center then
+                    x, y, z = vault_lobby_center.Transform:GetWorldPosition()
+                end
+            end
 			TheWorld.components.playerspawner:SpawnAtLocation(TheWorld, player, x, y, z, true)
 			if platform ~= nil then
 				player.components.walkableplatformplayer:TestForPlatform()
@@ -2441,8 +2449,8 @@ function CreateRepeatedSoundVolumeReduction(repeat_time, lowered_volume_percent)
     end
 end
 
---if fired in the last 0.25 seconds, reduce the volume to 75%
-ClickMouseoverSoundReduction = CreateRepeatedSoundVolumeReduction(0.25, 0.75)
+ClickMouseoverSoundReduction = CreateRepeatedSoundVolumeReduction(0.25, 0.75) --if fired in the last 0.25 seconds, reduce the volume to 75%
+LuckSoundReduction = CreateRepeatedSoundVolumeReduction(0.75, 0.50) --if fired in the last 0.5 seconds, reduce the volume to 50%
 
 local currently_displaying = nil
 function DisplayAntiAddictionNotification( notification )

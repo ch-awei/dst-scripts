@@ -27,6 +27,7 @@ local AVAILABLE_TECH =
 	"FISHING",
 	"WINTERSFEASTCOOKING",
     "HERMITCRABSHOP",
+    "SHELLWEAVER",
     "RABBITKINGSHOP",
     "WANDERINGTRADERSHOP",
     "WAGPUNK_WORKSTATION",
@@ -39,6 +40,7 @@ local AVAILABLE_TECH =
 	"SHADOWFORGING",
     "CARPENTRY",
     "WORMOFFERING",
+    "KNIGHTOFFERING",
 }
 
 -- NOTES(JBK): These are a cache for a speedup in builder:KnowsRecipe calculations to reduce a spike in garbage collection from string allocations.

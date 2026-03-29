@@ -11,6 +11,7 @@ local prefabs =
     "cutgrass",
     "plantmeat",
     "grassgekkoherd",
+    "grassgekkocorpse",
 }
 
 SetSharedLootTable('grassgekko',
@@ -49,7 +50,7 @@ local function ontimerdone(inst, data)
 end
 
 local function SleepTest(inst)
-    if ( inst.components.follower and inst.components.follower.leader )
+    if ( inst.components.follower and inst.components.follower:GetLeader() )
         or ( inst.components.combat and inst.components.combat.target )
         or inst.components.playerprox:IsPlayerClose()
         or TheWorld.state.israining and inst.components.rainimmunity == nil then

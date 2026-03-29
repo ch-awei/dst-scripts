@@ -34,9 +34,9 @@ local events=
 			inst.sg:GoToState("attack")
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("attack", "electrocute", "nointerrupt") then
@@ -66,6 +66,9 @@ local events=
 			inst.sg:GoToState("dive")
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -186,12 +189,21 @@ local states=
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("waterlogged2/creatures/grass_gator/death")
             inst.AnimState:PlayAnimation("death")
+            local amphibiouscreature = inst.components.amphibiouscreature
+            if amphibiouscreature and amphibiouscreature.in_water then
+                inst.AnimState:PushAnimation("death_idle", true)
+            end
+
             inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
 
             RemovePhysicsColliders(inst)
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -587,4 +599,15 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("grassgator", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        local amphibiouscreature = inst.components.amphibiouscreature
+        if amphibiouscreature and amphibiouscreature.in_water then
+            return "death_idle", true
+        end
+    end,
+})
+
+return StateGraph("grassgator", states, events, "init")

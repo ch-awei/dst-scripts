@@ -99,6 +99,9 @@ local events =
     EventHandler("flyback", function(inst)
         inst.sg:GoToState("flyback")
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -308,7 +311,17 @@ local states =
         end,
 
         onupdate = function(inst, dt)
-            if inst.sg.statemem.collisiontime <= 0 then
+			if inst.sg.statemem.fxtime > 0 then
+				inst.sg.statemem.fxtime = inst.sg.statemem.fxtime - dt
+			else
+				inst.sg.statemem.fxtime = FX_TIME - dt
+				spawn_ground_fx(inst)
+			end
+
+			if inst.sg.statemem.collisiontime > 0 then
+				inst.sg.statemem.collisiontime = inst.sg.statemem.collisiontime - dt
+			else
+				inst.sg.statemem.collisiontime = COLLIDE_TIME - dt
 				--assert(TUNING.EYEOFTERROR_CHARGE_AOERANGE <= inst.components.combat.hitrange)
                 local x,y,z = inst.Transform:GetWorldPosition()
 				local theta = inst.Transform:GetRotation() * DEGREES
@@ -319,21 +332,13 @@ local states =
 					if ent:IsValid() then
 						local range = TUNING.EYEOFTERROR_CHARGE_AOERANGE + ent:GetPhysicsRadius(0)
 						if ent:GetDistanceSqToPoint(x, y, z) < range * range then
+							--NOTE: It is possible for this call to cause us to exit state
+							--      e.g. colliding against something that reflects electrocute
 							inst:OnCollide(ent)
 						end
 					end
                 end
-
-                inst.sg.statemem.collisiontime = COLLIDE_TIME
             end
-            inst.sg.statemem.collisiontime = inst.sg.statemem.collisiontime - dt
-
-            if inst.sg.statemem.fxtime <= 0 then
-                spawn_ground_fx(inst)
-
-                inst.sg.statemem.fxtime = FX_TIME
-            end
-            inst.sg.statemem.fxtime = inst.sg.statemem.fxtime - dt
         end,
 
         onexit = function(inst)
@@ -451,6 +456,12 @@ local states =
 						end
 					end
                 end
+
+				if inst.sg.currentstate.name ~= "mouthcharge_loop" then
+					--OnCollide attack resulted in us leaving this state already.
+					--e.g. Hit something that electrocutes us.
+					return
+				end
 
                 inst.sg.statemem.collisiontime = COLLIDE_TIME
             end
@@ -960,7 +971,7 @@ local states =
             TimeEvent(36*FRAMES, function(inst)
 				if inst.persists then
 					inst.persists = false
-					inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    inst:DropDeathLoot()
 				end
                 ShakeAllCameras(CAMERASHAKE.VERTICAL, 0.5, 0.15, 0.1, inst, 40)
 				inst:PushEvent("forgetme")
@@ -973,6 +984,7 @@ local states =
             EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
 					inst:PushEvent("turnoff_terrarium")
+                    inst.sg:GoToState("corpse")
 				end
             end),
         },
@@ -1121,4 +1133,7 @@ CommonStates.AddSleepExStates(states,
     onexitwake = raise_flying_creature,
 })
 
-return StateGraph("eyeofterror", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("eyeofterror", states, events, "init")

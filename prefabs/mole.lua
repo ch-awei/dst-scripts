@@ -13,6 +13,8 @@ local prefabs =
     "cookedsmallmeat",
     "mole_move_fx",
     "molehat",
+
+    "molecorpse",
 }
 
 local brain = require("brains/molebrain")
@@ -197,6 +199,8 @@ local function fn()
 
         return inst
     end
+
+	inst.scrapbook_speechstatus = "ABOVEGROUND"
 
     inst:AddComponent("tradable")
 

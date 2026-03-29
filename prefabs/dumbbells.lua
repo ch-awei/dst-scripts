@@ -62,7 +62,7 @@ local function ReticuleShouldHideFn(inst)
 end
 
 local function HasFriendlyLeader(inst, target, attacker)
-    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    local target_leader = target.components.follower and target.components.follower:GetLeader()
     
     if target_leader ~= nil then
 
@@ -100,9 +100,9 @@ local function CanDamage(inst, target, attacker)
         return false
     end
 
+    local leader = target.components.follower and target.components.follower:GetLeader()
     if target:HasTag("monster") and not TheNet:GetPVPEnabled() and 
-       ((target.components.follower and target.components.follower.leader ~= nil and 
-         target.components.follower.leader:HasTag("player")) or target.bedazzled) then
+       ((leader and leader:HasTag("player")) or target.bedazzled) then
         return false
     end
 
@@ -445,8 +445,9 @@ local function TemperatureChange(inst, data)
     if range ~= inst.currentTempRange then
         UpdateImages(inst, range)
 
-        if (inst.lowTemp ~= nil and range >= 3) or
-            (inst.highTemp ~= nil and range <= 3) then
+        local hasrate = data and data.hasrate or false
+        if hasrate and ((inst.lowTemp ~= nil and range >= 3) or
+            (inst.highTemp ~= nil and range <= 3)) then
             inst.lowTemp = nil
             inst.highTemp = nil
             inst.components.finiteuses:SetPercent(inst.components.finiteuses:GetPercent() - 1 / TUNING.HEATROCK_NUMUSES)

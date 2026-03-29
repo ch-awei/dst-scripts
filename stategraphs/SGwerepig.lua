@@ -26,12 +26,12 @@ local events =
         end
     end),
     EventHandler("giveuptarget", function(inst, data)
-		if data.target and not inst.sg:HasStateTag("electrocute") then
+		if data.target and not inst.sg:HasStateTag("electrocute") and not inst.components.health:IsDead() then
             inst.sg:GoToState("howl")
         end
     end),
     EventHandler("newcombattarget", function(inst, data)
-        if data.target ~= nil and not inst.sg:HasStateTag("busy") then
+        if data.target ~= nil and not inst.sg:HasStateTag("busy") and not inst.components.health:IsDead() then
             if math.random() < .3 then
                 inst.sg:GoToState("howl")
             else
@@ -52,8 +52,13 @@ local states =
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -334,4 +339,7 @@ CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 CommonStates.AddIpecacPoopState(states)
 
-return StateGraph("werepig", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states, nil, nil, "pigcorpse")
+
+return StateGraph("werepig", states, events, "init", actionhandlers)

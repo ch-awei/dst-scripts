@@ -41,14 +41,15 @@ SetSharedLootTable("worm_boss",
 
 local function GenerateLoot(inst, pos, loot)
     local loottable = {
-        boneshard = 25,
-        rocks = 20,
-        flint = 15,
-        nitre = 15,
-        monstermeat = 15,
+        boneshard = 15,
+        rocks = 10,
+        flint = 10,
+        nitre = 10,
+        monstermeat = 10,
         goldnugget = 4,
         slurtle_shellpieces = 2,
         tentaclespots = 2,
+        tree_rock_seed = 2,
         lightbulb = 2,
         wormlight = 2,
         guano = 2,
@@ -236,7 +237,9 @@ local function OnDeath(inst, data)
 end
 
 local function _PlayDirstPstSlowAnim(dirt)
-    dirt.AnimState:PlayAnimation("dirt_pst_slow")
+    if dirt and dirt:IsValid() then
+        dirt.AnimState:PlayAnimation("dirt_pst_slow")
+    end
 end
 
 local SEGMENT_ERODE_TIME = 6
@@ -306,6 +309,11 @@ local function OnSave(inst, data)
                     table.insert(data.lootspots,SerializePosition(Vector3(segment.Transform:GetWorldPosition()) ))
                 end
             end
+        end
+
+        if inst.components.lootdropper then
+            local lucky_user = inst.components.lootdropper:GetLuckyUser()
+            data.luck_num = lucky_user and GetEntityLuck(lucky_user) or 0
         end
 
     else
@@ -396,7 +404,7 @@ local function OnLoadPostPass(inst, newents, data)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
-                if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+                if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() <= GetLuckChance(data.luck_num or 0, LUCY_NUGGET_CHANCE, LuckFormulas.LootDropperChance) then
                     GenerateLoot(inst, pos, "lucky_goldnugget")
                 end
             end
@@ -883,10 +891,11 @@ local function Segment_OnAnimOver(inst)
 
     elseif inst.AnimState:IsCurrentAnimation("segment_death") then
         inst.AnimState:PlayAnimation("segment_death_pst")
+        local lucky_user = inst.worm ~= nil and inst.worm.components.lootdropper:GetLuckyUser()
         GenerateLoot(inst)
         GenerateLoot(inst)
         GenerateLoot(inst)
-        if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+        if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and TryLuckRoll(lucky_user, LUCY_NUGGET_CHANCE, LuckFormulas.LootDropperChance) then
             GenerateLoot(inst,nil,"lucky_goldnugget")
         end
     elseif inst.AnimState:IsCurrentAnimation("segment_death_pst") then
@@ -1159,7 +1168,7 @@ local function Dirt_DamageRedirectFn(inst, attacker, damage, weapon, stimuli)
         end
     end
 
-    if inst.chunk.head ~= nil then
+	if inst.chunk and inst.chunk.head then
         inst.chunk.head:PushEvent("attacked")
     end
 

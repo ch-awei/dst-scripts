@@ -12,12 +12,17 @@ local function DoInspected(invitem, tried)
     end
 end
 
+--NOTE: keep in sync with RecipeTile.sSetImageFromRecipe
 local function SetImageFromItem(im, item)
 	if item.layeredinvimagefn then
 		local layers = item.layeredinvimagefn(item)
 		if layers and #layers > 0 then
 			local row = layers[1]
 			im:SetTexture(row.atlas or GetInventoryItemAtlas(row.image), row.image)
+			if row.offset then
+				print("WARNING: offset not supported on layer 1 of layered icon.  Item = "..tostring(item))
+				assert(BRANCH ~= "dev")
+			end
 
             local j = 1
 
@@ -31,13 +36,16 @@ local function SetImageFromItem(im, item)
 					if w then
 						w:SetTexture(row.atlas or GetInventoryItemAtlas(row.image), row.image)
 					else
-						im.layers[j] = im:AddChild(Image(row.atlas or GetInventoryItemAtlas(row.image), row.image))
+						w = im:AddChild(Image(row.atlas or GetInventoryItemAtlas(row.image), row.image))
 						if usecc then
-							im.layers[j]:SetEffect("shaders/ui_cc.ksh")
+							w:SetEffect("shaders/ui_cc.ksh")
 						end
+						im.layers[j] = w
 					end
 					if row.offset then
-						im.layers[j]:SetPosition(row.offset)
+						w:SetPosition(row.offset)
+					else
+						w:SetPosition(0, 0, 0)
 					end
 					j = j + 1
 				end
@@ -105,6 +113,17 @@ local ItemTile = Class(Widget, function(self, invitem)
         self.spoilage:GetAnimState():SetBuild("spoiled_meter")
         self.spoilage:GetAnimState():AnimateWhilePaused(false)
         self.spoilage:SetClickable(false)
+		self.spoilage.inst:ListenForEvent("hide_spoilage",
+			function(invitem)
+				if self.bg then
+					self.bg:Kill()
+					self.bg = nil
+				end
+				if self.spoilage then
+					self.spoilage:Kill()
+					self.spoilage = nil
+				end
+			end, invitem)
     end
 
     self.wetness = self:AddChild(UIAnim())
@@ -213,8 +232,8 @@ local ItemTile = Class(Widget, function(self, invitem)
                 end
             end, ThePlayer)
     self.inst:ListenForEvent("item_buff_changed",
-        function(player)
-            self:HandleBuffFX(invitem, true)
+        function(player, data)
+            self:HandleBuffFX(invitem, true, data)
         end,
     ThePlayer)
     self.inst:ListenForEvent("stacksizechange",
@@ -270,7 +289,7 @@ local ItemTile = Class(Widget, function(self, invitem)
         function(invitem, data)
             if self:HasSpoilage() then
                 self:SetPerishPercent(data.percent)
-            elseif invitem:HasTag("fresh") or invitem:HasTag("stale") or invitem:HasTag("spoiled") then
+			elseif invitem:HasAnyTag("fresh", "stale", "spoiled") then
                 self:SetPercent(data.percent)
             end
         end, invitem)
@@ -507,19 +526,21 @@ function ItemTile:SetQuantity(quantity)
 end
 
 function ItemTile:SetPerishPercent(percent)
-    --percent is approximated over the network, so check tags to
-    --determine the correct color at the 50% and 20% boundaries.
-    if percent < .51 and percent > .49 and self.item:HasTag("fresh") then
-        self.spoilage:GetAnimState():OverrideSymbol("meter", "spoiled_meter", "meter_green")
-        self.spoilage:GetAnimState():OverrideSymbol("frame", "spoiled_meter", "frame_green")
-    elseif percent < .21 and percent > .19 and self.item:HasTag("stale") then
-        self.spoilage:GetAnimState():OverrideSymbol("meter", "spoiled_meter", "meter_yellow")
-        self.spoilage:GetAnimState():OverrideSymbol("frame", "spoiled_meter", "frame_yellow")
-    else
-        self.spoilage:GetAnimState():ClearAllOverrideSymbols()
-    end
-    --don't use 100% frame, since it should be replace by something like "spoiled_food" then
-    self.spoilage:GetAnimState():SetPercent("anim", math.clamp(1 - percent, 0, .99))
+	if self.spoilage then
+		--percent is approximated over the network, so check tags to
+		--determine the correct color at the 50% and 20% boundaries.
+		if percent < 0.51 and percent > 0.49 and self.item:HasTag("fresh") then
+			self.spoilage:GetAnimState():OverrideSymbol("meter", "spoiled_meter", "meter_green")
+			self.spoilage:GetAnimState():OverrideSymbol("frame", "spoiled_meter", "frame_green")
+		elseif percent < 0.21 and percent > 0.19 and self.item:HasTag("stale") then
+			self.spoilage:GetAnimState():OverrideSymbol("meter", "spoiled_meter", "meter_yellow")
+			self.spoilage:GetAnimState():OverrideSymbol("frame", "spoiled_meter", "frame_yellow")
+		else
+			self.spoilage:GetAnimState():ClearAllOverrideSymbols()
+		end
+		--don't use 100% frame, since it should be replace by something like "spoiled_food" then
+		self.spoilage:GetAnimState():SetPercent("anim", math.clamp(1 - percent, 0, 0.99))
+	end
 end
 
 function ItemTile:SetPercent(percent)
@@ -538,10 +559,16 @@ function ItemTile:SetPercent(percent)
 		self.percent:SetString(string.format("%2.0f%%", val_to_show))
 		if not self.dragging and self.item:HasTag("show_broken_ui") then
 			if percent > 0 then
-				self.bg:Hide()
-				self.spoilage:Hide()
+				if self.bg then
+					self.bg:Hide()
+				end
+				if self.spoilage then
+					self.spoilage:Hide()
+				end
 			else
-				self.bg:Show()
+				if self.bg then
+					self.bg:Show()
+				end
 				self:SetPerishPercent(0)
 			end
 		end
@@ -603,11 +630,11 @@ end
 function ItemTile:CancelDrag()
     self:StopFollowMouse()
 
-    if self.item:HasTag("show_spoiled") or (self.item.components.edible and self.item.components.perishable) then
+	if self.bg and self.item:HasTag("show_spoiled") or (self.item.components.edible and self.item.components.perishable) then
         self.bg:Show( )
     end
 
-    if self.item.components.perishable and self.item.components.edible then
+	if self.spoilage and self.item.components.perishable and self.item.components.edible then
         self.spoilage:Show()
     end
 
@@ -766,7 +793,7 @@ function ItemTile:HandleAcidSizzlingFX(isacidsizzling)
     end
 end
 
-function ItemTile:HandleBuffFX(invitem, fromchanged)
+function ItemTile:HandleBuffFX(invitem, fromchanged, data)
     local player_classified = ThePlayer and ThePlayer.player_classified or nil
     if not player_classified then
         return
@@ -804,6 +831,44 @@ function ItemTile:HandleBuffFX(invitem, fromchanged)
                 self.freecastpanflute = nil
                 ref:GetAnimState():PlayAnimation("notes_pst")
                 ref.inst:ListenForEvent("animover", function() ref:Kill() end)
+            end
+        end
+    elseif invitem.prefab == "desiccant" or invitem.prefab == "desiccantboosted" then
+        if data and data.effect == "playwaterfx" and data.inst == invitem then
+            if self.playwaterfx == nil then
+                self.playwaterfx = self.image:AddChild(UIAnim())
+                local ref = self.playwaterfx
+                ref:GetAnimState():SetBank("inventory_fx_absorbwater")
+                ref:GetAnimState():SetBuild("inventory_fx_absorbwater")
+                ref:GetAnimState():PlayAnimation("absorb", false)
+                ref:GetAnimState():AnimateWhilePaused(true) -- Based off of a sound that plays so it should also keep going.
+                ref:SetClickable(false)
+                ref.inst:ListenForEvent("animover", function()
+                    self.playwaterfx = nil
+                    ref:Kill()
+                end)
+                ref.inst:DoTaskInTime(8 * FRAMES, function()
+                    if TheFocalPoint then
+                        TheFocalPoint.SoundEmitter:PlaySound("winter2025/dessicant/use")
+                    end
+                end)
+            end
+        end
+    elseif invitem:HasAnyTag("luckyitem", "unluckyitem", "luckysource", "unluckysource") and data then
+        if (data.effect == "playluckyfx" and invitem:HasAnyTag("luckyitem", "luckysource"))
+            or (data.effect == "playunluckyfx" and invitem:HasAnyTag("unluckyitem", "unluckysource")) then
+            if self.playluckyfx == nil then
+                self.playluckyfx = self.image:AddChild(UIAnim())
+                local ref = self.playluckyfx
+                ref:GetAnimState():SetBank("inventory_fx_luck")
+                ref:GetAnimState():SetBuild("inventory_fx_luck")
+                ref:GetAnimState():PlayAnimation(data.effect == "playluckyfx" and "lucky" or "unlucky", false)
+                ref:GetAnimState():AnimateWhilePaused(true)
+                ref:SetClickable(false)
+                ref.inst:ListenForEvent("animover", function()
+                    self.playluckyfx = nil
+                    ref:Kill()
+                end)
             end
         end
     end

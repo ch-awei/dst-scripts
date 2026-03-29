@@ -1535,12 +1535,15 @@ function GetNextOwnedSkin(prefab, cur_skin)
 			end
 		end
 		for i = found + 1, #skin_list do
-			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and TheInventory:CheckOwnership(skin_list[i]) then
+			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and (SKINS_EVENTLOCK[skin_list[i]] == nil or IsSpecialEventActive(SKINS_EVENTLOCK[skin_list[i]])) and TheInventory:CheckOwnership(skin_list[i]) then
 				new_skin = skin_list[i]
 				break
 			end
 		end
 	end
+    if not new_skin and PREFAB_SKINS_SHOULD_NOT_SELECT[prefab] then
+        new_skin = cur_skin
+    end
 	return new_skin
 end
 
@@ -1558,12 +1561,15 @@ function GetPrevOwnedSkin(prefab, cur_skin)
 			end
 		end
 		for i = found - 1, 1, -1 do
-			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and TheInventory:CheckOwnership(skin_list[i]) then
+			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and (SKINS_EVENTLOCK[skin_list[i]] == nil or IsSpecialEventActive(SKINS_EVENTLOCK[skin_list[i]])) and TheInventory:CheckOwnership(skin_list[i]) then
 				new_skin = skin_list[i]
 				break
 			end
 		end
 	end
+    if not new_skin and PREFAB_SKINS_SHOULD_NOT_SELECT[prefab] then
+        new_skin = cur_skin
+    end
 	return new_skin
 end
 
@@ -1952,7 +1958,7 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	elseif num_item_types == 19 or num_item_types == 14 then
 		columns = 7
 		resize_root = true
-	elseif num_item_types == 22 or num_item_types == 23 or num_item_types == 24 or num_item_types == 27 then
+	elseif num_item_types == 21 or num_item_types == 22 or num_item_types == 23 or num_item_types == 24 or num_item_types == 26 or num_item_types == 27 then
 		columns = 8
 		resize_root_small = true
 	elseif num_item_types == 31 or num_item_types == 35 then

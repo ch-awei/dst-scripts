@@ -199,6 +199,8 @@ local prefabs =
     --"spawn_fx_huge",
     --"spawn_fx_large",
     "spawn_fx_medium",
+	"spawn_fx_medium_static",
+	"spawn_fx_ocean_static",
     "spawn_fx_small",
     "spawn_fx_tiny",
     "spawn_fx_small_high",
@@ -562,6 +564,8 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
             return inst
         end
 
+        inst:AddComponent("shardtransactionsteps")
+
         inst:AddComponent("klaussackloot")
 
         inst:AddComponent("undertile")
@@ -579,6 +583,8 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
 
         inst:AddComponent("nightlightmanager")
         inst:AddComponent("winonateleportpadmanager")
+
+        inst:AddComponent("corpsepersistmanager")
 
         --World health management
         inst:AddComponent("skeletonsweeper")

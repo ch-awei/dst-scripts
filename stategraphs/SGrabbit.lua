@@ -12,7 +12,7 @@ local events=
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
 	EventHandler("attacked", function(inst, data)
-        if not inst.components.health:IsDead() then
+        if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -20,9 +20,6 @@ local events=
 			end
         end
     end),
-    EventHandler("death", function(inst, data)
-				inst.sg:GoToState("death", data)
-			end),
     EventHandler("trapped", function(inst) inst.sg:GoToState("trapped") end),
     EventHandler("locomote",
         function(inst)
@@ -47,6 +44,10 @@ local events=
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned")
     end),
+    CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -213,9 +214,13 @@ local states=
 			--print("data.afflicter",tostring(data.afflicter),type(data.afflicter))
 			-- KAJ: I'm not happy with this, I'd rather set this somewhere else
 			inst.causeofdeath = data and data.afflicter or nil
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()), data and data.afflicter or nil)
+            inst:DropDeathLoot()
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
      State{
@@ -309,4 +314,7 @@ CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("rabbit", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("rabbit", states, events, "init", actionhandlers)

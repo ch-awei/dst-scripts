@@ -384,7 +384,7 @@ local function keeptargetfn(inst, target)
         and target.components.health ~= nil
         and not target.components.health:IsDead()
         and not (inst.components.follower ~= nil and
-                (inst.components.follower.leader == target or inst.components.follower:IsLeaderSame(target)))
+                (inst.components.follower:GetLeader() == target or inst.components.follower:IsLeaderSame(target)))
 end
 
 local function CreateFlame()
@@ -447,6 +447,7 @@ local function fn()
     inst:AddTag("lunarthrall_plant")
     inst:AddTag("retaliates")
     inst:AddTag("NPCcanaggro")
+    inst:AddTag("gestaltmutant")
 
 	inst.highlightchildren = {}
 

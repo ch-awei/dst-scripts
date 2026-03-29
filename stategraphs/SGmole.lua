@@ -41,9 +41,7 @@ local events =
 			end
 		end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death")
-    end),
+    CommonHandlers.OnDeath(),
     EventHandler("trapped", function(inst)
         inst.flee = true
         inst:DoTaskInTime(math.random(3, 6), onstopflee)
@@ -62,6 +60,9 @@ local events =
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned", true)
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function SpawnMoveFx(inst)
@@ -441,9 +442,14 @@ local states =
             inst.Physics:Stop()
             inst:SetAbovePhysics()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
             inst.components.inventory:DropEverything(false, true)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        }
     },
 
     State{
@@ -663,4 +669,7 @@ local states =
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("mole", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("mole", states, events, "init", actionhandlers)

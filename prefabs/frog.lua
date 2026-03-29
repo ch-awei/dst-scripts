@@ -15,11 +15,17 @@ local normal_prefabs =
 {
     "froglegs",
     "frogsplash",
+    "frogcorpse",
 }
 
 local lunar_prefabs =
 {
     "froglegs",
+}
+
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
 }
 
 -----------------------------------------------------------------------------------------------------------------
@@ -208,6 +214,8 @@ local function lunar_common_postinit(inst)
 	inst.Transform:SetScale(LUNARFROG_SCALE, LUNARFROG_SCALE, LUNARFROG_SCALE)
 
 	inst:AddTag("lunar_aligned")
+    inst:AddTag("gestaltmutant")
+    inst:AddTag("soulless")
 
 	inst.AnimState:SetSymbolLightOverride("flameanim", 0.1)
 	inst.AnimState:SetSymbolBloom("flameanim")
@@ -224,9 +232,12 @@ local function lunarfn()
         return inst
     end
 
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
+
     inst.sounds = LUNAR_SOUNDS
 
     inst.islunar = true
+    inst.sg.mem.nocorpse = true
 
     inst:AddComponent("planarentity")
 

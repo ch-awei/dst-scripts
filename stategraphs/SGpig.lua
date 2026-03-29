@@ -48,6 +48,9 @@ local events =
             inst.sg:GoToState("win_yotb")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -94,18 +97,20 @@ local states =
             inst.SoundEmitter:PlaySound("dontstarve/pig/grunt")
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
-            
+
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
+                inst:DropDeathLoot()
             end
         end,
-        
+
         events =
         {
             EventHandler("animover", function(inst)
                 if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
                     TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                elseif inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("corpse")
                 end
             end),
         },
@@ -306,21 +311,6 @@ local states =
             EventHandler("animover", go_to_idle),
         },
     },
-
-    State{
-        name = "parasite_revive",
-		tags = { "busy", "noelectrocute" },
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("parasite_death_pst")
-            inst.Physics:Stop()
-        end,
-
-        events=
-        {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
-        },
-    },
 }
 
 CommonStates.AddWalkStates(states,
@@ -359,5 +349,10 @@ CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_ju
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 CommonStates.AddIpecacPoopState(states)
+CommonStates.AddParasiteReviveState(states)
 
-return StateGraph("pig", states, events, "idle", actionhandlers)
+-- werepig uses a different stategraph
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("pig", states, events, "init", actionhandlers)

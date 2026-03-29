@@ -21,7 +21,7 @@ local actionhandlers =
 local events =
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
@@ -29,9 +29,7 @@ local events =
 			end
         end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death", inst.sg.statemem.dead)
-    end),
+    CommonHandlers.OnDeath(),
     EventHandler("doattack", function(inst, data)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState("attack", data.target)
@@ -50,6 +48,9 @@ local events =
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function dimLight(inst,dim,instant,zero,time)
@@ -592,7 +593,7 @@ local states =
 			inst.AnimState:SetFrame(5)
             inst.AnimState:PushAnimation("jump_loop")
 
-            inst:StopBrain()
+			inst:StopBrain("SGsquid_fling")
 
             inst.components.locomotor:Stop()
             inst.components.locomotor:EnableGroundSpeedMultiplier(false)
@@ -688,7 +689,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.components.locomotor:EnableGroundSpeedMultiplier(true)
             inst.Physics:ClearMotorVelOverride()
-            inst:RestartBrain()
+			inst:RestartBrain("SGsquid_fling")
             RestoreCollidesWith(inst)
         end,
 
@@ -702,41 +703,22 @@ local states =
         name = "death",
         tags = { "busy" },
 
-        onenter = function(inst, reanimating)
-            if reanimating then
-                inst.AnimState:Pause()
-            else
-                inst.AnimState:PlayAnimation("dead")
-                if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
-                    inst.AnimState:PushAnimation("dead_loop", true)
-                end
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("dead")
+            if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
+                inst.AnimState:PushAnimation("dead_loop", true)
             end
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.SoundEmitter:PlaySound(inst.sounds.death)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
             inst.eyeglow.Light:Enable(false)
         end,
 
-        timeline =
+        events =
         {
-            TimeEvent(TUNING.GARGOYLE_REANIMATE_DELAY, function(inst)
-                if not inst:IsInLimbo() then
-                    inst.AnimState:Resume()
-                end
-            end),
-            TimeEvent(11 * FRAMES, function(inst)
-                if inst.sg.statemem.clay then
-                    PlayClayFootstep(inst)
-                end
-            end),
+            CommonHandlers.OnCorpseDeathAnimOver(),
         },
-
-        onexit = function(inst)
-            if not inst:IsInLimbo() then
-                inst.AnimState:Resume()
-            end
-        end,
     },
 
     State{
@@ -1137,4 +1119,15 @@ CommonStates.AddWalkStates(states, nil, nil, nil, true)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("squid", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        local amphibiouscreature = inst.components.amphibiouscreature
+        if amphibiouscreature and amphibiouscreature.in_water then
+            return "dead_loop", true
+        end
+    end,
+})
+
+return StateGraph("squid", states, events, "init", actionhandlers)

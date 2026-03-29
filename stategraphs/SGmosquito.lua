@@ -20,7 +20,7 @@ local actionhandlers =
 local events=
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -29,7 +29,7 @@ local events=
 		end
 	end),
     EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then inst.sg:GoToState("attack") end end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
@@ -46,6 +46,9 @@ local events=
 			end
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -95,14 +98,18 @@ local states=
 			end
 			inst.Physics:Stop()
 			RemovePhysicsColliders(inst)
-			if inst.components.lootdropper then
-				inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
-			end
+            inst:DropDeathLoot()
         end,
 
-		events=
+		events =
         {
-            EventHandler("animover", function(inst) if inst.toofat then inst.sg:GoToState("splat") end end),
+            EventHandler("animover", function(inst) 
+                if inst.toofat then 
+                    inst.sg:GoToState("splat")
+                else
+                    CommonHandlers.CorpseDeathAnimOver(inst)
+                end
+            end),
         },
 
         timeline =
@@ -214,5 +221,8 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states, LandFlyingCreature, RaiseFlyingCreature)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("mosquito", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("mosquito", states, events, "init", actionhandlers)
 

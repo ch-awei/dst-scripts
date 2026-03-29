@@ -93,6 +93,7 @@ local assets_passive = {
 }
 local prefabs_passive = {
     "smallmeat",
+    "rabbitkingcorpse",
     -- shop
     "armor_carrotlure",
     "rabbitkinghorn",
@@ -155,6 +156,7 @@ local prefabs_aggressive = {
     "beardhair",
     "rabbitkingminion_bunnyman",
     "rabbitkingspear",
+    "rabbitkingcorpse",
 }
 local loot_aggressive = {
     "monstermeat",
@@ -309,13 +311,14 @@ local prefabs_bunnyman = {
     "monstermeat",
     "meat",
     "manrabbit_tail",
+    "rabbitkingminion_bunnymancorpse",
 }
 local bunnyman_brain = require("brains/rabbitking_bunnymanbrain")
 local function OnTalk_Bunnyman(inst)
     inst.SoundEmitter:PlaySound("dontstarve/creatures/bunnyman/idle_med")
 end
 local function NormalLeaderRetargetFn(inst)
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     return leader and leader.components.combat.target or nil
 end
 local function NormalKeepTargetFn(inst, target)
@@ -502,6 +505,7 @@ local assets_lucky = {
 }
 local prefabs_lucky = {
     "smallmeat",
+    "rabbitkingcorpse",
 }
 local loot_lucky = {
     "smallmeat",

@@ -36,6 +36,10 @@ end
 
 --------------------------------------------------------------------------
 
+local function IsRotationValid(rot)
+	return rot > -math.huge and rot < math.huge
+end
+
 local function IsPointInRange(player, x, z)
     local px, py, pz = player.Transform:GetWorldPosition()
     return distsq(x, z, px, pz) <= 4096
@@ -104,7 +108,7 @@ local RPC_HANDLERS =
 			printinvalidplatform("RightClick", player, action, x, z, platform, platform_relative)
 			x, z = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
 			if x ~= nil then
-				if IsPointInRange(player, x, z) and (rotation == nil or (rotation > -360.1 and rotation < 360.1)) then
+				if IsPointInRange(player, x, z) and (rotation == nil or IsRotationValid(rotation)) then
 					playercontroller:OnRemoteRightClick(action, Vector3(x, 0, z), target, rotation, isreleased, controlmods, noforce, mod_name)
 				else
 					print("Remote right click out of range")
@@ -233,7 +237,7 @@ local RPC_HANDLERS =
 			printinvalidplatform("ControllerActionButtonDeploy", player, nil, x, z, platform, platform_relative)
 			x, z = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
 			if x ~= nil then
-				if IsPointInRange(player, x, z) and (rotation == nil or (rotation > -360.1 and rotation < 360.1)) then
+				if IsPointInRange(player, x, z) and (rotation == nil or IsRotationValid(rotation)) then
 					playercontroller:OnRemoteControllerActionButtonDeploy(invobject, Vector3(x, 0, z), rotation, isreleased)
 				else
 					print("Remote controller action button deploy out of range")
@@ -890,8 +894,7 @@ local RPC_HANDLERS =
 			printinvalidplatform("MakeRecipeAtPoint", player, nil, x, z, platform, platform_relative)
 			x, z = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
 			if x ~= nil then
-				--rot supported range really only needs to be [-180, 180]
-				if IsPointInRange(player, x, z) and rot >= -360 and rot <= 360 then
+				if IsPointInRange(player, x, z) and IsRotationValid(rot) then
 					for k, v in pairs(AllRecipes) do
 						if v.rpc_id == recipe then
 							builder:MakeRecipeAtPoint(v, Vector3(x, 0, z), rot, skin_index ~= nil and PREFAB_SKINS[v.name] ~= nil and PREFAB_SKINS[v.name][skin_index] or nil)
@@ -993,6 +996,8 @@ local RPC_HANDLERS =
         local popup = GetPopupFromPopupCode(popupcode, mod_name)
         if not popup.validaterpcfn(...) then
             printinvalid("ClosePopup"..tostring(popup.id), player)
+			popup:Close(player)
+			return
         end
         popup:Close(player, ...)
     end,
@@ -1179,6 +1184,33 @@ local RPC_HANDLERS =
 		end
 	end,
 
+	PredictGallopTrip = function(player, x, z, dir, speed, platform, platform_relative)
+		if not (checknumber(x) and
+				checknumber(z) and
+				checknumber(dir) and
+				optnumber(speed) and
+				optentity(platform) and
+				checkbool(platform_relative))
+		then
+			printinvalid("PredictGallopTrip", player)
+			return
+		end
+		printinvalidplatform("PredictGallopTrip", player, nil, x, z, platform, platform_relative)
+		local x1, z1 = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
+		if x1 then
+			if IsRotationValid(dir) and (speed == nil or speed > 0) then
+				player:PushEventImmediate("predict_gallop_trip", {
+					x = x1,
+					z = z1,
+					dir = dir,
+					speed = speed,
+				})
+			else
+				print("Predict gallop trip out of range")
+			end
+		end
+	end,
+
     -- NOTES(JBK): RPC limit is at 128, with 1-127 usable.
 }
 
@@ -1335,6 +1367,24 @@ end
 local WorldSettings_Overrides = require("worldsettings_overrides")
 local SHARD_RPC_HANDLERS =
 {
+    ShardTransactionSteps = function(shardid, shardpayload_string)
+        shardid = tostring(shardid) -- shardid is converted to an integer and must be back to string.
+        local shardtransactionsteps = TheWorld and TheWorld.components.shardtransactionsteps or nil
+        if shardtransactionsteps then
+            local success, shardpayload = RunInSandboxSafe(shardpayload_string)
+            if success and (shardid == shardpayload.originshardid or shardid == shardpayload.receivershardid) then
+                shardtransactionsteps:OnShardTransactionSteps(shardpayload)
+            end
+        end
+    end,
+    PruneShardTransactionSteps = function(shardid, newfinalizedid)
+        shardid = tostring(shardid) -- shardid is converted to an integer and must be back to string.
+        local shardtransactionsteps = TheWorld and TheWorld.components.shardtransactionsteps or nil
+        if shardtransactionsteps then
+            shardtransactionsteps:OnPruneShardTransactionSteps(shardid, newfinalizedid)
+        end
+    end,
+
     ReskinWorldMigrator = function(shardid, migrator, skin_theme, skin_id, sessionid)
         for i,v in ipairs(ShardPortals) do
             if v.components.worldmigrator.id == migrator then

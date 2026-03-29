@@ -10,7 +10,6 @@ local RECOIL_DURATION = 0.7
 local RECOIL_DECEL_DURATION = RECOIL_DURATION * 0.7
 local RECOIL_ACCEL_DURATION = RECOIL_DECEL_DURATION
 local RECOIL_MAX_DECEL = -0.6
-local HALFPI = math.pi / 2
 
 local WagdroneRollingBrain = Class(Brain, function(self, inst)
 	Brain._ctor(self, inst)
@@ -70,7 +69,7 @@ local DRONE_NO_TAGS = { "INLIMBO", "NOCLICK", "HAMMER_workable", "usesdepleted" 
 local WORK_TAGS = { "CHOP_workable", "MINE_workable" }
 local WORK_NO_TAGS = { "INLIMBO", "NOCLICK", "waxedplant", "event_trigger" }
 
-function FriendlyTargeting(inst)
+local function FriendlyTargeting(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local pos = GetDeployPoint(inst)
 	if pos then

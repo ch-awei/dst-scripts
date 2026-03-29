@@ -98,7 +98,7 @@ local function on_projectile_landed(inst)
         inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
 
         inst.sg:GoToState("idle", "jump_pst")
-        inst:RestartBrain()
+		inst:RestartBrain("wobster_out_of_water")
 
         SpawnPrefab("splash").Transform:SetPosition(x, y, z)
 
@@ -112,7 +112,7 @@ local function on_make_projectile(inst)
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(on_projectile_landed)
 
-    inst:StopBrain()
+	inst:StopBrain("wobster_out_of_water")
     inst.sg:GoToState("launched_out_of_water")
 
     inst.Physics:SetCollisionMask(PROJECTILE_COLLISION_MASK)
@@ -275,8 +275,8 @@ local function on_ground_wobster_landed(inst)
 end
 
 local function on_dropped_as_loot(inst, data)
-    if data ~= nil and data.dropped ~= nil then
-        inst.components.wighable.prefab_override_owner = data.dropper.prefab
+    if data ~= nil and data.dropper ~= nil then
+        inst.components.weighable.prefab_override_owner = data.dropper.prefab
     end
 end
 

@@ -19,6 +19,7 @@ local prefabs =
 	"wagpunk_bits",
 
     "chesspiece_wagboss_robot_sketch",
+	"winter_ornament_boss_warbot",
 }
 
 SetSharedLootTable("wagboss_robot",
@@ -27,7 +28,7 @@ SetSharedLootTable("wagboss_robot",
 	{ "transistor",			0.5 },
 	{ "wagpunk_bits",		1.0 },
 	{ "wagpunk_bits",		0.5 },
-	{"chesspiece_wagboss_robot_sketch", 1.0},
+	{ "chesspiece_wagboss_robot_sketch", 1.0},
 })
 
 local brain = require("brains/wagboss_robotbrain")
@@ -624,13 +625,7 @@ local function CreateBackFx()
 	return fx
 end
 
-local CancelBackFxPostUpdate_Client --forward declare
-
 local function BackFxPostUpdate_Client(inst)
-	if inst._cancelbackfxpostupdate then
-		return
-	end
-
 	if inst.AnimState:IsCurrentAnimation("lunar_spawn_1") then
 		if inst._backfx == nil then
 			inst._backfx = CreateBackFx()
@@ -645,11 +640,6 @@ local function BackFxPostUpdate_Client(inst)
 		inst._backfx = nil
 	end
 
-	inst._cancelbackfxpostupdate = inst:DoStaticTaskInTime(0, CancelBackFxPostUpdate_Client)
-end
-
-CancelBackFxPostUpdate_Client = function(inst)
-	inst._cancelbackfxpostupdate = nil
 	inst._backfxpostupdating = false
 	inst.components.updatelooper:RemovePostUpdateFn(BackFxPostUpdate_Client)
 end
@@ -662,9 +652,6 @@ local function OnShowBackFx_Client(inst)
 		if not inst._backfxpostupdating then
 			inst._backfxpostupdating = true
 			inst.components.updatelooper:AddPostUpdateFn(BackFxPostUpdate_Client)
-		elseif inst._cancelbackfxpostupdate then
-			inst._cancelbackfxpostupdate:Cancel()
-			inst._cancelbackfxpostupdate = nil
 		end
 	else
 		if inst._backfx then
@@ -672,10 +659,8 @@ local function OnShowBackFx_Client(inst)
 			inst._backfx = nil
 		end
 		if inst._backfxpostupdating then
-			if inst._cancelbackfxpostupdate then
-				inst._cancelbackfxpostupdate:Cancel()
-			end
-			CancelBackFxPostUpdate_Client(inst)
+			inst._backfxpostupdating = false
+			inst.components.updatelooper:RemovePostUpdateFn(BackFxPostUpdate_Client)
 		end
 	end
 end
@@ -871,7 +856,7 @@ local function CreateStompFx()
 	return fx
 end
 
-local ClearStompFx_Client, CancelStompFxPostUpdate_Client --forward declare
+local ClearStompFx_Client --forward declare
 
 local function OnStompFxAnimOver(fx)
 	local inst = fx.entity:GetParent()
@@ -880,10 +865,6 @@ local function OnStompFxAnimOver(fx)
 end
 
 local function StompFxPostUpdate_Client(inst)
-	if inst._cancelstompfxpostupdate then
-		return
-	end
-
 	local frame =
 		(inst.AnimState:IsCurrentAnimation("atk_squish") and inst.AnimState:GetCurrentAnimationFrame() - 27) or
 		(inst.AnimState:IsCurrentAnimation("atk_leap_pst") and inst.AnimState:GetCurrentAnimationFrame() - 4) or
@@ -904,11 +885,6 @@ local function StompFxPostUpdate_Client(inst)
 		inst.showstompfx:set_local(false)
 	end
 
-	inst._cancelstompfxpostupdate = inst:DoStaticTaskInTime(0, CancelStompFxPostUpdate_Client)
-end
-
-CancelStompFxPostUpdate_Client = function(inst)
-	inst._cancelstompfxpostupdate = nil
 	inst._stompfxpostupdating = false
 	inst.components.updatelooper:RemovePostUpdateFn(StompFxPostUpdate_Client)
 end
@@ -919,10 +895,8 @@ ClearStompFx_Client = function(inst)
 		inst._stompfx = nil
 	end
 	if inst._stompfxpostupdating then
-		if inst._cancelstompfxpostupdate then
-			inst._cancelstompfxpostupdate:Cancel()
-		end
-		CancelStompFxPostUpdate_Client(inst)
+		inst._stompfxpostupdating = false
+		inst.components.updatelooper:RemovePostUpdateFn(StompFxPostUpdate_Client)
 	end
 end
 
@@ -934,9 +908,6 @@ local function OnShowStompFx_Client(inst)
 		if not inst._stompfxpostupdating then
 			inst._stompfxpostupdating = true
 			inst.components.updatelooper:AddPostUpdateFn(StompFxPostUpdate_Client)
-		elseif inst._cancelstompfxpostupdate then
-			inst._cancelstompfxpostupdate:Cancel()
-			inst._cancelstompfxpostupdate = nil
 		end
 	else
 		ClearStompFx_Client(inst)
@@ -1232,14 +1203,7 @@ local function SetCombatEnabled(inst, enabled)
 end
 
 local function SetBrainEnabled(inst, enabled)
-	if enabled then
-		inst:SetBrain(brain)
-		if not inst:IsAsleep() then
-			inst:RestartBrain()
-		end
-	else
-		inst:SetBrain(nil)
-	end
+	inst:SetBrain(enabled and brain or nil)
 end
 
 local function ConfigureOff(inst)

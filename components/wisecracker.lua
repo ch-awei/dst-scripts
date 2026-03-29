@@ -230,6 +230,10 @@ local Wisecracker = Class(function(self, inst)
 		inst.components.talker:Say(GetString(inst, "ANNOUNCE_TOOL_TOOWEAK"))
 	end)
 
+    inst:ListenForEvent("weapontooweak", function(inst, data)
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_WEAPON_TOOWEAK"))
+	end)
+
     if inst:HasTag("soulstealer") then
         inst:ListenForEvent("soulempty", function(inst)
             if inst.wortox_inclination == "nice" then
@@ -370,6 +374,29 @@ local Wisecracker = Class(function(self, inst)
 		end
 	end)
 
+    local last_yoth_cooldown = -999
+    local yoth_cooldown_task
+    local function do_yoth_cooldown(inst)
+        yoth_cooldown_task = nil
+        inst.components.talker:Say(GetString(inst, "ANNOUNCE_YOTH_ONCOOLDOWN"))
+    end
+    inst:ListenForEvent("yoth_oncooldown", function(inst)
+        if yoth_cooldown_task == nil then
+            local t = GetTime()
+            if last_yoth_cooldown + 10 < t then
+                last_yoth_cooldown = t
+                yoth_cooldown_task = inst:DoTaskInTime(2 + math.random(), do_yoth_cooldown)
+            end
+        end
+    end)
+    inst:ListenForEvent("yoth_oncooldown_cancel", function(inst)
+        if yoth_cooldown_task ~= nil then
+            yoth_cooldown_task:Cancel()
+            yoth_cooldown_task = nil
+            last_yoth_cooldown = -999
+        end
+    end)
+
 	if inst:HasTag("dogrider") then
 		local lasttalktowobytime = 0
 		local lastwobymsg = nil
@@ -403,6 +430,19 @@ local Wisecracker = Class(function(self, inst)
 			callwobytask = inst:DoTaskInTime(0.7, talktowoby, woby, "ANNOUNCE_WOBY_RETURN", nil, 4, 0)
 		end)
 	end
+
+    inst:ListenForEvent("vault_teleporter_does_nothing", function(inst)
+        inst.components.talker:Say(GetString(inst, "ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING"))
+    end)
+
+	local lastlightsoutshadowhand
+	inst:ListenForEvent("see_lightsout_shadowhand", function(inst)
+		local t = GetTime()
+		if lastlightsoutshadowhand == nil or lastlightsoutshadowhand + 15 < t then
+			lastlightsoutshadowhand = t
+			inst.components.talker:Say(GetString(inst, "ANNOUNCE_LIGHTSOUT_SHADOWHAND"))
+		end
+	end)
 
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "components/wisecracker").AddQuagmireEventListeners(inst)

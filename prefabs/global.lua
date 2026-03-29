@@ -162,6 +162,18 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/lunarhail_event.fev"),
     Asset("FILE", "sound/lunarhail_event.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/rifts6.fev"),
+    Asset("FILE", "sound/rifts6.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/hallowednights2025.fev"),
+    Asset("FILE", "sound/hallowednights2025.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/winter2025.fev"),
+    Asset("FILE", "sound/winter2025.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/yoth_2026.fev"),
+    Asset("FILE", "sound/yoth_2026.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -456,6 +468,8 @@ local assets =
     Asset("IMAGE", "images/inventoryimages2.tex"),
     Asset("ATLAS", "images/inventoryimages3.xml"),
     Asset("IMAGE", "images/inventoryimages3.tex"),
+    Asset("ATLAS", "images/inventoryimages4.xml"),
+    Asset("IMAGE", "images/inventoryimages4.tex"),
 
     Asset("ATLAS", "images/hud.xml"),
     Asset("IMAGE", "images/hud.tex"),
@@ -577,6 +591,14 @@ for _,char in ipairs(DST_CHARACTERLIST) do
     table.insert(assets, Asset("DYNAMIC_ATLAS", "images/names_gold_cn_"..char..".xml"))
     table.insert(assets, Asset("PKGREF", "images/names_gold_cn_"..char..".tex"))
 end
+
+-- For hermithouse.
+table.insert(assets, Asset("DYNAMIC_ATLAS", "images/names_pearl.xml"))
+table.insert(assets, Asset("PKGREF", "images/names_pearl.tex"))
+table.insert(assets, Asset("DYNAMIC_ATLAS", "images/names_gold_pearl.xml"))
+table.insert(assets, Asset("PKGREF", "images/names_gold_pearl.tex"))
+table.insert(assets, Asset("DYNAMIC_ATLAS", "images/names_gold_cn_pearl.xml"))
+table.insert(assets, Asset("PKGREF", "images/names_gold_cn_pearl.tex"))
 
 --Skin assets
 for _, skin_asset in pairs(require("skin_assets")) do

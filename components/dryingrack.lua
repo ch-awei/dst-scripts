@@ -25,7 +25,7 @@ local DryingRack = Class(function(self, inst, container)
 
 	self._dryingperishratefn = function(containerinst, item)
 		if self.isinacid then
-			local perishtime = item.components.perishable and item.components.perishable.perishtime
+			local perishtime = item and item.components.perishable and item.components.perishable.perishtime
 			if perishtime then
 				local rate = item.components.moisture and item.components.moisture:_GetMoistureRateAssumingRain() or TheWorld.state.precipitationrate
 				rate = rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT -- %/s
@@ -311,7 +311,7 @@ function DryingRack:OnLoseItem(item, slot)
 		end
 	end
 	if self.hideitemfn and slot then
-		self.hideitemfn(self.inst, slot)
+		self.hideitemfn(self.inst, slot, item.prefab)
 	end
 end
 
@@ -386,7 +386,7 @@ local function InstantDry(item, container)
 	end
 end
 
-function DryingRack:OnBurnt() --Called by DefaultStructureBurntFn
+function DryingRack:OnBurnt() --Called by DefaultBurntStructureFn
 	self.container:ForEachItem(InstantDry, self.container)
 end
 

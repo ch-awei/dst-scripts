@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -274,6 +275,7 @@ return{
         PICK =
         {
             NOTHING_INSIDE = "NOTHING",
+			STUCK = "DEADLOCKED",
         },
         PICKUP =
         {
@@ -318,7 +320,7 @@ return{
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             -- Electrocute
+--fallback to speech_wilson.lua             -- rifts5.1
 --fallback to speech_wilson.lua             DEADBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 		REMOTE_TELEPORT =
@@ -486,6 +488,12 @@ return{
         {
             MISSED = "TARGET EVADED, RECALIBRATING",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "NO SPACE THERE. LET THEM DROWN",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -706,7 +714,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "WARNING: VISUAL COMPONENTS MALFUNCTIONING",
+    ANNOUNCE_SPOOKED = "FILTHY ORGANICS!",
 	ANNOUNCE_BRAVERY_POTION = "FLYING FLESHLINGS NO LONGER ACTIVATE FEAR UNITS",
 	ANNOUNCE_MOONPOTION_FAILED = "INEFFECTIVE RESULT",
 
@@ -1170,11 +1178,28 @@ return{
     ANNOUNCE_FLOATER_HELD = "ERROR: WHY WHHHY!",
     ANNOUNCE_FLOATER_LETGO = "I WILL RETURN",
 
-    -- Electrocute
+    -- rifts5.1
     ANNOUNCE_LUNARHAIL_BIRD_SOUNDS = "I LOVE THAT SOUND",
     ANNOUNCE_LUNARHAIL_BIRD_CORPSES = "LITTLE GIFTS FROM ABOVE",
     ANNOUNCE_FLOAT_SWIM_TIRED = "JUST A MOMENT...",
     ANOUNCE_MUTATED_BIRD_ATTACK = "WARNING: AIRBORNE MEAT ATTACK!",
+
+    -- Rift 6
+    ANNOUNCE_WEAPON_TOOWEAK = "INSUFFICIENT POWER. OFFENSIVE UPGRADE REQUIRED",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "UNIT NON-OPERATIONAL",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "WARNING: UNAUTHORIZED INTERFERANCE! SHADOW APPLICATION DETECTED!",
+
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "ROTTEN FLESH EATERS INCOMING! CORRUPTION DETECTED!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "TRANSFER ERROR",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "TRANSFER COMPLETE",
+
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "UNITS CURRENTLY UNAVAILABLE? HOW DARE THEY!",
 
 	BATTLECRY =
 	{
@@ -1759,6 +1784,8 @@ return{
 		TURF_FUNGUS="GROUND PARTS",
 		TURF_FUNGUS_MOON = "GROUND PARTS",
 		TURF_ARCHIVE = "GROUND PARTS",
+        TURF_VAULT = "GROUND PARTS",
+        TURF_VENT = "GROUND PARTS",
 		TURF_SINKHOLE="GROUND PARTS",
 		TURF_UNDERROCK="GROUND PARTS",
 		TURF_MUD="GROUND PARTS",
@@ -2109,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "PATHETIC FLESH LOG",
         CHESSPIECE_WAGBOSS_ROBOT = "I WILL REMEMBER YOU",
         CHESSPIECE_WAGBOSS_LUNAR = "WHAT WENT WRONG FOR US?",
+        CHESSPIECE_YOTH = "THE ONLY HORSE I EVER LIKED",
 
         CHESSJUNK1 = "EX-AUTOMATON",
         CHESSJUNK2 = "EX-AUTOMATON",
@@ -2149,6 +2177,7 @@ return{
         CRITTER_KITTEN = "IT USES \"CUTENESS\" AS A WEAPON. RESPECTABLE",
         CRITTER_PERDLING = "...YOU MAY LIVE",
 		CRITTER_LUNARMOTHLING = "IT HAS NO OFFENSIVE USAGE, YET I AM COMPELLED TO KEEP IT",
+        CRITTER_BULBIN = "CORRUPTION DETECTED. EXCELLENT",
 
 		CROW =
 		{
@@ -3330,6 +3359,7 @@ return{
         WINTER_ORNAMENTBOSS = "I DO NOT UNDERSTAND THIS RITUAL",
 		WINTER_ORNAMENTFORGE = "REDUNDANT FLESHLING ORNAMENTATION",
 		WINTER_ORNAMENTGORGE = "THIS FLESHLING IS NOT COMPOSED OF FLESH",
+        WINTER_ORNAMENTPEARL = "WHO CARES",
 
         WINTER_FOOD1 = "WHERE ARE THE ROBOT-SHAPED CONFECTIONS", --gingerbread cookie
         WINTER_FOOD2 = "FLESHLINGS LOVE SHAPING FOOD LIKE NON-FOOD", --sugar cookie
@@ -4426,6 +4456,13 @@ return{
             LINE_4 = "SUCH A CRUDE WAY OF RECORDING DATA",
             LINE_5 = "INSUFFICIENT DATA, UNABLE TO TRANSLATE",
         },
+		VAULT_RUNE = "SYNTAX ERROR",
+		VAULT_STATUE =
+		{
+			LORE1 = "INTEGRITY CHECK FAILED. CORRUPTION DETECTED",
+			LORE2 = "HA... HA?",
+			LORE3 = "YOU DARE TAKE UP ARMS AGAINST A SUPERIOR BEING?",
+		},
 
         ARCHIVE_RESONATOR = {
             GENERIC = "POINT THE WAY MY NOBLE BRETHREN",
@@ -5128,6 +5165,7 @@ return{
 
         PLAYBILL_THE_DOLL = "RUNSCRIPT \"THE ENCHANTED DOLL\"",
         PLAYBILL_THE_VEIL = "RUNSCRIPT \"THE PALL\"",
+        PLAYBILL_THE_VAULT = "RUNSCRIPT \"A TASK COMPLETE\"",
         STATUEHARP_HEDGESPAWNER = "UGH THERE ARE ORGANISMS ALL OVER IT",
         HEDGEHOUND = "ORGANIC TRICKERY!",
         HEDGEHOUND_BUSH = "THERE IS SOMETHING INSIDE",
@@ -5734,7 +5772,7 @@ return{
         FLOTATIONCUSHION = "MINE",
         LUNAR_SEED = "THEY DON'T UNDERSTAND YOU LIKE I DO",
 
-        -- electrocute
+        -- rifts5.1
         WAGBOSS_ROBOT_CONSTRUCTIONSITE = "SOON, MY FRIEND",
         WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "COMPRESSED HARDWARE",
         WAGBOSS_ROBOT_CREATION_PARTS = "AWAITING INSTALLATION",
@@ -5755,6 +5793,234 @@ return{
             BURNING  = "CARBON TO STINKING CARBON", --when its burning
             REVIVING = "UPDATE IN PROGRESS", --when its mutating and being revived
         },
+
+        BUZZARDCORPSE = {
+            GENERIC  = "HA", --witnessing the corpse
+            BURNING  = "CARBON TO STINKING CARBON", --when its burning
+            REVIVING = "UPDATE IN PROGRESS", --when its mutating and being revived
+        },
+
+        MUTATEDBUZZARD_GESTALT = {
+            GENERIC = "CODE CORRUPTED", -- Generic string
+            EATING_CORPSE = "I HATE THIS UPDATE", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
+        },
+
+        -- Rifts 6
+
+        SHADOWTHRALL_CENTIPEDE = {
+            HEAD = "DUAL CPU", --The head segment
+            BODY = "RESPECTABLE HARDWARE", --The body segment
+            FLIPPED = "INVERTED ON Y-AXIS", --When it's flipped over (either head or body segment)
+        },
+
+        TREE_ROCK =
+		{
+			BURNING = "CARBONIZING", --It's vines are burning, it will collapse
+			CHOPPED = "OF COURSE THE ORGANIC COMPONENT FAILED", --It's 'chopped', so the rock fell
+			GENERIC = "STRUCTURAL WEAKNESS IDENTIFIED", --Rock is still on tree
+		},
+
+        -- NOTE: Unsure about HOT and COLD, just do GENERIC, GAS, MIASMA for now!
+        CAVE_VENT_ROCK =
+        {
+            GENERIC = "PRIMITIVE VENTILATION SYSTEM", -- Not ventilating anything
+            HOT     = "OVERHEAT WARNING", -- Ventiliating hot air, making the area warm
+            GAS     = "WARNING: RISK OF ORGANIC RESOURCE CORRUPTION", -- Ventiliating Toadstools gas fumes and spores
+            MIASMA  = "WARNING: USER MAY EXPERIENCE LAG", -- Ventiliating the shadow rift miasma
+        },
+        CAVE_FERN_WITHERED = "HA",
+        FLOWER_CAVE_WITHERED = "POWER SOURCE: DIMINISHED",
+
+		ABYSSPILLAR_MINION =
+		{
+			GENERIC = "INERT", --off, looks like decor/statue
+			ACTIVATED = "MOVEMENT PATTERN DETECTED: MIRRORING.", --turned on and hopping over puzzle pillars
+		},
+		ABYSSPILLAR_TRIAL = "ACTIVATION SWITCH",
+
+        VAULT_TELEPORTER =
+        {
+            GENERIC = "PARTICLE DISPLACEMENT DEVICE",
+            BROKEN = "NONFUNCTIONAL",
+            UNPOWERED = "IT NEEDS POWER!!!",
+        },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
+		VAULT_ORB = "ESSENTIAL HARDWARE IDENTIFIED",
+        VAULT_LOBBY_EXIT = "ESC",
+		VAULT_CHANDELIER_BROKEN = "MUST HAVE BEEN MOUNTED BY A FLESHBAG",
+
+		ANCIENT_HUSK = "CONFLICT RESOLVED",
+		MASK_ANCIENT_HANDMAIDHAT = "OH, HELLO",
+		MASK_ANCIENT_ARCHITECTHAT = "NICE FACE",
+		MASK_ANCIENT_MASONHAT = "THE FACE OF A RELIABLE MINION",
+
+        TREE_ROCK_SEED = "MUST BE INSTALLED",
+        TREE_ROCK_SAPLING = "INSTALLED",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "POSSIBLE SALVAGE DETECTED", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "INTERCONNECTED LIGHTING UNIT",
+			BROKEN = "SWITCH NOT OPERATIONAL", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "HAHAHA. DEAD",
+			GENERIC = "YOU ANNOY ME. PREPARE TO DIE",
+			SLEEPING = "UNIT SLEEPING. PERFECT...",
+            VENTING = "UNIT VENTING", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "THIS ORGANIC MAKES A FINE MASK",
+			UNCARVED = "HUSH, ORGANIC. I WILL MAKE THIS AS PAINFUL AS POSSIBLE",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "HA", --witnessing the corpse
+            BURNING  = "CARBON TO STINKING CARBON", --when its burning
+            REVIVING = "UPDATE IN PROGRESS", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "DON'T EVEN TRUST DEAD ORGANICS",
+			BURNING = "BEST BUG FIX",
+			REVIVING = "RECURRING BUG",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "THEIR QUEEN IS DEAD. NICE",
+			BURNING = "PERMANENT BUG FIX",
+			REVIVING = "PREPARE FOR INFESTATION",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "SMELLS WORSE THAN DEAD FISH",
+			BURNING = "A GOOD IDEA",
+			REVIVING = "WHY WON'T YOU STAY DEAD?",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "A DEAD FLESHLING. POINT AND LAUGH",
+            BURNING = "REBOOT DISABLED",
+            REVIVING = "UNIT REBOOTING",
+        },
+
+		--Winter's Feast 2025
+
+		W_RADIO = "DO I KNOW YOU?",
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "STILL NO",
+            GENERIC = "IT IS A HATEFUL THING",
+            EMPTY = "IT IS MUCH BETTER LIKE THIS",
+        },
+		HERMITHOTSPRING_CONSTR = "SITE UNDER CONSTRUCTION",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "DEHYDRATION COMPLETE",
+            DRYING = "PLEASE WAIT FOR DRYING TO COMPLETE",
+            DRYINGINRAIN = "RAIN INCREASES DRYING TIME",
+            GENERIC =  "HIGH CAPACITY DRYING UNIT",
+            BURNT = "USELESS",
+            DONE_NOTMEAT = "DEHYDRATION COMPLETE",
+            DRYING_NOTMEAT = "WETNESS IS TRULY THE WORST",
+            DRYINGINRAIN_NOTMEAT = "STOP MAKING MY THINGS WET, RAIN",
+            DONE_SALT = "SODIUM OUTPUT",
+			ABANDONED = "GARBAGE",
+        },
+		HERMITHOUSE_ORNAMENT = "HATE IT",
+		HERMITHOUSE_LAUNDRY = "GROSS",
+
+        PETALS_DRIED = "DEHYDRATED PLANT MATTER",
+        PETALS_EVIL_DRIED = "DEHYDRATED PLANT MATTER",
+        FOLIAGE_DRIED = "DEHYDRATED PLANT MATTER",
+        SUCCULENT_PICKED_DRIED = "DEHYDRATED PLANT MATTER",
+        FIRENETTLES_DRIED = "DEHYDRATED PLANT MATTER",
+        TILLWEED_DRIED = "DEHYDRATED PLANT MATTER",
+        MOON_TREE_BLOSSOM_DRIED = "DEHYDRATED PLANT MATTER",
+        FORGETMELOTS_DRIED = "DEHYDRATED PLANT MATTER",
+
+        HERMITCRABTEA_PETALS = "DEBUGGER",
+        HERMITCRABTEA_PETALS_EVIL = "MALWARE",
+        HERMITCRABTEA_FOLIAGE = "COGNITIVE STABILITY PATCH",
+        HERMITCRABTEA_SUCCULENT_PICKED = "IN CASE OF OVERHEAT",
+        HERMITCRABTEA_FIRENETTLES = "IN CASE OF FREEZE",
+        HERMITCRABTEA_TILLWEED = "INSTANT HARDWARE REPAIR",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "PACIFICATION SUBROUTINE",
+        HERMITCRABTEA_FORGETMELOTS = "ADVANCED DEBUGGER",
+        SHELLWEAVER = "SODIUM INFUSION",
+        ICESTAFF2 = "TIME FOR SOME FROZEN MEATSACKS",
+        ICESTAFF3 = "FREEZE THEM ALL",
+        NONSLIPGRIT = "TRACTION CONTROL",
+        NONSLIPGRITBOOSTED = "UPGRADED TRACTION CONTROL",
+        DESICCANT = "MINE",
+        DESICCANTBOOSTED = "ALL MINE",
+        HERMITCRAB_SHELL = "SHORTCUT",
+        SALTY_DOGHAT = "WEARABLE COMMAND MODULE",
+        SALTY_DOG = "SALT RETRIEVAL UNIT, DESIGNATION: RUSTY",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "WHERE IS SHE NOW?", -- Inactive state, no Pearl inside.
+            ACTIVE = "REHYDRATING SOMETHING THAT IS DEHYDRATED. REDUNDANT", -- Active, Pearl is inside, can buy from her
+            BREWING = "BETTER BE GOOD", -- A trade just happened and she's brewing the tea!|
+            BURNT = "HAHA... WHERE DO I GET TEA NOW?", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "DESICCATED FISH FLESH",
+        FISHMEAT_SMALL_DRIED = "DESICCATED FISH FLESH",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "FLESHSACKS ARE ALWAYS AFRAID OF THE DARK",
+            ABANDONED = "HA",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "INSTALLATION REQUIRED",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "NOW GIVE!", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "YOU ASK TOO MUCH", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "HAHA", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "SOMEWHAT PRETTY",
+        COSTUME_PRINCESS_BODY = "FANCY",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "RUNSCRIPT \"MY KNIGHTS FOUR AND I\"",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "I AM NOT YOUR ENEMY", -- Generic quote. It's aggressive.
+            FOLLOWING = "SO LOYAL, SO MAJESTIC", -- Following the character examining
+            FOLLOWING_OTHER = "YOU ARE BEING MISLED", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "NOW I SHALL STRIKE... AS A TROJAN HORSE! HAHA",
+        ARMOR_YOTH_KNIGHT = "I AM ARMOR!",
+        HORSESHOE = "SUPERSTITIOUS FLESHLINGS... MINE",
+        YOTH_LANCE = "NICE FLESH PIERCER",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "AS EXPECTED", -- Depleted and on the ground
+            HELD = "SINGLE-USE LIGHT UNIT", -- In the players inventory
+            GENERIC = "SUB-PAR. DOES NOT COMPARE", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "STRIDE AUGMENTATION DEVICE",
+        YOTH_CHAIR_ROCKING_ITEM = "OSCILLATION UNIT", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

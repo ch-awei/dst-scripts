@@ -47,6 +47,30 @@ local mutated_prefabs =
     "coolant",
 }
 
+local normal_sounds =
+{
+    attack = "dontstarve_DLC001/creatures/bearger/attack",
+    death = "dontstarve_DLC001/creatures/bearger/death",
+    idle = "dontstarve_DLC001/creatures/bearger/idle",
+    sleep = "dontstarve_DLC001/creatures/bearger/sleep",
+    taunt = "dontstarve_DLC001/creatures/bearger/taunt",
+    taunt_short = "dontstarve_DLC001/creatures/bearger/taunt_short",
+    growl = "dontstarve_DLC001/creatures/bearger/grrrr",
+    yawn = "dontstarve_DLC001/creatures/bearger/yawn",
+}
+
+local mutated_sounds =
+{
+    attack = "rifts3/mutated_bearger/attack",
+    death = "rifts3/mutated_bearger/death",
+    idle = "rifts3/mutated_bearger/idle",
+    sleep = "rifts3/mutated_bearger/sleep",
+    taunt = "rifts3/mutated_bearger/taunt",
+    taunt_short = "rifts3/mutated_bearger/taunt_short",
+    growl = "rifts3/mutated_bearger/grrrr",
+    yawn = "rifts3/mutated_bearger/yawn",
+}
+
 local brain = require("brains/beargerbrain")
 
 SetSharedLootTable( 'bearger',
@@ -136,17 +160,21 @@ end
 local function OnSave(inst, data)
     data.seenbase = inst.seenbase or nil-- from brain
 	data.num_food_cherrypicked = inst.num_food_cherrypicked ~= 0 and inst.num_food_cherrypicked or nil
-	data.looted = inst.looted
 end
 
 local function OnLoad(inst, data)
     if data ~= nil then
         inst.seenbase = data.seenbase or nil-- for brain
         inst.num_food_cherrypicked = data.num_food_cherrypicked or 0
-		inst.looted = data.looted
-		if inst.looted and inst.components.health:IsDead() then
-			inst.sg:GoToState("corpse")
-		end
+
+        -- Deprecated, kept for old saves
+        inst.looted = data.looted
+        if inst.looted then
+            inst:SetDeathLootLevel(1)
+            if inst.components.health:IsDead() then
+			    inst.sg:GoToState("corpse")
+		    end
+        end
     end
 end
 
@@ -231,7 +259,7 @@ local function LaunchItem(inst, target, item)
 end
 
 local function OnGroundPound(inst)
-    if math.random() < .2 then
+    if math.random() <= TUNING.BEARGER_MULTISHED_CHANCE then
         inst.components.shedder:DoMultiShed(3, false) -- can't drop too many, or it'll be really easy to farm for thick furs
     end
 end
@@ -441,7 +469,6 @@ local function commonfn(build, commonfn)
     ------------------
 
     inst:AddComponent("health")
-	inst.components.health.nofadeout = true
 
     ------------------
 
@@ -449,7 +476,6 @@ local function commonfn(build, commonfn)
     inst.components.combat.playerdamagepercent = .5
     inst.components.combat.hiteffectsymbol = "bearger_body"
     inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
-    inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/bearger/hurt")
 
     ------------------------------------------
 
@@ -534,6 +560,7 @@ local function normalfn()
         return inst
     end
 
+    inst.sounds = normal_sounds
 	inst.swipefx = "bearger_swipe_fx"
 
 	inst:AddComponent("thief")
@@ -548,6 +575,7 @@ local function normalfn()
 	inst.components.combat:SetRange(TUNING.BEARGER_ATTACK_RANGE)
     inst.components.combat:SetAttackPeriod(TUNING.BEARGER_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(3, RetargetFn_Normal)
+    inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/bearger/hurt")
 
     inst.components.lootdropper:SetChanceLootTable("bearger")
 
@@ -572,6 +600,8 @@ local function normalfn()
 	inst:ListenForEvent("droppedtarget", OnDroppedTarget)
     inst:ListenForEvent("death", OnDead)
     inst:ListenForEvent("onremove", OnRemove)
+
+    inst.spawn_gestalt_mutated_tuning = "SPAWN_MUTATED_BEARGER"
 
 	--[[ PLAYER TRACKING ]]
 
@@ -714,6 +744,11 @@ local mutated_scrapbook_overridedata = {
     { "flameR", "lunar_flame", "flameanim", 0.6 },
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 local COOLANT_LOOT = {"coolant"}
 local function LootSetupFn_mutated(lootdropper)
     lootdropper:SetLoot(TheWorld.components.wagboss_tracker and TheWorld.components.wagboss_tracker:IsWagbossDefeated() and COOLANT_LOOT or nil)
@@ -722,6 +757,7 @@ end
 
 local function mutatedcommonfn(inst)
     inst:AddTag("lunar_aligned")
+    inst:AddTag("gestaltmutant")
 	inst:AddTag("bearger_blocker")
 	inst:AddTag("noepicmusic")
     inst:AddTag("soulless") -- no wortox souls
@@ -765,12 +801,16 @@ local function mutatedfn()
         return inst
     end
 
+    inst.sounds = mutated_sounds
     inst.scrapbook_overridedata = mutated_scrapbook_overridedata
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
 
 	inst.cancombo = true
 	inst.canbutt = true
 	inst.canrunningbutt = false
 	inst.swipefx = "mutatedbearger_swipe_fx"
+
+    inst.sg.mem.nocorpse = true
 
     inst.components.health:SetMaxHealth(TUNING.MUTATED_BEARGER_HEALTH)
 
@@ -778,6 +818,7 @@ local function mutatedfn()
 	inst.components.combat:SetRange(TUNING.MUTATED_BEARGER_ATTACK_RANGE)
     inst.components.combat:SetAttackPeriod(TUNING.MUTATED_BEARGER_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(3, RetargetFn_Mutated)
+    inst.components.combat:SetHurtSound("rifts3/mutated_bearger/hurt")
 
 	inst:AddComponent("planarentity")
 	inst:AddComponent("planardamage")
